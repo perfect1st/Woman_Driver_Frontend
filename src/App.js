@@ -10,6 +10,7 @@
   import LoadingComponent from "./components/LoadingComponent";
 import MainLayout from "./components/MainLayout";
 import Home from "./pages/Home/Home";
+import PassengersPage from "./pages/PassengersPage/PassengersPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -124,6 +125,8 @@ import Home from "./pages/Home/Home";
             },
             secondary: {
               main: mode === "light" ? "#FFE9FB" : "#5A1A3B",
+              sec: mode === "light" ? "#F9FAFB" : "#BDC8D2",
+              border: mode === "light" ? "#F5F0F2" : "#CCB2BC",
             },
             background: {
               default: mode === "light" ? "#F5F0F2" : "#121212",
@@ -134,6 +137,9 @@ import Home from "./pages/Home/Home";
             },
             text: {
               primary: mode === "light" ? "#191C32" : "#ffffff",
+            },
+            whiteText: {
+              primary: mode === "light" ? "#ffffff" : "#191C32",
             },
           },
           typography: {
@@ -298,11 +304,21 @@ import Home from "./pages/Home/Home";
     }
   />
   <Route
+    path="/Passengers"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <PassengersPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
     path="/admin/users"
     element={
       // <ProtectedRoute>
         <MainLayout>
-          {/* <AdminHome /> */}
+          <PassengersPage />
         </MainLayout>
       // </ProtectedRoute>
     }

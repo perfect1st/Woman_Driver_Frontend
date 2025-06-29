@@ -11,18 +11,24 @@ const routesData = {
       key: "dashboard",
       label: { en: "Dashboard", ar: "لوحة التحكم" },
       path: "/adminHome",
-      icon: DashboardIcon,
+      // icon: DashboardIcon,
+    },
+    {
+      key: "Passengers",
+      label: { en: "Passengers", ar: "الركاب" },
+      path: "/Passengers",
+      // icon: HomeIcon,
     },
     {
       key: "home",
       label: { en: "home", ar: "الرئيسيه" },
       path: "/home",
-      icon: HomeIcon,
+      // icon: HomeIcon,
     },
     {
       key: "users",
       label: { en: "Users", ar: "المستخدمين" },
-      icon: HomeIcon,
+      // icon: HomeIcon,
       children: [
         {
           key: "allUsers",

@@ -19,6 +19,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useTranslation } from "react-i18next";
+import LoadingComponent from "../../components/LoadingComponent";
 
 const Home = () => {
   const theme = useTheme();
@@ -49,6 +50,10 @@ const Home = () => {
     { city: "City I", trips: 900 },
   ];
   const maxValue = Math.max(...citiesData.map((item) => item.trips));
+
+  // return (
+  //   <LoadingComponent />
+  // )
 
   return (
     <Box sx={{ p: isMobile ? 1 : 3 }}>

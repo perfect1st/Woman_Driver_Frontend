@@ -23,7 +23,7 @@ const LoadingComponent = () => {
     <Box
       sx={{
         height: "100vh",
-        width: "100vw",
+        // width: "100vw",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -36,8 +36,8 @@ const LoadingComponent = () => {
         src={logo}
         alt="App Logo"
         sx={{
-          width: 100,
-          height: 100,
+          width: 200,
+          height: 200,
           animation: `${pulse} 1.5s ease-in-out infinite`,
         }}
       />

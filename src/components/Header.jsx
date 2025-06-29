@@ -104,7 +104,7 @@ const Header = () => {
 
   // Mobile drawer content
   const drawerContent = (
-    <Box sx={{ width: 250, padding: 2, height: '100%', background: theme.palette.customBackground.mainCard }}>
+    <Box sx={{ width: 250, padding: 2, height: '100%', background: theme.palette.secondary.sec }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
         <IconButton onClick={handleDrawerToggle}>
           <CloseIcon />
@@ -131,10 +131,10 @@ const Header = () => {
           }} 
         />
         <Box sx={{ ml: 2 }}>
-          <Typography variant="h6" fontWeight="bold">
+          <Typography variant="h6" fontWeight="bold" sx={{color: theme.palette.primary.main}}>
             {user?.name}
           </Typography>
-          <Typography variant="body2">
+          <Typography variant="body2" sx={{color: theme.palette.primary.main}}>
             {user?.type}
           </Typography>
         </Box>
@@ -276,23 +276,33 @@ const Header = () => {
       position="static" 
       elevation={0}
       sx={{ 
-        background: theme.palette.customBackground.mainCard,
+        background: theme.palette.secondary.sec,
         px: { xs: 2, md: 4 },
-        py: { xs: 1, md: 1.5 }
+        py: { xs: 1, md: 1.5 },
+        boxShadow: 'none' ,
+        
       }}
     >
       <Toolbar disableGutters>
         {/* Mobile Menu Button */}
-        <Hidden mdUp>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon sx={{ fontSize: 32 }} />
-          </IconButton>
+      <Hidden mdUp>
+      <IconButton
+          color="primary"               // use theme.palette.primary
+          aria-label="open drawer"
+          edge="start"
+          onClick={handleDrawerToggle}
+          sx={{
+            ml: 2,
+            color: theme.palette.primary.main,  // ensure sx color matches
+          }}
+        >
+          <MenuIcon
+            sx={{
+              fontSize: 32,
+              color: theme.palette.primary.main, // icon color
+            }}
+          />
+        </IconButton>
         </Hidden>
 
         {/* Logo */}
@@ -316,7 +326,7 @@ const Header = () => {
             display: 'flex', 
             alignItems: 'center',
             mr: { xs: 1, md: 3 },
-            color: theme.palette.text.primary
+            color: theme.palette.primary.main
           }}>
             <Badge badgeContent={3} color="primary">
               <Box 
@@ -331,7 +341,7 @@ const Header = () => {
                 }} 
               />
             </Badge>
-            <Typography variant="body1" sx={{ ml: { xs: 0.5, md: 1.5 }, fontWeight: 'bold', display: { xs: 'none', sm: 'block' } }}>
+            <Typography variant="body1" sx={{ ml: { xs: 0.5, md: 1.5 }, fontWeight: 'bold', display: { xs: 'none', sm: 'block' }, color: theme.palette.primary.main }}>
               {i18n.t('notification')}
             </Typography>
           </Box>
@@ -354,7 +364,7 @@ const Header = () => {
             onClick={handleLangMenuOpen}
             sx={{
               mr: { xs: 1, md: 3 },
-              color: theme.palette.text.primary,
+              color: theme.palette.primary.main,
               textTransform: 'none',
               minWidth: 'auto'
             }}
@@ -392,7 +402,7 @@ const Header = () => {
             sx={{
               '& .MuiPaper-root': {
                 backgroundColor: theme.palette.background.paper,
-                color: theme.palette.text.primary,
+                color:theme.palette.primary.main,
                 minWidth: 120
               }
             }}
@@ -447,7 +457,7 @@ const Header = () => {
               p: { xs: 0.5, md: 1.5 },
               borderRadius: 2,
               '&:hover': { bgcolor: 'action.hover' },
-              color: theme.palette.text.primary
+              color:theme.palette.primary.main
             }}
             onClick={handleUserMenuOpen}
           >
@@ -464,10 +474,10 @@ const Header = () => {
               mx: { xs: 0.5, md: 1.5 },
               display: { xs: 'none', md: 'block' }
             }}>
-              <Typography variant="subtitle1" fontWeight="bold">
+              <Typography variant="subtitle1" fontWeight="bold" sx={{color: theme.palette.primary.main}}>
                 {user?.name}
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="body2" sx={{color: theme.palette.primary.main}}>
                 {user?.type}
               </Typography>
             </Box>
@@ -490,7 +500,7 @@ const Header = () => {
             sx={{
               '& .MuiPaper-root': {
                 backgroundColor: theme.palette.background.paper,
-                color: theme.palette.text.primary,
+                color: theme.palette.primary.main,
                 minWidth: 140
               }
             }}
@@ -544,7 +554,7 @@ const Header = () => {
         sx={{
           '& .MuiPaper-root': {
             backgroundColor: theme.palette.background.paper,
-            color: theme.palette.text.primary,
+            color: theme.palette.primary.main,
             minWidth: 120
           }
         }}

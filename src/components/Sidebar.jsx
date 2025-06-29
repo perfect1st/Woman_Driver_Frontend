@@ -24,7 +24,6 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
   const menuItems = routesData["admin"] || [];
   const [openKeys, setOpenKeys] = useState({});
 
-  // Automatically open parent routes when child route is active
   useEffect(() => {
     const newOpenKeys = {};
     menuItems.forEach((item) => {
@@ -55,14 +54,11 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
     >
       <List component="nav">
         {menuItems.map((item, index) => {
-          const isParentActive =
-            item.children &&
-            item.children.some((child) =>
-              location.pathname.startsWith(child.path)
-            );
-          const selected =
-            location.pathname.startsWith(item.path || "") || isParentActive;
           const hasChildren = !!item.children;
+          const isActiveParent = hasChildren && 
+            item.children.some(child => location.pathname.startsWith(child.path));
+          const isDirectlyActive = !hasChildren && 
+            location.pathname.startsWith(item.path || "");
           const IconComponent = item.icon;
 
           return (
@@ -72,24 +68,35 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
                   component={item.path ? Link : "div"}
                   to={item.path || undefined}
                   onClick={() => hasChildren && toggleOpen(item.key)}
-                  selected={selected}
+                  selected={isDirectlyActive || isActiveParent}
                   sx={{
                     pl: 3,
                     mb: 0.5,
-
                     "&.Mui-selected": {
-                      // backgroundColor: theme.palette.customBackground.mainCard,
-                      // color: theme.palette.primary.main,
+                      backgroundColor: isDirectlyActive 
+                        ? theme.palette.background.default 
+                        : 'transparent',
+                      color: isDirectlyActive 
+                        ? theme.palette.primary.main
+                        : "inherit",
                     },
                     "&.Mui-selected:hover": {
-                      backgroundColor: theme.palette.customBackground.mainCard,
+                      backgroundColor: isDirectlyActive 
+                        ? theme.palette.background.default  
+                        : 'rgba(255, 255, 255, 0.1)',
                     },
                     borderRadius: "8px",
                   }}
                 >
                   {IconComponent ? (
                     <ListItemIcon sx={{ minWidth: 30 }}>
-                      <IconComponent sx={{ color: "inherit" }} />
+                      <IconComponent
+                        sx={{
+                          color: isDirectlyActive 
+                            ? theme.palette.primary.main 
+                            : "inherit",
+                        }}
+                      />
                     </ListItemIcon>
                   ) : (
                     <ListItemIcon sx={{ minWidth: 30 }}>
@@ -98,7 +105,9 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
                           width: 6,
                           height: 24,
                           borderRadius: "3px",
-                          backgroundColor: theme.palette.primary.main,
+                          backgroundColor: isDirectlyActive 
+                            ? theme.palette.primary.main 
+                            : theme.palette.primary.main,
                         }}
                       />
                     </ListItemIcon>
@@ -110,6 +119,7 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
                         sx={{ display: "flex", alignItems: "start" }}
                         variant="body1"
                         fontWeight="bold"
+                        color={isDirectlyActive ? "primary.main" : "inherit"}
                       >
                         {item.label[i18n.language]}
                       </Typography>
@@ -127,39 +137,47 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
                   >
                     <List component="div" disablePadding>
                       {item.children.map((child) => {
-                        const childSel = location.pathname.startsWith(
-                          child.path
-                        );
+                        const isChildActive = location.pathname.startsWith(child.path);
                         return (
                           <ListItemButton
                             key={child.key}
                             component={Link}
                             to={child.path}
-                            selected={childSel}
+                            selected={isChildActive}
                             sx={{
-                              pl: 8,
+                              // pl: 8,
                               mb: 0.5,
                               "&.Mui-selected": {
-                                backgroundColor:
-                                  theme.palette.customBackground.mainCard,
-                                color: theme.palette.text.primary,
+                                backgroundColor: theme.palette.background.default ,
+                                color: theme.palette.primary.main,
                               },
                               "&.Mui-selected:hover": {
-                                backgroundColor:
-                                  theme.palette.customBackground.mainCard,
+                                backgroundColor: theme.palette.background.default ,
                               },
                               borderRadius: "8px",
                             }}
                           >
+                             <ListItemIcon sx={{ minWidth: 30 }}>
+                      <Box
+                        sx={{
+                          width: 6,
+                          height: 24,
+                          borderRadius: "3px",
+                          backgroundColor: isDirectlyActive 
+                            ? theme.palette.primary.main 
+                            : theme.palette.primary.main,
+                        }}
+                      />
+                    </ListItemIcon>
                             <ListItemText
                               primary={
                                 <Typography
-                                sx={{ display: "flex", alignItems: "start" }}
-                                variant="body1"
-                                // fontWeight="bold"
-                              >
-                                {child.label[i18n.language]}
-                              </Typography>
+                                  sx={{ display: "flex", alignItems: "start" }}
+                                  variant="body1"
+                                  color={isChildActive ? "primary.main" : "inherit"}
+                                >
+                                  {child.label[i18n.language]}
+                                </Typography>
                               }
                             />
                           </ListItemButton>
@@ -170,7 +188,6 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
                 )}
               </Box>
 
-              {/* Add divider between routes except the last one */}
               {index < menuItems.length - 1 && (
                 <Divider
                   sx={{
@@ -189,7 +206,6 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
 
   return (
     <>
-      {/* Desktop sidebar - hidden on mobile */}
       <Box
         sx={{
           display: { xs: "none", md: "block" },
@@ -200,7 +216,6 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
         {drawerContent}
       </Box>
 
-      {/* Mobile drawer - hidden completely on mobile */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
