@@ -169,14 +169,14 @@ const Home = () => {
                 <Bar
                   dataKey="trips"
                   stackId="a"
-                  fill={theme.palette.background.secDefault} // الجزء المملوء
+                  fill={theme.palette.primary.main} // الجزء المملوء
                   barSize={30}
                   radius={[0, 0, 4, 4]}
-                />
+                  />
                 <Bar
                   dataKey={(data) => maxValue - data.trips} // الجزء الفارغ
                   stackId="a"
-                  fill={theme.palette.primary.main}
+                  fill={theme.palette.background.default} 
                   barSize={30}
                   radius={[4, 4, 0, 0]}
                 />
