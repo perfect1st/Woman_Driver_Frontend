@@ -14,6 +14,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import CustomTextField from '../RTLTextField';
 import { ReactComponent as SearchIcon } from '../../assets/searchIcon.svg'
+import { ArrowDropDown } from '@mui/icons-material';
 
 const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [], isDriver = false }) => {
   const theme = useTheme();
@@ -68,10 +69,20 @@ const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [], isDri
     sx={{ backgroundColor: theme.palette.secondary.sec,  borderRadius:1 }}
     isRtl={isArabic}
     SelectProps={{
+      // هنا بنبدل الأيقونة ونثبت موقعها
+      IconComponent: (props) => (
+        <ArrowDropDown
+          {...props}
+          sx={{
+            // نلغي اليسار ونثبتها 8px من اليمين
+            left: 'auto',
+            right: 8,
+            position: 'absolute',
+          }}
+        />
+      ),
       MenuProps: {
-        PaperProps: {
-          style: { maxHeight: 250 }
-        }
+        PaperProps: { style: { maxHeight: 250 } }
       }
     }}
   >
@@ -96,6 +107,23 @@ const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [], isDri
     onChange={handleChange}
     variant="outlined"
     isRtl={isArabic}
+    SelectProps={{
+      // هنا بنبدل الأيقونة ونثبت موقعها
+      IconComponent: (props) => (
+        <ArrowDropDown
+          {...props}
+          sx={{
+            // نلغي اليسار ونثبتها 8px من اليمين
+            left: 'auto',
+            right: 8,
+            position: 'absolute',
+          }}
+        />
+      ),
+      MenuProps: {
+        PaperProps: { style: { maxHeight: 250 } }
+      }
+    }}
     sx={{ backgroundColor: theme.palette.secondary.sec, borderRadius:1 }}
   >
     <MenuItem value="">{t('All')}</MenuItem>

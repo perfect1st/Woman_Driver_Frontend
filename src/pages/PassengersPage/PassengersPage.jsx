@@ -136,6 +136,7 @@ const PassengersPage = () => {
         <Header 
           title={t('Rider')} 
           subtitle={t('Riders Details')}
+          i18n={i18n}
         />
       </Box>
       

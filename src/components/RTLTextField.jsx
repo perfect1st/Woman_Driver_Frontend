@@ -5,6 +5,14 @@ import PropTypes from 'prop-types';
 // Default styling for RTL TextField
 const defaultRtlSx = {
   direction: 'rtl',
+    '& .MuiOutlinedInput-root .MuiSelect-icon': {
+    insetInlineEnd: 'auto !important',  // unset the default left-hand positioning
+    insetInlineStart: '8px !important', // pin it 8px from the right edge
+  },
+  '& .MuiFilledInput-root .MuiSelect-icon': {
+    insetInlineEnd: 'auto !important',
+    insetInlineStart: '8px !important',
+  },
   '& .MuiInputLabel-root': {
     right: '26px',
     left: 'auto',
@@ -17,12 +25,24 @@ const defaultRtlSx = {
     '& input': {
       textAlign: 'right',
     },
+    // ← هنا بنستهدف الأيقونة داخل .MuiOutlinedInput-root
+    '& .MuiSelect-icon': {
+      right: 'auto !important',
+      left: '8px !important',
+    },
+  },
+  '& .MuiFilledInput-root': {
+    '& .MuiSelect-icon': {
+      right: '8px !important',
+      left: 'auto !important',
+    },
   },
   '& legend': {
     textAlign: 'right',
     direction: 'rtl',
   },
 };
+
 
 /**
  * Reusable TextField component with optional RTL support based on MUI TextField.

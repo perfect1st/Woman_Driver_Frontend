@@ -13,7 +13,8 @@ import {
   MenuItem,
   Divider,
   useTheme,
-  Box
+  Box,
+  alpha
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import WarningIcon from "@mui/icons-material/Warning";
@@ -46,6 +47,7 @@ const statusStyles = {
 
 const TableComponent = ({ columns, data, onStatusChange, onViewDetails, isDriver = false }) => {
   const {t,i18n} = useTranslation()
+  const isArabic = i18n.language == 'ar'
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -106,7 +108,7 @@ const TableComponent = ({ columns, data, onStatusChange, onViewDetails, isDriver
         <TableCell
         key={column.key}
         sx={{
-          backgroundColor: "#F7FAFA",
+          backgroundColor: theme.palette.background.secDefault,
           border: "1px solid #F5F0F2",
           fontWeight: "bold",
           py: { xs: 1, sm: 1.5 },
@@ -131,7 +133,7 @@ const TableComponent = ({ columns, data, onStatusChange, onViewDetails, isDriver
               <TableCell
                 align="start"
                 sx={{
-                  backgroundColor: "#F7FAFA",
+                  backgroundColor: theme.palette.background.secDefault,
                   border: "1px solid #F5F0F2",
                   fontWeight: "bold",
                   py: { xs: 1, sm: 1.5 }
@@ -236,17 +238,26 @@ const TableComponent = ({ columns, data, onStatusChange, onViewDetails, isDriver
         }}
       >
         {/* Details */}
-        <MenuItem onClick={handleDetailsClick} sx={{ py: 1 }}>
+        <MenuItem onClick={handleDetailsClick}  sx={{
+    borderLeft: isArabic
+      ? ''
+      : `4px solid ${alpha(theme.palette.text.primary, 0.5)}`,
+    borderRight: isArabic
+      ? `4px solid ${alpha(theme.palette.text.primary, 0.5)}`
+      : '',
+    py: 1,
+  }}>
           {t('Details')}
-          <InfoIcon sx={{ color: "black", mr: 1.5 }} fontSize="small" />
+          {/* <InfoIcon sx={{ color: "black", mr: 1.5 }} fontSize="small" /> */}
         </MenuItem>
-        <Divider />
+        {/* <Divider /> */}
         {/* Available */}
         <MenuItem
           onClick={() => handleStatusSelect("Available")}
           sx={{
             color: statusStyles.Available.textColor,
-            borderLeft: `4px solid ${statusStyles.Available.borderColor}`,
+            borderLeft: isArabic ? '' : `4px solid ${statusStyles.Available.borderColor}`,
+            borderRight: isArabic ? `4px solid ${statusStyles.Available.borderColor}` : '' ,
             pl: 2,
             py: 1,
             display: "flex",
@@ -261,7 +272,8 @@ const TableComponent = ({ columns, data, onStatusChange, onViewDetails, isDriver
           onClick={() => handleStatusSelect("Pending")}
           sx={{
             color: statusStyles.Pending.textColor,
-            borderLeft: `4px solid ${statusStyles.Pending.borderColor}`,
+            borderLeft: isArabic ? '' : `4px solid ${statusStyles.Pending.borderColor}`,
+            borderRight: isArabic ? `4px solid ${statusStyles.Pending.borderColor}` : '' ,
             pl: 2,
             py: 1,
             display: "flex",
@@ -276,7 +288,8 @@ const TableComponent = ({ columns, data, onStatusChange, onViewDetails, isDriver
           onClick={() => handleStatusSelect("Rejected")}
           sx={{
             color: statusStyles.Rejected.textColor,
-            borderLeft: `4px solid ${statusStyles.Rejected.borderColor}`,
+            borderLeft: isArabic ? '' : `4px solid ${statusStyles.Rejected.borderColor}`,
+            borderRight: isArabic ? `4px solid ${statusStyles.Rejected.borderColor}` : '' ,
             pl: 2,
             py: 1,
             display: "flex",

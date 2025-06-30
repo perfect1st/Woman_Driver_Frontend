@@ -70,7 +70,7 @@ const Home = () => {
         variant="fullWidth"
         sx={{
           mt: 2,
-          backgroundColor: theme.palette.background.default,
+          backgroundColor: theme.palette.background.secDefault,
           borderRadius: 1,
           "& .MuiTabs-indicator": {
             display: "none",
@@ -89,7 +89,7 @@ const Home = () => {
               bgcolor:
                 activeTab === index
                   ? theme.palette.primary.main
-                  : theme.palette.background.default,
+                  : theme.palette.background.secDefault,
               color: theme.palette.primary.main,
               "&.Mui-selected": {
                 color: "#ffffff",
@@ -111,7 +111,7 @@ const Home = () => {
           { title: t("totalRevenue"), value: "250,000", change: "+8%" },
         ].map((metric, idx) => (
           <Grid item xs={12} sm={6} md={3} key={idx}>
-            <Card sx={{ bgcolor: "background.default", height: "100%" }}>
+            <Card sx={{ bgcolor: "background.secDefault", height: "100%" }}>
               <CardContent>
                 <Typography variant="body1">{metric.title}</Typography>
                 <Typography variant="h5" sx={{ my: 1 }}>
@@ -169,7 +169,7 @@ const Home = () => {
                 <Bar
                   dataKey="trips"
                   stackId="a"
-                  fill={theme.palette.background.default} // الجزء المملوء
+                  fill={theme.palette.background.secDefault} // الجزء المملوء
                   barSize={30}
                   radius={[0, 0, 4, 4]}
                 />
@@ -196,7 +196,7 @@ const Home = () => {
           { title: t("activeDrivers"), value: "1,000", change: "+10%" },
         ].map((metric, idx) => (
           <Grid item xs={12} sm={6} key={idx}>
-            <Card sx={{ bgcolor: "background.default" }}>
+            <Card sx={{ bgcolor: "background.secDefault" }}>
               <CardContent>
                 <Typography variant="body1">{metric.title}</Typography>
                 <Typography variant="h5" sx={{ my: 1, fontWeight: "bold" }}>

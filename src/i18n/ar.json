@@ -29,7 +29,7 @@
   "Account status": "حالة الحساب",
   "Details": "تفاصيل",
   "Available": "متاح",
-  "Pending": "قيد الانتظار",
+  "Pending": "قيد الانتظار...",
   "Rejected": "مرفوض",
   "Search by Passenger name and number": "ابحث باسم الراكب أو رقمه",
   "Search by Driver name and number": "ابحث باسم السائق أو رقمه",

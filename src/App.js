@@ -131,6 +131,7 @@ import DriversPage from "./pages/DriversPage/DriversPage";
             },
             background: {
               default: mode === "light" ? "#F5F0F2" : "#121212",
+              secDefault: mode === "light" ? "#F7FAFA" : "#1F2937",
               paper: mode === "light" ? "#FFFFFF" : "#1e1e1e",
             },
             customBackground: {

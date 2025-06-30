@@ -26,12 +26,12 @@ const routesData = {
       path: "/Drivers",
       // icon: HomeIcon,
     },
-    {
-      key: "home",
-      label: { en: "home", ar: "الرئيسيه" },
-      path: "/home",
-      // icon: HomeIcon,
-    },
+    // {
+    //   key: "home",
+    //   label: { en: "home", ar: "الرئيسيه" },
+    //   path: "/home",
+    //   // icon: HomeIcon,
+    // },
     {
       key: "users",
       label: { en: "Users", ar: "المستخدمين" },

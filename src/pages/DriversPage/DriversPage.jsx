@@ -136,6 +136,7 @@ const DriversPage = () => {
         <Header 
           title={t('Drivers')} 
           subtitle={t('Drivers Details')}
+          i18n={i18n}
         />
       </Box>
       
