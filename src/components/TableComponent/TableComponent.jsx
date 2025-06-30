@@ -131,7 +131,7 @@ const TableComponent = ({ columns, data, onStatusChange, onViewDetails, isDriver
       </TableCell>
               ))}
               <TableCell
-                align="start"
+                 align={i18n.dir() === 'rtl' ? 'right' : 'left'}
                 sx={{
                   backgroundColor: theme.palette.background.secDefault,
                   border: "1px solid #F5F0F2",

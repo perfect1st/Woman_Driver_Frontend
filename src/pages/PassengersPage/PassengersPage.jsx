@@ -54,8 +54,23 @@ const PassengersPage = () => {
     }
   ];
 
-  const cities = ['New York', 'London', 'Paris', 'Tokyo', 'Berlin', 'Sydney'];
-  const statusOptions = [t('Available'), t('Pending'), t('Rejected')];
+  const [cities, setCities] = useState([
+    { _id: "1", name: "New York" },
+    { _id: "2", name: "London" },
+    { _id: "3", name: "Paris" },
+    { _id: "4", name: "Tokyo" },
+    { _id: "5", name: "Berlin" },
+  ]);
+  const statusOptions = ["Available", "Pending", "Rejected"];
+  const handleSearch = (filters) => {
+    // filters will contain:
+    //   keyword: search term
+    //   city: city ID (e.g. '1')
+    //   status: status string (e.g. 'Available')
+
+    console.log("Search filters:", filters);
+    // Make API call with these filters
+  };
 
   // State management
   const [passengers, setPassengers] = useState(initialPassengers);
@@ -71,20 +86,20 @@ const PassengersPage = () => {
   ];
 
   // Handle search/filter
-  const handleSearch = (filters) => {
-    const filtered = passengers.filter(passenger => {
-      const matchesSearch = !filters.search || 
-        passenger.name.toLowerCase().includes(filters.search.toLowerCase()) || 
-        passenger.number.toLowerCase().includes(filters.search.toLowerCase());
+  // const handleSearch = (filters) => {
+  //   const filtered = passengers.filter(passenger => {
+  //     const matchesSearch = !filters.search || 
+  //       passenger.name.toLowerCase().includes(filters.search.toLowerCase()) || 
+  //       passenger.number.toLowerCase().includes(filters.search.toLowerCase());
       
-      const matchesCity = !filters.city || passenger.city === filters.city;
-      const matchesStatus = !filters.status || passenger.accountStatus === filters.status;
+  //     const matchesCity = !filters.city || passenger.city === filters.city;
+  //     const matchesStatus = !filters.status || passenger.accountStatus === filters.status;
       
-      return matchesSearch && matchesCity && matchesStatus;
-    });
+  //     return matchesSearch && matchesCity && matchesStatus;
+  //   });
     
-    setFilteredPassengers(filtered);
-  };
+  //   setFilteredPassengers(filtered);
+  // };
 
   // Handle status changes
   const handleStatusChange = (row, newStatus) => {
