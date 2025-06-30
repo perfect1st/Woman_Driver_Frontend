@@ -20,14 +20,12 @@ const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [], isDri
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Initialize state from URL parameters
   const [filters, setFilters] = useState({ 
     search: '', 
     city: '', 
     status: '' 
   });
 
-  // Read URL parameters on component mount
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     setFilters({
@@ -54,7 +52,7 @@ const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [], isDri
       search: queryParams.toString()
     });
 
-    // Execute search with formatted parameters
+    // Handle search with formatted parameters
     onSearch({
       keyword: filters.search,
       city: filters.city,
@@ -188,6 +186,8 @@ const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [], isDri
             {t('Search')}
           </Button>
         </Grid>
+
+        
       </Grid>
     </Box>
   );
