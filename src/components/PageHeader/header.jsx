@@ -7,7 +7,7 @@ const Header = ({ title, subtitle, i18n }) => (
     component="header"
     sx={{
       direction: i18n.language === 'ar' ? 'rtl' : 'ltr',
-      p: 4,
+      // p: 4,
     }}
   >
     <Typography variant="h6">{title}</Typography>

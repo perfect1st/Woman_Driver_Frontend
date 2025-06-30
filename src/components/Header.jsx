@@ -32,7 +32,9 @@ import {
   Menu as MenuIcon,
   Close as CloseIcon,
   ExpandLess,
-  ExpandMore
+  ExpandMore,
+  Logout,
+  Person
 } from '@mui/icons-material';
 import { ColorModeContext } from '../App';
 import logo from '../assets/Logo.png';
@@ -102,62 +104,94 @@ const Header = () => {
     if (isMobile) setMobileOpen(false);
   };
 
-  // Mobile drawer content
-  const drawerContent = (
-    <Box sx={{ width: 250, padding: 2, height: '100%', background: theme.palette.secondary.sec }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-        <IconButton onClick={handleDrawerToggle}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
-  
-      {/* User Profile in Drawer */}
-      <Box 
+// Mobile drawer content
+// Mobile drawer content
+const drawerContent = (
+  <Box 
+    sx={{ 
+      width: 250, 
+      padding: 2, 
+      height: '100%', 
+      background: theme.palette.secondary.sec,
+      direction: lang === 'ar' ? 'rtl' : 'ltr'
+    }}
+  >
+    {/* Close Button */}
+    <Box sx={{ 
+      display: 'flex', 
+      justifyContent: lang === 'ar' ? 'flex-start' : 'flex-end', 
+      mb: 2 
+    }}>
+      <IconButton onClick={handleDrawerToggle}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
+
+    {/* User Profile */}
+    <Box 
+      sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        flexDirection: lang === 'ar' ? 'row' : 'row',
+        mb: 3,
+        p: 2,
+        borderRadius: 2,
+        background: 'rgba(255,255,255,0.1)'
+      }}
+    >
+      <Avatar 
+        src={user?.image} 
         sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          mb: 3,
-          p: 2,
-          borderRadius: 2,
-          background: 'rgba(255,255,255,0.1)'
-        }}
-      >
-        <Avatar 
-          src={user?.image} 
-          sx={{ 
-            width: 60, 
-            height: 60,
-            border: `2px solid ${theme.palette.primary.main}`
-          }} 
-        />
-        <Box sx={{ ml: 2 }}>
-          <Typography variant="h6" fontWeight="bold" sx={{color: theme.palette.primary.main}}>
-            {user?.name}
-          </Typography>
-          <Typography variant="body2" sx={{color: theme.palette.primary.main}}>
-            {user?.type}
-          </Typography>
-        </Box>
+          width: 60, 
+          height: 60,
+          border: `2px solid ${theme.palette.primary.main}`,
+          marginLeft: lang === 'ar' ? 2 : 0,
+          marginRight: lang === 'ar' ? 0 : 2
+        }} 
+      />
+      <Box sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}>
+        <Typography variant="h6" fontWeight="bold" sx={{color: theme.palette.primary.main}}>
+          {user?.name}
+        </Typography>
+        <Typography variant="body2" sx={{color: theme.palette.primary.main}}>
+          {user?.type}
+        </Typography>
       </Box>
+    </Box>
 
-
-      <Divider sx={{ my: 2 }} />
+    <Divider sx={{ my: 2 }} />
   
-  {/* Dynamic Routes from routes.js */}
- {/* Dynamic Routes from routes.js */}
-
- <List>
+    {/* Navigation Menu */}
+    <List>
       {currentRoutes?.map((route) =>
         route.children ? (
           <React.Fragment key={route.key}>
-            {/* Level 1 Title Button */}
-            <ListItemButton onClick={() => handleToggleMenu(route.key)}>
-              {route.icon && <Box component={route.icon} sx={{ mr: 1 }} />}
-              <ListItemText primary={route.label[lang]} />
+            <ListItemButton 
+              onClick={() => handleToggleMenu(route.key)}
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                flexDirection: lang === 'ar' ? 'row' : 'row'
+              }}
+            >
+              {/* Left-aligned content (icon + text) */}
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                flexDirection: lang === 'ar' ? 'row' : 'row'
+              }}>
+
+                <ListItemText 
+                  primary={route.label[lang]} 
+                  sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
+                />
+              </Box>
+              
+              {/* Right-aligned arrow */}
               {openMenus[route.key] ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
 
-            {/* Level 2 Nested Children */}
+            {/* Nested Children */}
             <Collapse in={openMenus[route.key]} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
                 {route.children.map((child) => (
@@ -166,12 +200,16 @@ const Header = () => {
                     component={Link}
                     to={child.path}
                     onClick={handleDrawerToggle}
-                    sx={{ pl: 4 }}
+                    sx={{ 
+                      pl: lang === 'ar' ? 0 : 4,
+                      pr: lang === 'ar' ? 4 : 0,
+                      flexDirection: lang === 'ar' ? 'row' : 'row'
+                    }}
                   >
-                    {child.icon && (
-                      <Box component={child.icon} sx={{ mr: 1 }} />
-                    )}
-                    <ListItemText primary={child.label[lang]} />
+                    <ListItemText 
+                      primary={child.label[lang]} 
+                      sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
+                    />
                   </ListItemButton>
                 ))}
               </List>
@@ -183,92 +221,167 @@ const Header = () => {
             component={Link}
             to={route.path}
             onClick={handleDrawerToggle}
+            sx={{
+              flexDirection: lang === 'ar' ? 'row' : 'row'
+            }}
           >
-            {route.icon && <Box component={route.icon} sx={{ mr: 1 }} />}
-            <ListItemText primary={route.label[lang]} />
+            <ListItemText 
+              primary={route.label[lang]} 
+              sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
+            />
           </ListItemButton>
         )
       )}
     </List>
   
-      <List>
-        {/* Notifications */}
-        <ListItem button sx={{ mb: 1 }}>
-          <Badge badgeContent={3} color="primary" sx={{ mr: 2 }}>
-            <Box 
-              component="img" 
-              src={notificationIcon} 
-              alt="Notification"
-              sx={{
-                width: 28,
-                height: 28,
-                ml:1,
-                filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
-              }} 
-            />
-          </Badge>
-          <ListItemText 
-            primary={<Typography fontWeight="bold">{i18n.t('notification')}</Typography>} 
-          />
-        </ListItem>
-  
-        <Divider sx={{ my: 2 }} />
-  
-        {/* Language Menu */}
-        <ListItem button onClick={handleLangMenuOpen} sx={{ mb: 1 }}>
+    {/* Additional Menu Items */}
+    <List>
+      {/* Notifications */}
+      <ListItem 
+        button 
+        sx={{ 
+          mb: 1,
+          flexDirection: lang === 'ar' ? 'row' : 'row'
+        }}
+      >
+        <Badge 
+          badgeContent={3} 
+          color="primary" 
+          sx={{ 
+            marginRight: lang === 'ar' ? 0 : 2,
+            marginLeft: lang === 'ar' ? 2 : 0
+          }}
+        >
           <Box 
             component="img" 
-            src={languageIcon} 
-            alt="Language"
+            src={notificationIcon} 
+            alt="Notification"
             sx={{
               width: 28,
               height: 28,
-              mx: 2,
+              // ml: lang === 'ar' ? 0 : 0,
+              // mr: lang === 'ar' ? 0 : 0,
               filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
             }} 
           />
-          <ListItemText 
-            primary={<Typography fontWeight="bold">{i18n.language === 'en' ? 'En' : 'Ar'}</Typography>} 
-          />
-          {langMenuAnchor ? <ArrowDropUp /> : <ArrowDropDown />}
-        </ListItem>
+        </Badge>
+        <ListItemText 
+          primary={
+            <Typography 
+              fontWeight="bold"
+              sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
+            >
+              {i18n.t('notification')}
+            </Typography>
+          } 
+        />
+      </ListItem>
   
-        {/* Dark/Light Mode */}
-        {/* <ListItem button onClick={toggleColorMode} sx={{ mb: 1 }}>
-          {theme.palette.mode === 'dark' ? (
-            <LightMode sx={{ fontSize: 28, mr: 2 }} />
-          ) : (
-            <DarkMode sx={{ fontSize: 28, mr: 2 }} />
-          )}
-          <ListItemText 
-            primary={
-              <Typography fontWeight="bold">
-                {theme.palette.mode === 'dark' 
-                  ? i18n.t('lightMode') 
-                  : i18n.t('darkMode')}
-              </Typography>
-            } 
-          />
-        </ListItem> */}
+      <Divider sx={{ my: 2 }} />
   
-        <Divider sx={{ my: 2 }} />
+      {/* Language Selector */}
+      <ListItem 
+        button 
+        onClick={handleLangMenuOpen} 
+        sx={{ 
+          mb: 1,
+          flexDirection: lang === 'ar' ? 'row' : 'row'
+        }}
+      >
+        <Box 
+          component="img" 
+          src={languageIcon} 
+          alt="Language"
+          sx={{
+            width: 28,
+            height: 28,
+            mx: 2,
+            filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
+          }} 
+        />
+        <ListItemText 
+          primary={
+            <Typography 
+              fontWeight="bold"
+              sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
+            >
+              {i18n.language === 'en' ? 'En' : 'Ar'}
+            </Typography>
+          } 
+        />
+        {langMenuAnchor ? <ArrowDropUp /> : <ArrowDropDown />}
+      </ListItem>
   
-        {/* User Menu */}
-        <ListItem button onClick={handleUserMenuOpen} sx={{ mb: 1 }}>
-          <ListItemText 
-            primary={<Typography fontWeight="bold">{i18n.t('profile')}</Typography>} 
-          />
-        </ListItem>
-        <ListItem button onClick={handleLogout} sx={{ mb: 1 }}>
-          <ListItemText 
-            primary={<Typography fontWeight="bold">{i18n.t('logout')}</Typography>} 
-          />
-        </ListItem>
+      <Divider sx={{ my: 2 }} />
   
+      {/* User Menu */}
+      <ListItem 
+        button 
+        onClick={handleUserMenuOpen} 
+        sx={{ 
+          mb: 1,
+          flexDirection: lang === 'ar' ? 'row' : 'row'
+        }}
+      >
+        {/* <Box 
+          component="img" 
+          src={Person} 
+          alt="Profile"
+          sx={{
+            width: 28,
+            height: 28,
+            mr: lang === 'ar' ? 0 : 2,
+            ml: lang === 'ar' ? 2 : 0,
+            filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
+          }} 
+        /> */}
+        <ListItemText 
+          primary={
+            <Typography 
+              fontWeight="bold"
+              sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
+            >
+              {i18n.t('profile')}
+            </Typography>
+          } 
+        />
+      </ListItem>
       
-      </List>
-    </Box>
-  );
+      <ListItem 
+        button 
+        onClick={handleLogout} 
+        sx={{ 
+          mb: 1,
+          flexDirection: lang === 'ar' ? 'row' : 'row'
+        }}
+      >
+        {/* <Box 
+          component="img" 
+          src={Logout} 
+          alt="Logout"
+          sx={{
+            width: 28,
+            height: 28,
+            mr: lang === 'ar' ? 0 : 2,
+            ml: lang === 'ar' ? 2 : 0,
+            filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
+          }} 
+        /> */}
+        <ListItemText 
+          primary={
+            <Typography 
+              fontWeight="bold"
+              sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
+            >
+              {i18n.t('logout')}
+            </Typography>
+          } 
+        />
+      </ListItem>
+    </List>
+  </Box>
+);
+  
   
 
   return (
