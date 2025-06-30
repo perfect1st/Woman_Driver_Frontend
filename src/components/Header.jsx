@@ -279,6 +279,7 @@ const Header = () => {
         background: theme.palette.secondary.sec,
         px: { xs: 2, md: 4 },
         py: { xs: 1, md: 1.5 },
+        maxHeight: { xs: 60, md: 80 },
         boxShadow: 'none' ,
         
       }}
@@ -286,26 +287,51 @@ const Header = () => {
       <Toolbar disableGutters>
         {/* Mobile Menu Button */}
       <Hidden mdUp>
-      <IconButton
-          color="primary"               // use theme.palette.primary
-          aria-label="open drawer"
-          edge="start"
-          onClick={handleDrawerToggle}
-          sx={{
-            ml: 2,
-            color: theme.palette.primary.main,  // ensure sx color matches
-          }}
-        >
-          <MenuIcon
-            sx={{
-              fontSize: 32,
-              color: theme.palette.primary.main, // icon color
-            }}
-          />
-        </IconButton>
-        </Hidden>
+      <Box
+  sx={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: { xs: "space-between", md: "flex-start" }, // space-between في الموبايل فقط
+    width: "100%",
+  }}
+>
+  {/* Menu Icon (Hidden on mdUp) */}
+  <Hidden mdUp>
+    <IconButton
+      color="primary"
+      aria-label="open drawer"
+      edge="start"
+      onClick={handleDrawerToggle}
+      sx={{
+        ml: 2,
+        color: theme.palette.primary.main,
+      }}
+    >
+      <MenuIcon
+        sx={{
+          fontSize: 32,
+          color: theme.palette.primary.main,
+        }}
+      />
+    </IconButton>
+  </Hidden>
 
-        {/* Logo */}
+  {/* Logo */}
+  <Box
+    component="img"
+    src={logo}
+    alt="Logo"
+    sx={{
+      height: { xs: 40, md: 60 },
+      ml: i18n.language === "ar" ? { xs: 1, md: 3 } : 0,
+      mr: i18n.language === "ar" ? 0 : { xs: 1, md: 3 },
+    }}
+  />
+</Box>
+
+          </Hidden>
+          <Hidden mdDown>
+
         <Box 
           component="img" 
           src={logo} 
@@ -316,6 +342,7 @@ const Header = () => {
             mr: i18n.language === 'ar' ? 0 : { xs: 1, md: 3 }
           }} 
         />
+          </Hidden>
 
         <Box sx={{ flexGrow: 1 }} />
 

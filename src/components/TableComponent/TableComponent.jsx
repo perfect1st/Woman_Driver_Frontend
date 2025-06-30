@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Table,
   TableBody,
@@ -44,15 +44,7 @@ const statusStyles = {
   },
 };
 
-/**
- * TableComponent
- * Props:
- *  - columns: array of { key: string, label: string }
- *  - data: array of { id, ...fields }, must include accountStatus field matching keys in statusStyles
- *  - onStatusChange: function(row, newStatus)
- *  - onViewDetails: function(row)
- */
-const TableComponent = ({ columns, data, onStatusChange, onViewDetails }) => {
+const TableComponent = ({ columns, data, onStatusChange, onViewDetails, isDriver = false }) => {
   const {t,i18n} = useTranslation()
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -60,6 +52,18 @@ const TableComponent = ({ columns, data, onStatusChange, onViewDetails }) => {
 
   const open = Boolean(anchorEl);
 
+
+  // make all chips with the same width 
+  const chipRefs = useRef({});
+  const [maxChipWidth, setMaxChipWidth] = useState(0);
+  
+  useEffect(() => {
+    const widths = Object.values(chipRefs.current).map(ref => ref?.offsetWidth || 0);
+    const largest = Math.max(...widths);
+    setMaxChipWidth(largest);
+  }, [data, i18n.language]);
+
+// ----------------------------------------------------
   // Open menu when clicking status chip or action icon
   const handleClick = (event, row) => {
     event.stopPropagation();
@@ -118,9 +122,9 @@ const TableComponent = ({ columns, data, onStatusChange, onViewDetails }) => {
           }}
         >
           {column.label}
-          <IconButton size="small">
+         {column.label != t('Account status') && <IconButton size="small">
             <SortIcon width={20} height={20} />
-          </IconButton>
+          </IconButton>}
         </Box>
       </TableCell>
               ))}
@@ -146,7 +150,7 @@ const TableComponent = ({ columns, data, onStatusChange, onViewDetails }) => {
                   {columns.map((column) => (
                     <TableCell
                       key={`${row.id}-${column.key}`}
-                      align="center"
+                      align={i18n.dir() === 'rtl' ? 'right' : 'left'}
                       sx={{
                         border: "1px solid #e0e0e0",
                         py: { xs: 0.75, sm: 1.5 }
@@ -155,6 +159,8 @@ const TableComponent = ({ columns, data, onStatusChange, onViewDetails }) => {
                       {column.key === "accountStatus" ? (
                         <Chip
                           label={t(status)}
+                          ref={(el) => (chipRefs.current[row.id] = el)}  // for make all width == together
+
                           // onClick={(e) => handleClick(e, row)}
                           icon={styles.icon}
                           sx={{
@@ -163,7 +169,8 @@ const TableComponent = ({ columns, data, onStatusChange, onViewDetails }) => {
                             backgroundColor: styles.bgColor,
                             border: `1px solid ${styles.borderColor}`,
                             fontWeight: "bold",
-                            borderRadius: 2,
+                            minWidth: maxChipWidth,  // for make all width == together
+                            borderRadius: 1,
                             textTransform: "none",
                             px: 1.5,
                             py: 0.5,

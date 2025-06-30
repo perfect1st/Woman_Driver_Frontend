@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import CustomTextField from '../RTLTextField';
 import { ReactComponent as SearchIcon } from '../../assets/searchIcon.svg'
 
-const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [] }) => {
+const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [], isDriver = false }) => {
   const theme = useTheme();
   const { t , i18n } = useTranslation();
   const isArabic = i18n.language == 'ar'
@@ -39,7 +39,7 @@ const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [] }) => 
             fullWidth
             size="small"
             name="search"
-            placeholder={t("Search by Passenger name and number")}
+            placeholder={isDriver ? t("Search by Driver name and number") : t("Search by Passenger name and number")}
             sx={{ backgroundColor:theme.palette.secondary.sec ,  borderRadius:1 }}
             value={filters.search}
             onChange={handleChange}

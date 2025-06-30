@@ -3,6 +3,7 @@
 import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { ReactComponent as More } from '../assets/More.svg'
 
 
 const routesData = {
@@ -20,6 +21,12 @@ const routesData = {
       // icon: HomeIcon,
     },
     {
+      key: "Drivers",
+      label: { en: "Drivers", ar: "السائقين" },
+      path: "/Drivers",
+      // icon: HomeIcon,
+    },
+    {
       key: "home",
       label: { en: "home", ar: "الرئيسيه" },
       path: "/home",
@@ -28,7 +35,7 @@ const routesData = {
     {
       key: "users",
       label: { en: "Users", ar: "المستخدمين" },
-      // icon: HomeIcon,
+      icon: More,
       children: [
         {
           key: "allUsers",
@@ -40,14 +47,15 @@ const routesData = {
           key: "createUser",
           label: { en: "Create User", ar: "إنشاء مستخدم" },
           path: "/admin/users/create",
-          icon: HomeIcon,
+          // icon: More,
+
         },
       ],
     },
     {
       key: "drivers",
       label: { en: "Drivers", ar: "السائقين" },
-      // icon: HomeIcon,
+      icon: More,
       children: [
         {
           key: "allDrivers",

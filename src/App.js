@@ -11,6 +11,7 @@
 import MainLayout from "./components/MainLayout";
 import Home from "./pages/Home/Home";
 import PassengersPage from "./pages/PassengersPage/PassengersPage";
+import DriversPage from "./pages/DriversPage/DriversPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -309,6 +310,16 @@ import PassengersPage from "./pages/PassengersPage/PassengersPage";
       // <ProtectedRoute>
         <MainLayout>
           <PassengersPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/Drivers"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <DriversPage />
         </MainLayout>
       // </ProtectedRoute>
     }
