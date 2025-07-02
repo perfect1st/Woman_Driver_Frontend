@@ -4,12 +4,13 @@ import Header from '../../components/PageHeader/header';
 import FilterComponent from '../../components/FilterComponent/FilterComponent';
 import TableComponent from '../../components/TableComponent/TableComponent';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const PassengersPage = () => {
   const theme = useTheme();
   const { t , i18n } = useTranslation()
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  
+  const navigate = useNavigate();
   // Initial data
   const initialPassengers = [
     {
@@ -114,8 +115,9 @@ const PassengersPage = () => {
 
   // Handle view details
   const handleViewDetails = (row) => {
-    console.log('View details for:', row);
-    alert(`Showing details for: ${row.name}\nID: ${row.id}\nStatus: ${row.accountStatus}`);
+    // console.log('View details for:', row);
+    navigate(`/riderDetails/${row.id}`);
+    // alert(`Showing details for: ${row.name}\nID: ${row.id}\nStatus: ${row.accountStatus}`);
   };
 
   // Prevent horizontal scrolling on the entire page

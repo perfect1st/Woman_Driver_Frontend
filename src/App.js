@@ -12,6 +12,8 @@ import MainLayout from "./components/MainLayout";
 import Home from "./pages/Home/Home";
 import PassengersPage from "./pages/PassengersPage/PassengersPage";
 import DriversPage from "./pages/DriversPage/DriversPage";
+import RiderDetailsPage from "./pages/RiderDetailsPage/RiderDetailsPage";
+import DriverDetailsPage from "./pages/DriverDetailsPage/DriverDetailsPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -132,6 +134,7 @@ import DriversPage from "./pages/DriversPage/DriversPage";
             background: {
               default: mode === "light" ? "#F5F0F2" : "#121212",
               secDefault: mode === "light" ? "#F7FAFA" : "#1F2937",
+              DarkGray: mode === "light" ? "#F7FAFA" : "#1F2937",
               paper: mode === "light" ? "#FFFFFF" : "#1e1e1e",
             },
             customBackground: {
@@ -139,6 +142,7 @@ import DriversPage from "./pages/DriversPage/DriversPage";
             },
             text: {
               primary: mode === "light" ? "#191C32" : "#ffffff",
+              blue: mode === "light" ? "#0080FB" : "#0080FB",
             },
             whiteText: {
               primary: mode === "light" ? "#ffffff" : "#191C32",
@@ -326,11 +330,31 @@ import DriversPage from "./pages/DriversPage/DriversPage";
     }
   />
   <Route
+    path="/riderDetails/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <RiderDetailsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/DriverDetails/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <DriverDetailsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
     path="/admin/users"
     element={
       // <ProtectedRoute>
         <MainLayout>
-          <PassengersPage />
+          {/* <RiderDetailsPage /> */}
         </MainLayout>
       // </ProtectedRoute>
     }

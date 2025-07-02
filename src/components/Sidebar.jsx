@@ -13,15 +13,15 @@ import {
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, matchPath } from "react-router-dom";
 import routesData from "../data/routes";
 
-const Sidebar = ({ userType, mobileOpen, onClose }) => {
+const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
   const theme = useTheme();
   const { i18n } = useTranslation();
   const location = useLocation();
 
-  const menuItems = routesData["admin"] || [];
+  const menuItems = routesData[userType] || [];
   const [openKeys, setOpenKeys] = useState({});
 
   useEffect(() => {
@@ -29,7 +29,7 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
     menuItems.forEach((item) => {
       if (item.children) {
         const isChildActive = item.children.some((child) =>
-          location.pathname.startsWith(child.path)
+          matchPath(child.path, location.pathname)
         );
         if (isChildActive) {
           newOpenKeys[item.key] = true;
@@ -39,8 +39,15 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
     setOpenKeys((prev) => ({ ...prev, ...newOpenKeys }));
   }, [location.pathname, menuItems]);
 
+
   const toggleOpen = (key) =>
     setOpenKeys((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  const isSubRouteOf = (childPath, targetPath) => {
+    const match = matchPath(childPath, location.pathname);
+    return match && location.pathname.startsWith(targetPath);
+  };
+
 
   const drawerContent = (
     <Box
@@ -53,12 +60,19 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
       }}
     >
       <List component="nav">
-        {menuItems.map((item, index) => {
+      {menuItems.map((item, index) => {
           const hasChildren = !!item.children;
-          const isActiveParent = hasChildren && 
-            item.children.some(child => location.pathname.startsWith(child.path));
-          const isDirectlyActive = !hasChildren && 
-            location.pathname.startsWith(item.path || "");
+          const isDirectlyActive =
+            (!hasChildren && matchPath(item.path, location.pathname)) ||
+            (item.key === "Passengers" &&
+              matchPath("/riderDetails/:id", location.pathname));
+
+          const isActiveParent =
+            hasChildren &&
+            item.children.some((child) =>
+              matchPath(child.path, location.pathname)
+            );
+
           const IconComponent = item.icon;
 
           return (
@@ -137,8 +151,8 @@ const Sidebar = ({ userType, mobileOpen, onClose }) => {
                   >
                     <List component="div" disablePadding>
                       {item.children.map((child) => {
-                        const isChildActive = location.pathname.startsWith(child.path);
-                        return (
+const isChildActive = !!matchPath(child.path, location.pathname);
+return (
                           <ListItemButton
                             key={child.key}
                             component={Link}
