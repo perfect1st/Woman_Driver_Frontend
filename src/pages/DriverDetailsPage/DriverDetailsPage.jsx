@@ -723,18 +723,72 @@ export default function DriverDetailsPage() {
 
       {/* Tabs */}
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
-        <Tabs
-          value={activeTab}
-          onChange={(e, newValue) => setActiveTab(newValue)}
-          variant={isMobile ? "scrollable" : "standard"}
-          scrollButtons="auto"
-        >
-          <Tab label={t("Driver Details")} />
-          <Tab label={t("Car Documents")} />
-          <Tab label={t("Payment Details")} />
-          <Tab label={t("Trips")} />
-        </Tabs>
-      </Box>
+  {isMobile ? (
+    <Grid container spacing={1}>
+      <Grid item xs={6}>
+        <Tab
+          label={t("Driver Details")}
+          value={0}
+          onClick={() => setActiveTab(0)}
+          sx={{
+            width: "100%",
+            borderBottom: activeTab === 0 ? `2px solid ${theme.palette.primary.main}` : "none",
+            fontWeight: activeTab === 0 ? "bold" : "normal",
+          }}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <Tab
+          label={t("Car Documents")}
+          value={1}
+          onClick={() => setActiveTab(1)}
+          sx={{
+            width: "100%",
+            borderBottom: activeTab === 1 ? `2px solid ${theme.palette.primary.main}` : "none",
+            fontWeight: activeTab === 1 ? "bold" : "normal",
+          }}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <Tab
+          label={t("Payment Details")}
+          value={2}
+          onClick={() => setActiveTab(2)}
+          sx={{
+            width: "100%",
+            borderBottom: activeTab === 2 ? `2px solid ${theme.palette.primary.main}` : "none",
+            fontWeight: activeTab === 2 ? "bold" : "normal",
+          }}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <Tab
+          label={t("Trips")}
+          value={3}
+          onClick={() => setActiveTab(3)}
+          sx={{
+            width: "100%",
+            borderBottom: activeTab === 3 ? `2px solid ${theme.palette.primary.main}` : "none",
+            fontWeight: activeTab === 3 ? "bold" : "normal",
+          }}
+        />
+      </Grid>
+    </Grid>
+  ) : (
+    <Tabs
+      value={activeTab}
+      onChange={(e, newValue) => setActiveTab(newValue)}
+      variant="standard"
+    >
+      <Tab label={t("Driver Details")} />
+      <Tab label={t("Car Documents")} />
+      <Tab label={t("Payment Details")} />
+      <Tab label={t("Trips")} />
+    </Tabs>
+  )}
+</Box>
+
+
 
       {/* Tab Content */}
       <Box maxWidth="md">

@@ -1,82 +1,132 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Grid,
   InputAdornment,
   Button,
   useTheme,
-  MenuItem
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
-import CustomTextField from '../RTLTextField';
-import { ReactComponent as SearchIcon } from '../../assets/searchIcon.svg'
-import { ArrowDropDown } from '@mui/icons-material';
+  MenuItem,
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom";
+import CustomTextField from "../RTLTextField";
+import { ReactComponent as SearchIcon } from "../../assets/searchIcon.svg";
+import { ArrowDropDown } from "@mui/icons-material";
 
-const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [], isDriver = false }) => {
+const FilterComponent = ({
+  onSearch,
+  cityOptions = [],
+  statusOptions = [],
+  isDriver = false,
+  tripTypeOptions = [],
+  carTypeOptions = [],
+  isTrip = false,
+}) => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
-  const isArabic = i18n.language == 'ar';
+  const isArabic = i18n.language == "ar";
   const navigate = useNavigate();
   const location = useLocation();
-  
-  const [filters, setFilters] = useState({ 
-    search: '', 
-    city: '', 
-    status: '' 
+
+  const [filters, setFilters] = useState({
+    search: "",
+    city: "",
+    carType: "",
+    status: "",
+    tripType: "",
   });
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     setFilters({
-      search: queryParams.get('keyword') || '',
-      city: queryParams.get('city') || '',
-      status: queryParams.get('status') || ''
+      search: queryParams.get("keyword") || "",
+      city: queryParams.get("city") || "",
+      carType: queryParams.get("carType") || "",
+      status: queryParams.get("status") || "",
+      tripType: queryParams.get("tripType") || ""
     });
   }, [location.search]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
+    setFilters((prev) => ({ ...prev, [name]: value }));
   };
-
   const handleSubmit = () => {
-    // Handle search by URL parameters
     const queryParams = new URLSearchParams();
-    if (filters.search) queryParams.set('keyword', filters.search);
-    if (filters.city) queryParams.set('city', filters.city);
-    if (filters.status) queryParams.set('status', filters.status);
-    
+  
+    if (filters.search) queryParams.set("keyword", filters.search);
+    if (filters.city) queryParams.set("city", filters.city);
+    if (filters.carType) queryParams.set("carType", filters.carType);
+    if (filters.status) queryParams.set("status", filters.status);
+    if (filters.tripType) queryParams.set("tripType", filters.tripType);
+  
+    const queryString = queryParams.toString();
+  
+    // ✅ اطبع الكويري في الكونسل فقط
+    console.log("Query for backend:", queryString);
+  
     navigate({
       pathname: location.pathname,
-      search: queryParams.toString()
+      search: queryString,
+    });
+  };
+  
+
+  const handleCancelFilters = () => {
+    setFilters({
+      search: "",
+      city: "",
+      carType: "",
+      status: "",
+      tripType: "" 
     });
 
-    // Handle search with formatted parameters
+    // إزالة الباراميترز من الـ URL
+    navigate({
+      pathname: location.pathname,
+      search: "",
+    });
+
+    // عرض كل البيانات من جديد
     onSearch({
-      keyword: filters.search,
-      city: filters.city,
-      status: filters.status
+      keyword: "",
+      city: "",
+      carType: "",
+      status: "",
+      tripType: "" 
     });
   };
 
   // Find city name by ID for display
   const getCityNameById = (id) => {
-    const city = cityOptions.find(c => c._id === id);
-    return city ? city.name : '';
+    const city = cityOptions.find((c) => c._id === id);
+    return city ? city.name : "";
+  };
+  const getCarTypeById = (id) => {
+    const carType = carTypeOptions.find((c) => c._id === id);
+    return carType ? carType.name : "";
   };
 
   return (
     <Box sx={{ mb: 3, px: { xs: 1, sm: 2 } }}>
       <Grid container spacing={2} alignItems="center">
         {/* Search Field */}
-        <Grid item xs={12} sm={6} md={5}>
+        <Grid item xs={12} sm={6} md={isTrip ? 4 : isDriver ? 4 : 7}>
           <CustomTextField
             fullWidth
             size="small"
             name="search"
-            placeholder={isDriver ? t("Search by Driver name and number") : t("Search by Passenger name and number")}
-            sx={{ backgroundColor: theme.palette.secondary.sec, borderRadius: 1 }}
+            placeholder={
+              isTrip
+                ? t("Search by Rider name and Driver name")
+                : isDriver
+                ? t("Search by Driver name and number")
+                : t("Search by Passenger name and number")
+            }
+            sx={{
+              backgroundColor: theme.palette.secondary.sec,
+              borderRadius: 1,
+            }}
             value={filters.search}
             onChange={handleChange}
             isRtl={isArabic}
@@ -90,55 +140,158 @@ const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [], isDri
           />
         </Grid>
 
+        {isTrip && (
+          <Grid item xs={12} sm={3} md={2}>
+            <CustomTextField
+              select
+              fullWidth
+              size="small"
+              label={t("Trip Type")}
+              name="tripType"
+              value={filters.tripType}
+              onChange={handleChange}
+              variant="outlined"
+              isRtl={isArabic}
+              SelectProps={{
+                IconComponent: (props) => (
+                  <ArrowDropDown
+                    {...props}
+                    sx={{
+                      left: "auto",
+                      right: 8,
+                      position: "absolute",
+                    }}
+                  />
+                ),
+                MenuProps: {
+                  PaperProps: { style: { maxHeight: 250 } },
+                },
+                renderValue: (selected) => {
+                  if (!selected) return t("All");
+                  const tripType = tripTypeOptions.find(
+                    (t) => t._id === selected
+                  );
+                  return tripType ? tripType.name : t("All");
+                },
+              }}
+              sx={{
+                backgroundColor: theme.palette.secondary.sec,
+                borderRadius: 1,
+              }}
+            >
+              <MenuItem value="">{t("All")}</MenuItem>
+              {tripTypeOptions.map((tripType) => (
+                <MenuItem key={tripType._id} value={tripType._id}>
+                  {tripType.name}
+                </MenuItem>
+              ))}
+            </CustomTextField>
+          </Grid>
+        )}
+
         {/* City Select */}
-        <Grid item xs={12} sm={3} md={3}>
-          <CustomTextField
-            select
-            fullWidth
-            size="small"
-            label={t('City')}
-            name="city"
-            value={filters.city}
-            onChange={handleChange}
-            variant="outlined"
-            sx={{ backgroundColor: theme.palette.secondary.sec, borderRadius: 1 }}
-            isRtl={isArabic}
-            SelectProps={{
-              IconComponent: (props) => (
-                <ArrowDropDown
-                  {...props}
-                  sx={{
-                    left: 'auto',
-                    right: 8,
-                    position: 'absolute',
-                  }}
-                />
-              ),
-              MenuProps: {
-                PaperProps: { style: { maxHeight: 250 } }
-              },
-              renderValue: (selected) => {
-                if (!selected) return t('All');
-                return getCityNameById(selected) || t('All');
-              }
-            }}
-          >
-            <MenuItem value="">{t('All')}</MenuItem>
-            {cityOptions.map(city => (
-              <MenuItem key={city._id} value={city._id}>
-                {city.name}
-              </MenuItem>
-            ))}
-          </CustomTextField>
-        </Grid>
+        {false && (
+          <Grid item xs={12} sm={3} md={3}>
+            <CustomTextField
+              select
+              fullWidth
+              size="small"
+              label={t("City")}
+              name="city"
+              value={filters.city}
+              onChange={handleChange}
+              variant="outlined"
+              sx={{
+                backgroundColor: theme.palette.secondary.sec,
+                borderRadius: 1,
+              }}
+              isRtl={isArabic}
+              SelectProps={{
+                IconComponent: (props) => (
+                  <ArrowDropDown
+                    {...props}
+                    sx={{
+                      left: "auto",
+                      right: 8,
+                      position: "absolute",
+                    }}
+                  />
+                ),
+                MenuProps: {
+                  PaperProps: { style: { maxHeight: 250 } },
+                },
+                renderValue: (selected) => {
+                  if (!selected) return t("All");
+                  return getCityNameById(selected) || t("All");
+                },
+              }}
+            >
+              <MenuItem value="">{t("All")}</MenuItem>
+              {cityOptions.map((city) => (
+                <MenuItem key={city._id} value={city._id}>
+                  {city.name}
+                </MenuItem>
+              ))}
+            </CustomTextField>
+          </Grid>
+        )}
+        {/* Car Type Select (for trips and drivers) */}
+        {(isTrip || isDriver) && (
+          <Grid item xs={12} sm={3} md={2}>
+            <CustomTextField
+              select
+              fullWidth
+              size="small"
+              label={t("Car type")}
+              name="carType"
+              value={filters.carType}
+              onChange={handleChange}
+              variant="outlined"
+              isRtl={isArabic}
+              SelectProps={{
+                IconComponent: (props) => (
+                  <ArrowDropDown
+                    {...props}
+                    sx={{
+                      left: "auto",
+                      right: 8,
+                      position: "absolute",
+                    }}
+                  />
+                ),
+                MenuProps: {
+                  PaperProps: { style: { maxHeight: 250 } },
+                },
+                renderValue: (selected) => {
+                  if (!selected) return t("All");
+                  const carType = carTypeOptions.find(
+                    (c) => c._id === selected
+                  );
+                  return carType ? carType.name : t("All");
+                },
+              }}
+              sx={{
+                backgroundColor: theme.palette.secondary.sec,
+                borderRadius: 1,
+              }}
+            >
+              <MenuItem value="">{t("All")}</MenuItem>
+              {carTypeOptions.map((carType) => (
+                <MenuItem key={carType._id} value={carType._id}>
+                  {carType.name}
+                </MenuItem>
+              ))}
+            </CustomTextField>
+          </Grid>
+        )}
 
         {/* Status Select */}
-        <Grid item xs={12} sm={3} md={3}>
+        <Grid item xs={12} sm={3} md={isTrip ? 2 :3}>
           <CustomTextField
             select
             fullWidth
             size="small"
-            label={t('Account Status')}
+            label={t("Account Status")}
             name="status"
             value={filters.status}
             onChange={handleChange}
@@ -149,20 +302,23 @@ const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [], isDri
                 <ArrowDropDown
                   {...props}
                   sx={{
-                    left: 'auto',
+                    left: "auto",
                     right: 8,
-                    position: 'absolute',
+                    position: "absolute",
                   }}
                 />
               ),
               MenuProps: {
-                PaperProps: { style: { maxHeight: 250 } }
-              }
+                PaperProps: { style: { maxHeight: 250 } },
+              },
             }}
-            sx={{ backgroundColor: theme.palette.secondary.sec, borderRadius: 1 }}
+            sx={{
+              backgroundColor: theme.palette.secondary.sec,
+              borderRadius: 1,
+            }}
           >
-            <MenuItem value="">{t('All')}</MenuItem>
-            {statusOptions.map(status => (
+            <MenuItem value="">{t("All")}</MenuItem>
+            {statusOptions.map((status) => (
               <MenuItem key={status} value={status}>
                 {t(status)}
               </MenuItem>
@@ -180,14 +336,28 @@ const FilterComponent = ({ onSearch, cityOptions = [], statusOptions = [], isDri
             sx={{
               backgroundColor: theme.palette.primary.main,
               color: theme.palette.whiteText.primary,
-              borderRadius: 1
+              borderRadius: 1,
             }}
           >
-            {t('Search')}
+            {t("Search")}
           </Button>
         </Grid>
 
-        
+        <Grid item xs={12} sm={6} md={1}>
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={handleCancelFilters}
+            size="medium"
+            sx={{
+              borderColor: theme.palette.error.main,
+              color: theme.palette.error.main,
+              borderRadius: 1,
+            }}
+          >
+            {t("Cancel")}
+          </Button>
+        </Grid>
       </Grid>
     </Box>
   );

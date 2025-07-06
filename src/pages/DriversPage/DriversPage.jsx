@@ -4,63 +4,71 @@ import Header from "../../components/PageHeader/header";
 import FilterComponent from "../../components/FilterComponent/FilterComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const DriversPage = () => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
+    const navigate = useNavigate();
   // Initial data
-  const initialPassengers = [
+  const initialDrivers = [
     {
       id: 1,
-      number: "PAX001",
-      name: "John Doe",
-      city: "New York",
-      trips: 12,
+      name: "Ahmed Hassan",
+      carType: "Toyota Corolla",
+      nationalId: "29805231234567",
+      driverLicenseExpiry: "2025-10-01",
+      carLicenseExpiry: "2025-12-31",
       accountStatus: "Available",
     },
     {
       id: 2,
-      number: "PAX002",
-      name: "Jane Smith",
-      city: "London",
-      trips: 8,
+      name: "Mona Ali",
+      carType: "Hyundai Elantra",
+      nationalId: "29906021234567",
+      driverLicenseExpiry: "2024-11-15",
+      carLicenseExpiry: "2024-09-30",
       accountStatus: "Pending",
     },
     {
       id: 3,
-      number: "PAX003",
-      name: "Bob Johnson",
-      city: "Paris",
-      trips: 3,
+      name: "Youssef Khaled",
+      carType: "Kia Sportage",
+      nationalId: "30007181234567",
+      driverLicenseExpiry: "2026-03-20",
+      carLicenseExpiry: "2026-01-10",
       accountStatus: "Rejected",
     },
     {
       id: 4,
-      number: "PAX004",
-      name: "Alice Williams",
-      city: "Tokyo",
-      trips: 15,
+      name: "Sara Mohamed",
+      carType: "Honda Civic",
+      nationalId: "29708251234567",
+      driverLicenseExpiry: "2025-07-01",
+      carLicenseExpiry: "2025-08-15",
       accountStatus: "Available",
     },
     {
       id: 5,
-      number: "PAX005",
-      name: "Charlie Brown",
-      city: "Berlin",
-      trips: 7,
+      name: "Omar Farouk",
+      carType: "Nissan Sunny",
+      nationalId: "29609141234567",
+      driverLicenseExpiry: "2024-12-05",
+      carLicenseExpiry: "2025-01-30",
       accountStatus: "Pending",
     },
   ];
+  
 
-  const [cities, setCities] = useState([
-    { _id: "1", name: "New York" },
-    { _id: "2", name: "London" },
-    { _id: "3", name: "Paris" },
-    { _id: "4", name: "Tokyo" },
-    { _id: "5", name: "Berlin" },
+  const [carTypes, setCarTypes] = useState([
+    { _id: "1", name: "Toyota Corolla" },
+    { _id: "2", name: "Hyundai Elantra" },
+    { _id: "3", name: "Kia Sportage" },
+    { _id: "4", name: "Honda Civic" },
+    { _id: "5", name: "Nissan Sunny" },
   ]);
+  
   const statusOptions = ["Available", "Pending", "Rejected"];
   const handleSearch = (filters) => {
     // filters will contain:
@@ -73,18 +81,21 @@ const DriversPage = () => {
   };
 
   // State management
-  const [passengers, setPassengers] = useState(initialPassengers);
+  const [passengers, setPassengers] = useState(initialDrivers);
   const [filteredPassengers, setFilteredPassengers] =
-    useState(initialPassengers);
+    useState(initialDrivers);
 
   // Table columns configuration
   const tableColumns = [
-    { key: "number", label: t("Driver ID") },
+    { key: "id", label: t("Driver ID") },
     { key: "name", label: t("Driver name") },
-    { key: "city", label: t("City") },
-    { key: "trips", label: t("Trips number") },
+    { key: "carType", label: t("Car type") },
+    { key: "nationalId", label: t("National ID") },
+    { key: "driverLicenseExpiry", label: t("Driver license expiry") },
+    { key: "carLicenseExpiry", label: t("Car license expiry") },
     { key: "accountStatus", label: t("Account status") },
   ];
+  
 
   // Handle search/filter
   // const handleSearch = (filters) => {
@@ -115,10 +126,10 @@ const DriversPage = () => {
 
   // Handle view details
   const handleViewDetails = (row) => {
-    console.log("View details for:", row);
-    alert(
-      `Showing details for: ${row.name}\nID: ${row.id}\nStatus: ${row.accountStatus}`
-    );
+    navigate(`/DriverDetails/${row.id}`)
+    // alert(
+    //   `Showing details for: ${row.name}\nID: ${row.id}\nStatus: ${row.accountStatus}`
+    // );
   };
 
   // Prevent horizontal scrolling on the entire page
@@ -170,7 +181,7 @@ const DriversPage = () => {
       >
         <FilterComponent
           onSearch={handleSearch}
-          cityOptions={cities}
+          carTypeOptions={carTypes}
           statusOptions={statusOptions}
           isDriver={true}
         />

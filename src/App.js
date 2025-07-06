@@ -14,6 +14,8 @@ import PassengersPage from "./pages/PassengersPage/PassengersPage";
 import DriversPage from "./pages/DriversPage/DriversPage";
 import RiderDetailsPage from "./pages/RiderDetailsPage/RiderDetailsPage";
 import DriverDetailsPage from "./pages/DriverDetailsPage/DriverDetailsPage";
+import TripsPage from "./pages/TripsPage/TripsPage";
+import TripDetailsPage from "./pages/TripDetailsPage/TripDetailsPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -325,6 +327,26 @@ import DriverDetailsPage from "./pages/DriverDetailsPage/DriverDetailsPage";
       // <ProtectedRoute>
         <MainLayout>
           <DriversPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/Trips"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <TripsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/TripDetails"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <TripDetailsPage />
         </MainLayout>
       // </ProtectedRoute>
     }

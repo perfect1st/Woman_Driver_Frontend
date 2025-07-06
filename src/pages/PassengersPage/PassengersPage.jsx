@@ -17,6 +17,7 @@ const PassengersPage = () => {
       id: 1,
       number: 'PAX001',
       name: 'John Doe',
+      rate:'4.7',
       city: 'New York',
       trips: 12,
       accountStatus: 'Available'
@@ -25,6 +26,7 @@ const PassengersPage = () => {
       id: 2,
       number: 'PAX002',
       name: 'Jane Smith',
+      rate:'4.2',
       city: 'London',
       trips: 8,
       accountStatus: 'Pending'
@@ -33,6 +35,7 @@ const PassengersPage = () => {
       id: 3,
       number: 'PAX003',
       name: 'Bob Johnson',
+      rate:'3.5',
       city: 'Paris',
       trips: 3,
       accountStatus: 'Rejected'
@@ -42,6 +45,7 @@ const PassengersPage = () => {
       number: 'PAX004',
       name: 'Alice Williams',
       city: 'Tokyo',
+      rate:'5',
       trips: 15,
       accountStatus: 'Available'
     },
@@ -50,6 +54,7 @@ const PassengersPage = () => {
       number: 'PAX005',
       name: 'Charlie Brown',
       city: 'Berlin',
+      rate:'4.98',
       trips: 7,
       accountStatus: 'Pending'
     }
@@ -79,12 +84,13 @@ const PassengersPage = () => {
   
   // Table columns configuration
   const tableColumns = [
-    { key: 'number', label: t('Rider ID') },
-    { key: 'name', label: t('Rider name') },
-    { key: 'city', label: t('City') },
-    { key: 'trips', label: t('Trips number') },
-    { key: 'accountStatus', label: t('Account status') }
+    { key: "id", label: t("Rider ID") },
+    { key: "name", label: t("Rider name") },
+    { key: "rate", label: t("Rate") },
+    { key: "trips", label: t("Trips number") },
+    { key: "accountStatus", label: t("Account status") },
   ];
+  
 
   // Handle search/filter
   // const handleSearch = (filters) => {

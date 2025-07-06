@@ -63,9 +63,10 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
       {menuItems.map((item, index) => {
           const hasChildren = !!item.children;
           const isDirectlyActive =
-            (!hasChildren && matchPath(item.path, location.pathname)) ||
-            (item.key === "Passengers" &&
-              matchPath("/riderDetails/:id", location.pathname));
+          (!hasChildren && matchPath(item.path, location.pathname)) ||
+          (item.key === "Passengers" && matchPath("/riderDetails/:id", location.pathname)) ||
+          (item.key === "Drivers" && matchPath("/DriverDetails/:id", location.pathname));
+        
 
           const isActiveParent =
             hasChildren &&
