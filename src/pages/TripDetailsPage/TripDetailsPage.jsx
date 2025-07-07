@@ -149,14 +149,14 @@ export default function TripDetailsPage() {
         >
           {t("Trips")}
         </Typography>
-        <Typography mx={1}>/</Typography>
+        <Typography mx={1}>{`<`}</Typography>
         <Typography
           onClick={() => navigate('/Trips')}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Trips Details")}
         </Typography>
-        <Typography mx={1}>/</Typography>
+        <Typography mx={1}>{`<`}</Typography>
         <Typography>#{tripId || trip.id}</Typography>
       </Box>
 

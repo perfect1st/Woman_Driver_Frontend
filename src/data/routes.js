@@ -32,6 +32,12 @@ const routesData = {
       path: "/Trips",
       // icon: HomeIcon,
     },
+    {
+      key: "Cars",
+      label: { en: "Cars", ar: "السيارات" },
+      path: "/Cars",
+      // icon: HomeIcon,
+    },
     // {
     //   key: "home",
     //   label: { en: "home", ar: "الرئيسيه" },

@@ -642,14 +642,14 @@ export default function DriverDetailsPage() {
         >
           {t("Drivers")}
         </Typography>
-        <Typography mx={1}>/</Typography>
+        <Typography mx={1}>{`<`}</Typography>
         <Typography
           onClick={() => navigate("/Drivers")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Driver Details")}
         </Typography>
-        <Typography mx={1}>/</Typography>
+        <Typography mx={1}>{`<`}</Typography>
         <Typography>{driver.name}</Typography>
       </Box>
 
@@ -703,13 +703,13 @@ export default function DriverDetailsPage() {
 
         {/* Status Toggle */}
         <Box display="flex" alignItems="center" mt={1}>
+          <Typography>{t(editableFields.status)}</Typography>
           <IOSSwitch
             checked={editableFields.status === "Available"}
             onChange={toggleAvailability}
             color="primary" // أي لون تحب تستخدمه (مثلاً لون primary)
-            sx={{ ml: 1 }}
+            sx={{ mx: 1 }}
           />
-          <Typography>{t(editableFields.status)}</Typography>
         </Box>
 
         <Typography mt={1}>
@@ -722,7 +722,7 @@ export default function DriverDetailsPage() {
       </Box>
 
       {/* Tabs */}
-      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+      <Box maxWidth="md" sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
   {isMobile ? (
     <Grid container spacing={1}>
       <Grid item xs={6}>

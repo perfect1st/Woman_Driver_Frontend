@@ -17,12 +17,14 @@ import {
   alpha
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import InfoIcon from "@mui/icons-material/Info";
+// import InfoIcon from "@mui/icons-material/Info";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import WarningIcon from "@mui/icons-material/Warning";
 import { ReactComponent as SortIcon } from '../../assets/Sort-icon.svg';
+import { ReactComponent as InfoIcon } from '../../assets/InfoIcon.svg';
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 // Define all possible status styles
 const statusStyles = {
@@ -86,7 +88,8 @@ const TableComponent = ({
   onViewDetails,
   statusKey = "accountStatus", // Default to account status
   showStatusChange = true,     // Show status change options in menu
-  actionIconType = "more"      // "more" or "info"
+  actionIconType = "more" ,     // "more" or "info"
+  isCar = false,
 }) => {
   const {t, i18n} = useTranslation();
   const isArabic = i18n.language === 'ar';
@@ -94,7 +97,7 @@ const TableComponent = ({
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const open = Boolean(anchorEl);
-
+const navigate = useNavigate();
   // Make all chips with the same width 
   const chipRefs = useRef({});
   const [maxChipWidth, setMaxChipWidth] = useState(0);
@@ -223,7 +226,7 @@ const TableComponent = ({
                             minWidth: maxChipWidth,
                             borderRadius: 1,
                             textTransform: "none",
-                            px: 1.5,
+                            // px: 1.5,
                             py: 0.5,
                             "&:hover": showStatusChange ? {
                               opacity: 0.9,
@@ -244,24 +247,41 @@ const TableComponent = ({
                       py: { xs: 0.75, sm: 1.5 }
                     }}
                   >
-                    <IconButton
-                      size="small"
-                      onClick={(e) => handleClick(e, row)}
-                      sx={{
-                        border: `1px solid ${theme.palette.primary.main}`,
-                        borderRadius: 1,
-                        p: 0.5,
-                        "&:hover": {
-                          backgroundColor: theme.palette.primary.main,
-                        }
-                      }}
-                    >
-                      {actionIconType === "info" ? (
-                        <InfoIcon fontSize="small" />
-                      ) : (
-                        <MoreHorizIcon fontSize="small" />
-                      )}
-                    </IconButton>
+   <IconButton
+  size="small"
+  onClick={(e) => {
+    if (actionIconType === "info") {
+      navigate(`/tripDetails/${row.id}`);
+    } else {
+      handleClick(e, row);
+    }
+  }}
+  sx={{
+    border: `1px solid ${theme.palette.primary.main}`,
+    borderRadius: 1,
+    p: 0.5,
+    backgroundColor: actionIconType === "info" ? theme.palette.primary.main : '',
+    "&:hover": {
+      backgroundColor: theme.palette.primary.main,
+    }
+  }}
+>
+  {actionIconType === "info" ? (
+   <InfoIcon style={{ 
+    width: 20, 
+    height: 20,
+    padding:1, 
+    display: "block", 
+    verticalAlign: "middle", 
+    strokeWidth: 4, 
+    fill: "currentColor" 
+  }} />
+  ) : (
+    <MoreHorizIcon fontSize="small" />
+  )}
+</IconButton>
+
+
                   </TableCell>
                 </TableRow>
               );
@@ -316,7 +336,7 @@ const TableComponent = ({
               <Box component="span" sx={{ ml: 1 }}>{t('Available')}</Box>
             </MenuItem>
             {/* Pending */}
-            <MenuItem
+          {!isCar &&  <MenuItem
               onClick={() => handleStatusSelect("Pending")}
               sx={{
                 color: statusStyles.Pending.textColor,
@@ -330,7 +350,7 @@ const TableComponent = ({
             >
               {statusStyles.Pending.icon}
               <Box component="span" sx={{ ml: 1 }}>{t('Pending')}</Box>
-            </MenuItem>
+            </MenuItem>}
             {/* Rejected */}
             <MenuItem
               onClick={() => handleStatusSelect("Rejected")}

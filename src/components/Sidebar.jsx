@@ -65,6 +65,7 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
           const isDirectlyActive =
           (!hasChildren && matchPath(item.path, location.pathname)) ||
           (item.key === "Passengers" && matchPath("/riderDetails/:id", location.pathname)) ||
+          (item.key === "Trips" && matchPath("/tripDetails/:id", location.pathname)) ||
           (item.key === "Drivers" && matchPath("/DriverDetails/:id", location.pathname));
         
 

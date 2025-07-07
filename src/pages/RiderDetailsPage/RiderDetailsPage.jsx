@@ -314,14 +314,14 @@ export default function RiderDetailsPage() {
         >
           {t("Rider")}
         </Typography>
-        <Typography mx={1}>/</Typography>
+        <Typography mx={1}>{`<`}</Typography>
         <Typography
           onClick={() => navigate('/Passengers')}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Rider Details")}
         </Typography>
-        <Typography mx={1}>/</Typography>
+        <Typography mx={1}>{`<`}</Typography>
         <Typography>{rider.name}</Typography>
       </Box>
 

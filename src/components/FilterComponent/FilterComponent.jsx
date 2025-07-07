@@ -21,6 +21,8 @@ const FilterComponent = ({
   tripTypeOptions = [],
   carTypeOptions = [],
   isTrip = false,
+  isCar = false,
+  companyCarOptions = [],
 }) => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -32,6 +34,7 @@ const FilterComponent = ({
     search: "",
     city: "",
     carType: "",
+    companyCar: "",
     status: "",
     tripType: "",
   });
@@ -42,8 +45,9 @@ const FilterComponent = ({
       search: queryParams.get("keyword") || "",
       city: queryParams.get("city") || "",
       carType: queryParams.get("carType") || "",
+      companyCar: queryParams.get("companyCar") || "",
       status: queryParams.get("status") || "",
-      tripType: queryParams.get("tripType") || ""
+      tripType: queryParams.get("tripType") || "",
     });
   }, [location.search]);
 
@@ -53,32 +57,33 @@ const FilterComponent = ({
   };
   const handleSubmit = () => {
     const queryParams = new URLSearchParams();
-  
+
     if (filters.search) queryParams.set("keyword", filters.search);
     if (filters.city) queryParams.set("city", filters.city);
     if (filters.carType) queryParams.set("carType", filters.carType);
+    if (filters.companyCar) queryParams.set("companyCar", filters.companyCar);
     if (filters.status) queryParams.set("status", filters.status);
     if (filters.tripType) queryParams.set("tripType", filters.tripType);
-  
+
     const queryString = queryParams.toString();
-  
+
     // ✅ اطبع الكويري في الكونسل فقط
     console.log("Query for backend:", queryString);
-  
+
     navigate({
       pathname: location.pathname,
       search: queryString,
     });
   };
-  
 
   const handleCancelFilters = () => {
     setFilters({
       search: "",
       city: "",
       carType: "",
+      companyCar: "",
       status: "",
-      tripType: "" 
+      tripType: "",
     });
 
     // إزالة الباراميترز من الـ URL
@@ -93,7 +98,7 @@ const FilterComponent = ({
       city: "",
       carType: "",
       status: "",
-      tripType: "" 
+      tripType: "",
     });
   };
 
@@ -111,13 +116,15 @@ const FilterComponent = ({
     <Box sx={{ mb: 3, px: { xs: 1, sm: 2 } }}>
       <Grid container spacing={2} alignItems="center">
         {/* Search Field */}
-        <Grid item xs={12} sm={6} md={isTrip ? 4 : isDriver ? 4 : 7}>
+        <Grid item xs={12} sm={6} md={isCar ? 4 : isTrip ? 4 : isDriver ? 4 : 7}>
           <CustomTextField
             fullWidth
             size="small"
             name="search"
             placeholder={
-              isTrip
+              isCar
+                ? t("Search by Car ID and Car Model")
+                : isTrip
                 ? t("Search by Rider name and Driver name")
                 : isDriver
                 ? t("Search by Driver name and number")
@@ -236,8 +243,8 @@ const FilterComponent = ({
           </Grid>
         )}
         {/* Car Type Select (for trips and drivers) */}
-        {(isTrip || isDriver) && (
-          <Grid item xs={12} sm={3} md={2}>
+        {(isCar || isTrip || isDriver) && (
+          <Grid item xs={12} sm={3} md={isDriver ? 3 : 2}>
             <CustomTextField
               select
               fullWidth
@@ -285,13 +292,60 @@ const FilterComponent = ({
           </Grid>
         )}
 
+           {/* Company Car Select (for cars) */}
+           {isCar && (
+          <Grid item xs={12} sm={3} md={2}>
+            <CustomTextField
+              select
+              fullWidth
+              size="small"
+              label={t("Company Car")}
+              name="companyCar"
+              value={filters.companyCar}
+              onChange={handleChange}
+              variant="outlined"
+              isRtl={isArabic}
+              SelectProps={{
+                IconComponent: (props) => (
+                  <ArrowDropDown
+                    {...props}
+                    sx={{
+                      left: "auto",
+                      right: 8,
+                      position: "absolute",
+                    }}
+                  />
+                ),
+                MenuProps: {
+                  PaperProps: { style: { maxHeight: 250 } },
+                },
+                renderValue: (selected) => {
+                  if (!selected) return t("All");
+                  return t(selected);
+                },
+              }}
+              sx={{
+                backgroundColor: theme.palette.secondary.sec,
+                borderRadius: 1,
+              }}
+            >
+              <MenuItem value="">{t("All")}</MenuItem>
+              {companyCarOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {t(option)}
+                </MenuItem>
+              ))}
+            </CustomTextField>
+          </Grid>
+        )}
+
         {/* Status Select */}
-        <Grid item xs={12} sm={3} md={isTrip ? 2 :3}>
+        <Grid item xs={12} sm={3} md={isCar ? 2 : (isTrip ? 2 : 3)}>
           <CustomTextField
             select
             fullWidth
             size="small"
-            label={t("Account Status")}
+            label={ isCar ? t("Car status") : t("Account Status")}
             name="status"
             value={filters.status}
             onChange={handleChange}
