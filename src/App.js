@@ -60,7 +60,7 @@ import driverImage from "./assets/DomiDriverImage.png"
     }
 
     if (!user) {
-      return <Navigate to="/login" replace />;
+      return <Navigate to="/adminHome" replace />;
     }
 
     switch (user.type) {
