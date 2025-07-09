@@ -696,12 +696,15 @@ export default function CarDetailsPage() {
                 variant="outlined"
                 color="error"
                 onClick={handleDeleteImage}
+                sx={{mx:1}}
               >
                 {t("Delete")}
               </Button>
               <Button
                 variant="contained"
                 color="primary"
+                sx={{mx:1}}
+
                 onClick={handleEditImage}
               >
                 {t("Update")}

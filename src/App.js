@@ -18,6 +18,7 @@ import TripsPage from "./pages/TripsPage/TripsPage";
 import TripDetailsPage from "./pages/TripDetailsPage/TripDetailsPage";
 import CarsPage from "./pages/CarsPage/CarsPage";
 import CarDetailsPage from "./pages/CarDetailsPage/CarDetailsPage";
+import driverImage from "./assets/DomiDriverImage.png"
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -31,6 +32,15 @@ import CarDetailsPage from "./pages/CarDetailsPage/CarDetailsPage";
       // Simulate user fetching from localStorage or API
       const fetchUser = () => {
         try {
+          const DomiUser = {
+            name: "Domi User",
+            type: "admin",
+            image: driverImage
+          };
+          
+          // Save to localStorage
+          localStorage.setItem('user', JSON.stringify(DomiUser));
+          
           const storedUser = localStorage.getItem("user");
           if (storedUser) {
             setUser(JSON.parse(storedUser));
@@ -85,9 +95,9 @@ import CarDetailsPage from "./pages/CarDetailsPage/CarDetailsPage";
 
 
       localStorage.setItem('user', JSON.stringify({
-        name: "Mokhtar Mahmoud",
+        name: "Admin User",
         type: "admin",
-        image: ""  
+        image: driverImage
       }));
 
       localStorage.setItem(

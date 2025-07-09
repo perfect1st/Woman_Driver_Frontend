@@ -1275,7 +1275,7 @@ export default function DriverDetailsPage() {
 
       {/* Trip Details Drawer */}
       <Drawer
-        anchor="right"
+        anchor={isArabic ? "left" :"right"}
         open={drawerOpen}
         onClose={handleCloseDrawer}
         sx={{
@@ -1679,6 +1679,7 @@ export default function DriverDetailsPage() {
                 variant="outlined"
                 color="error"
                 onClick={handleDeleteImage}
+                sx={{mx:1}}
               >
                 {t("Delete")}
               </Button>
@@ -1686,6 +1687,7 @@ export default function DriverDetailsPage() {
                 variant="contained"
                 color="primary"
                 onClick={handleEditImage}
+                sx={{mx:1}}
               >
                 {t("Update")}
               </Button>

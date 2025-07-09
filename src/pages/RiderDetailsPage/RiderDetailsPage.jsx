@@ -594,7 +594,7 @@ export default function RiderDetailsPage() {
 
       {/* Trip Details Drawer */}
       <Drawer
-        anchor="right"
+        anchor={isArabic ? "left" :"right"}
         open={drawerOpen}
         onClose={handleCloseDrawer}
         sx={{
