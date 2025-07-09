@@ -19,6 +19,7 @@ import TripDetailsPage from "./pages/TripDetailsPage/TripDetailsPage";
 import CarsPage from "./pages/CarsPage/CarsPage";
 import CarDetailsPage from "./pages/CarDetailsPage/CarDetailsPage";
 import driverImage from "./assets/DomiDriverImage.png"
+import AddCarPage from "./pages/AddCarPage/AddCarPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -399,6 +400,16 @@ import driverImage from "./assets/DomiDriverImage.png"
       // <ProtectedRoute>
         <MainLayout>
           <CarDetailsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/Cars/AddCar"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <AddCarPage />
         </MainLayout>
       // </ProtectedRoute>
     }

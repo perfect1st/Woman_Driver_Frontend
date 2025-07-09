@@ -126,6 +126,9 @@ const CarsPage = () => {
     };
   }, []);
 
+  const addCarSubmit = () => {
+    navigate("/Cars/AddCar");
+  };
   return (
     <Box
       component="main"
@@ -149,7 +152,7 @@ const CarsPage = () => {
           haveBtn={true}
           btn={t("Add Car")}
           btnIcon={<ControlPointIcon />}
-          // onSubmit={onSubmit}
+          onSubmit={addCarSubmit}
         />
       </Box>
 
