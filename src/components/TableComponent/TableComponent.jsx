@@ -90,6 +90,7 @@ const TableComponent = ({
   showStatusChange = true,     // Show status change options in menu
   actionIconType = "more" ,     // "more" or "info"
   isCar = false,
+  isCarType = false,
 }) => {
   const {t, i18n} = useTranslation();
   const isArabic = i18n.language === 'ar';
@@ -215,7 +216,7 @@ const navigate = useNavigate();
                         <Chip
                           label={t(status)}
                           ref={(el) => (chipRefs.current[row.id] = el)}
-                          onClick={showStatusChange ? (e) => handleClick(e, row) : undefined}
+                          // onClick={showStatusChange ? (e) => handleClick(e, row) : undefined}
                           icon={styles.icon}
                           sx={{
                             cursor: showStatusChange ? "pointer" : "default",
@@ -336,7 +337,7 @@ const navigate = useNavigate();
               <Box component="span" sx={{ ml: 1 }}>{t('Available')}</Box>
             </MenuItem>
             {/* Pending */}
-          {!isCar &&  <MenuItem
+          {(!isCar  && !isCarType) &&  <MenuItem
               onClick={() => handleStatusSelect("Pending")}
               sx={{
                 color: statusStyles.Pending.textColor,

@@ -20,6 +20,9 @@ import CarsPage from "./pages/CarsPage/CarsPage";
 import CarDetailsPage from "./pages/CarDetailsPage/CarDetailsPage";
 import driverImage from "./assets/DomiDriverImage.png"
 import AddCarPage from "./pages/AddCarPage/AddCarPage";
+import CarTypesPage from "./pages/CarTypesPage/CarTypesPage";
+import CarTypeDetailsPage from "./pages/CarTypeDetailsPage/CarTypeDetailsPage";
+import AddCarTypePage from "./pages/AddCarTypePage/AddCarTypePage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -365,6 +368,16 @@ import AddCarPage from "./pages/AddCarPage/AddCarPage";
     }
   />
   <Route
+    path="/CarTypes"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <CarTypesPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
     path="/tripDetails/:id"
     element={
       // <ProtectedRoute>
@@ -405,11 +418,31 @@ import AddCarPage from "./pages/AddCarPage/AddCarPage";
     }
   />
   <Route
+    path="/CarTypeDetails/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <CarTypeDetailsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
     path="/Cars/AddCar"
     element={
       // <ProtectedRoute>
         <MainLayout>
           <AddCarPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/CarTypes/AddCarType"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <AddCarTypePage />
         </MainLayout>
       // </ProtectedRoute>
     }
