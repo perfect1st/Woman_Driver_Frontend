@@ -29,6 +29,7 @@ import LinkCarDriverPage from "./pages/LinkCarDriverPage/LinkCarDriverPage";
 import TrafficTimePage from "./pages/TrafficTimePage/TrafficTimePage";
 import TrafficTimeDetailsPage from "./pages/TrafficTimeDetailsPage/TrafficTimeDetailsPage";
 import AddTrafficTimePage from "./pages/AddTrafficTimePage/AddTrafficTimePage";
+import WalletPage from "./pages/WalletPage/WalletPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -399,6 +400,16 @@ import AddTrafficTimePage from "./pages/AddTrafficTimePage/AddTrafficTimePage";
       // <ProtectedRoute>
         <MainLayout>
           <TrafficTimePage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/Wallet"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <WalletPage />
         </MainLayout>
       // </ProtectedRoute>
     }

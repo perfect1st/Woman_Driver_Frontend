@@ -56,6 +56,12 @@ const routesData = {
       path: "/TrafficTime",
       // icon: HomeIcon,
     },
+    {
+      key: "Wallet",
+      label: { en: "Wallet", ar: "المحفظة" },
+      path: "/Wallet",
+      // icon: HomeIcon,
+    },
     // {
     //   key: "home",
     //   label: { en: "home", ar: "الرئيسيه" },

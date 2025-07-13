@@ -67,6 +67,12 @@ const statusStyles = {
     borderColor: "#ABEFC6",
     // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
   },
+  Accepted: {
+    textColor: "#085D3A",
+    bgColor: "#ECFDF3",
+    borderColor: "#ABEFC6",
+    // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
+  },
   'On Request': {
     textColor: "#93370D",
     bgColor: "#FFFAEB",
@@ -104,7 +110,8 @@ const TableComponent = ({
   isCar = false,
   isCarType = false,
   isCarDriver=false,
-  isTrafficTime=false
+  isTrafficTime=false,
+  isWallet=false
 }) => {
   const {t, i18n} = useTranslation();
   const isArabic = i18n.language === 'ar';
@@ -408,7 +415,7 @@ const navigate = useNavigate();
     ) : (
       <>
         {/* Available */}
-        <MenuItem
+        {isWallet ? <MenuItem
           onClick={() => handleStatusSelect("Available")}
           sx={{
             color: statusStyles.Available.textColor,
@@ -421,11 +428,27 @@ const navigate = useNavigate();
           }}
         >
           {statusStyles.Available.icon}
-          <Box component="span" sx={{ ml: 1 }}>{t('Available')}</Box>
-        </MenuItem>
+          <Box component="span" sx={{ ml: 1 }}>{t('Accept')}</Box>
+        </MenuItem> :
+        <MenuItem
+        onClick={() => handleStatusSelect("Accepted")}
+        sx={{
+          color: statusStyles.Accepted.textColor,
+          borderLeft: isArabic ? '' : `4px solid ${statusStyles.Accepted.borderColor}`,
+          borderRight: isArabic ? `4px solid ${statusStyles.Accepted.borderColor}` : '',
+          pl: 2,
+          py: 1,
+          display: "flex",
+          alignItems: "center"
+        }}
+      >
+        {statusStyles.Accepted.icon}
+        <Box component="span" sx={{ ml: 1 }}>{t('Accepted')}</Box>
+      </MenuItem>
+        }
 
         {/* Pending */}
-        {(!isCar && !isCarType && !isTrafficTime) && (
+        {(!isCar && !isCarType && !isTrafficTime && !isWallet) && (
           <MenuItem
             onClick={() => handleStatusSelect("Pending")}
             sx={{
