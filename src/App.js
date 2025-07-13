@@ -26,6 +26,9 @@ import AddCarTypePage from "./pages/AddCarTypePage/AddCarTypePage";
 import CarDriverPage from "./pages/CarDriverPage/CarDriverPage";
 import { CarDriverDetailsPage } from "./pages/CarDriverDetailsPage/CarDriverDetailsPage";
 import LinkCarDriverPage from "./pages/LinkCarDriverPage/LinkCarDriverPage";
+import TrafficTimePage from "./pages/TrafficTimePage/TrafficTimePage";
+import TrafficTimeDetailsPage from "./pages/TrafficTimeDetailsPage/TrafficTimeDetailsPage";
+import AddTrafficTimePage from "./pages/AddTrafficTimePage/AddTrafficTimePage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -386,6 +389,36 @@ import LinkCarDriverPage from "./pages/LinkCarDriverPage/LinkCarDriverPage";
       // <ProtectedRoute>
         <MainLayout>
           <CarDriverPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/TrafficTime"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <TrafficTimePage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/TrafficTimeDetails/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <TrafficTimeDetailsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/TrafficTimes/AddTrafficTime"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <AddTrafficTimePage />
         </MainLayout>
       // </ProtectedRoute>
     }

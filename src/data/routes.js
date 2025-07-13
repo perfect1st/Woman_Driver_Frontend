@@ -50,6 +50,12 @@ const routesData = {
       path: "/CarDriver",
       // icon: HomeIcon,
     },
+    {
+      key: "TrafficTime",
+      label: { en: "Traffic Time", ar: "مواعيد الذروة" },
+      path: "/TrafficTime",
+      // icon: HomeIcon,
+    },
     // {
     //   key: "home",
     //   label: { en: "home", ar: "الرئيسيه" },

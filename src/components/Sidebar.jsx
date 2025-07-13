@@ -69,8 +69,12 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
           (item.key === "Drivers" && matchPath("/DriverDetails/:id", location.pathname))||
           (item.key === "CarTypes" && matchPath("/CarTypeDetails/:id", location.pathname))||
           (item.key === "CarTypes" && matchPath("/CarTypes/AddCarType", location.pathname))||
+          (item.key === "Cars" && matchPath("/Cars/AddCar", location.pathname)) ||
           (item.key === "Cars" && matchPath("/CarDetails/:id", location.pathname))||
-          (item.key === "Cars" && matchPath("/Cars/AddCar", location.pathname));
+          (item.key === "CarDriver" && matchPath("/CarDriverDetails/AddCarDrive", location.pathname))||
+          (item.key === "CarDriver" && matchPath("/CarDriverDetails/:id", location.pathname))||
+          (item.key === "TrafficTime" && matchPath("/TrafficTimes/AddTrafficTime", location.pathname))||
+          (item.key === "TrafficTime" && matchPath("/TrafficTimeDetails/:id", location.pathname));
         
 
           const isActiveParent =

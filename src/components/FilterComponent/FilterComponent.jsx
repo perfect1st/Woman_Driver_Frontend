@@ -25,6 +25,7 @@ const FilterComponent = ({
   isCarType = false,
   isCarDriver = false,
   companyCarOptions = [],
+  isTrafficTime = false,
 }) => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -129,6 +130,7 @@ const FilterComponent = ({
             size="small"
             name="search"
             placeholder={
+              isTrafficTime ? t("Search by Traffic Time ID and Traffic Time Name") :
               isCarDriver
                 ? t("Search by Cars-Drivers ID and Driver Name and Car Model")
                 : isCarType

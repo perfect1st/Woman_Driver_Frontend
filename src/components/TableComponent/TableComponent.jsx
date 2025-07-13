@@ -103,7 +103,8 @@ const TableComponent = ({
   actionIconType = "more" ,     // "more" or "info"
   isCar = false,
   isCarType = false,
-  isCarDriver=false
+  isCarDriver=false,
+  isTrafficTime=false
 }) => {
   const {t, i18n} = useTranslation();
   const isArabic = i18n.language === 'ar';
@@ -424,7 +425,7 @@ const navigate = useNavigate();
         </MenuItem>
 
         {/* Pending */}
-        {(!isCar && !isCarType) && (
+        {(!isCar && !isCarType && !isTrafficTime) && (
           <MenuItem
             onClick={() => handleStatusSelect("Pending")}
             sx={{
