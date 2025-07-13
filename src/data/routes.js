@@ -40,8 +40,14 @@ const routesData = {
     },
     {
       key: "CarTypes",
-      label: { en: "Car Types", ar: "انواع السيارات" },
+      label: { en: "Cars types", ar: "انواع السيارات" },
       path: "/CarTypes",
+      // icon: HomeIcon,
+    },
+    {
+      key: "CarDriver",
+      label: { en: "Cars-Drivers", ar: "سيارات السائقين" },
+      path: "/CarDriver",
       // icon: HomeIcon,
     },
     // {

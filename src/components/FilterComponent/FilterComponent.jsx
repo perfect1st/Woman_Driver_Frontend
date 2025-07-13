@@ -23,6 +23,7 @@ const FilterComponent = ({
   isTrip = false,
   isCar = false,
   isCarType = false,
+  isCarDriver = false,
   companyCarOptions = [],
 }) => {
   const theme = useTheme();
@@ -117,13 +118,20 @@ const FilterComponent = ({
     <Box sx={{ mb: 3, px: { xs: 1, sm: 2 } }}>
       <Grid container spacing={2} alignItems="center">
         {/* Search Field */}
-        <Grid item xs={12} sm={6} md={isCarType ? 7 : isCar ? 4 : isTrip ? 4 : isDriver ? 4 : 7}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={isCarType ? 7 : isCar ? 4 : isTrip ? 4 : isDriver ? 4 : 7}
+        >
           <CustomTextField
             fullWidth
             size="small"
             name="search"
             placeholder={
-              isCarType
+              isCarDriver
+                ? t("Search by Cars-Drivers ID and Driver Name and Car Model")
+                : isCarType
                 ? t("Search by Car Type ID and Car Type Name")
                 : isCar
                 ? t("Search by Car ID and Car Model")
@@ -295,8 +303,8 @@ const FilterComponent = ({
           </Grid>
         )}
 
-           {/* Company Car Select (for cars) */}
-           {isCar && (
+        {/* Company Car Select (for cars) */}
+        {isCar && (
           <Grid item xs={12} sm={3} md={2}>
             <CustomTextField
               select
@@ -343,12 +351,23 @@ const FilterComponent = ({
         )}
 
         {/* Status Select */}
-        <Grid item xs={12} sm={3} md={isCarType ? 3 : isCar ? 2 : (isTrip ? 2 : 3)}>
+        <Grid
+          item
+          xs={12}
+          sm={3}
+          md={isCarType ? 3 : isCar ? 2 : isTrip ? 2 : 3}
+        >
           <CustomTextField
             select
             fullWidth
             size="small"
-            label={isCarType ? t("Car Type Status") : isCar ? t("Car status") : t("Account Status")}
+            label={
+              isCarType
+                ? t("Car Type Status")
+                : isCar
+                ? t("Car status")
+                : t("Account Status")
+            }
             name="status"
             value={filters.status}
             onChange={handleChange}
@@ -382,7 +401,6 @@ const FilterComponent = ({
             ))}
           </CustomTextField>
         </Grid>
-
 
         {/* Search Button */}
         <Grid item xs={12} sm={12} md={1}>

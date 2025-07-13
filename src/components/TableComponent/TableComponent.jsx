@@ -61,6 +61,12 @@ const statusStyles = {
     borderColor: "#ABEFC6",
     // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
   },
+  Linked: {
+    textColor: "#085D3A",
+    bgColor: "#ECFDF3",
+    borderColor: "#ABEFC6",
+    // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
+  },
   'On Request': {
     textColor: "#93370D",
     bgColor: "#FFFAEB",
@@ -68,6 +74,12 @@ const statusStyles = {
     // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#93370D" }} />
   },
   'Approved by driver': {
+    textColor: "#1F2A37",
+    bgColor: "#F9FAFB",
+    borderColor: "#E5E7EB",
+    // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#1F2A37" }} />
+  },
+  'Leaved': {
     textColor: "#1F2A37",
     bgColor: "#F9FAFB",
     borderColor: "#E5E7EB",
@@ -91,6 +103,7 @@ const TableComponent = ({
   actionIconType = "more" ,     // "more" or "info"
   isCar = false,
   isCarType = false,
+  isCarDriver=false
 }) => {
   const {t, i18n} = useTranslation();
   const isArabic = i18n.language === 'ar';
@@ -319,57 +332,137 @@ const navigate = useNavigate();
         
         {/* Status options - only show if enabled */}
         {showStatusChange && selectedRow && (
-          <>
-            {/* Available */}
-            <MenuItem
-              onClick={() => handleStatusSelect("Available")}
-              sx={{
-                color: statusStyles.Available.textColor,
-                borderLeft: isArabic ? '' : `4px solid ${statusStyles.Available.borderColor}`,
-                borderRight: isArabic ? `4px solid ${statusStyles.Available.borderColor}` : '',
-                pl: 2,
-                py: 1,
-                display: "flex",
-                alignItems: "center"
-              }}
-            >
-              {statusStyles.Available.icon}
-              <Box component="span" sx={{ ml: 1 }}>{t('Available')}</Box>
-            </MenuItem>
-            {/* Pending */}
-          {(!isCar  && !isCarType) &&  <MenuItem
-              onClick={() => handleStatusSelect("Pending")}
-              sx={{
-                color: statusStyles.Pending.textColor,
-                borderLeft: isArabic ? '' : `4px solid ${statusStyles.Pending.borderColor}`,
-                borderRight: isArabic ? `4px solid ${statusStyles.Pending.borderColor}` : '',
-                pl: 2,
-                py: 1,
-                display: "flex",
-                alignItems: "center"
-              }}
-            >
-              {statusStyles.Pending.icon}
-              <Box component="span" sx={{ ml: 1 }}>{t('Pending')}</Box>
-            </MenuItem>}
-            {/* Rejected */}
-            <MenuItem
-              onClick={() => handleStatusSelect("Rejected")}
-              sx={{
-                color: statusStyles.Rejected.textColor,
-                borderLeft: isArabic ? '' : `4px solid ${statusStyles.Rejected.borderColor}`,
-                borderRight: isArabic ? `4px solid ${statusStyles.Rejected.borderColor}` : '',
-                pl: 2,
-                py: 1,
-                display: "flex",
-                alignItems: "center"
-              }}
-            >
-              {statusStyles.Rejected.icon}
-              <Box component="span" sx={{ ml: 1 }}>{t('Rejected')}</Box>
-            </MenuItem>
-          </>
+  <>
+    {/* Status for CarDriver */}
+    {isCarDriver ? (
+      <>
+        {/* Linked */}
+        <MenuItem
+          onClick={() => handleStatusSelect("Linked")}
+          sx={{
+            color: statusStyles.Linked.textColor,
+            borderLeft: isArabic ? '' : `4px solid ${statusStyles.Linked.borderColor}`,
+            borderRight: isArabic ? `4px solid ${statusStyles.Linked.borderColor}` : '',
+            pl: 2,
+            py: 1,
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          {statusStyles.Linked.icon}
+          <Box component="span" sx={{ ml: 1 }}>{t('Linked')}</Box>
+        </MenuItem>
+
+        {/* On Request */}
+        <MenuItem
+          onClick={() => handleStatusSelect("On Request")}
+          sx={{
+            color: statusStyles["On Request"].textColor,
+            borderLeft: isArabic ? '' : `4px solid ${statusStyles["On Request"].borderColor}`,
+            borderRight: isArabic ? `4px solid ${statusStyles["On Request"].borderColor}` : '',
+            pl: 2,
+            py: 1,
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          {statusStyles["On Request"].icon}
+          <Box component="span" sx={{ ml: 1 }}>{t('On Request')}</Box>
+        </MenuItem>
+
+        {/* Leaved */}
+        <MenuItem
+          onClick={() => handleStatusSelect("Leaved")}
+          sx={{
+            color: statusStyles.Leaved.textColor,
+            borderLeft: isArabic ? '' : `4px solid ${statusStyles.Leaved.borderColor}`,
+            borderRight: isArabic ? `4px solid ${statusStyles.Leaved.borderColor}` : '',
+            pl: 2,
+            py: 1,
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          {statusStyles.Leaved.icon}
+          <Box component="span" sx={{ ml: 1 }}>{t('Leaved')}</Box>
+        </MenuItem>
+
+        {/* Rejected */}
+        <MenuItem
+          onClick={() => handleStatusSelect("Rejected")}
+          sx={{
+            color: statusStyles.Rejected.textColor,
+            borderLeft: isArabic ? '' : `4px solid ${statusStyles.Rejected.borderColor}`,
+            borderRight: isArabic ? `4px solid ${statusStyles.Rejected.borderColor}` : '',
+            pl: 2,
+            py: 1,
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          {statusStyles.Rejected.icon}
+          <Box component="span" sx={{ ml: 1 }}>{t('Rejected')}</Box>
+        </MenuItem>
+      </>
+    ) : (
+      <>
+        {/* Available */}
+        <MenuItem
+          onClick={() => handleStatusSelect("Available")}
+          sx={{
+            color: statusStyles.Available.textColor,
+            borderLeft: isArabic ? '' : `4px solid ${statusStyles.Available.borderColor}`,
+            borderRight: isArabic ? `4px solid ${statusStyles.Available.borderColor}` : '',
+            pl: 2,
+            py: 1,
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          {statusStyles.Available.icon}
+          <Box component="span" sx={{ ml: 1 }}>{t('Available')}</Box>
+        </MenuItem>
+
+        {/* Pending */}
+        {(!isCar && !isCarType) && (
+          <MenuItem
+            onClick={() => handleStatusSelect("Pending")}
+            sx={{
+              color: statusStyles.Pending.textColor,
+              borderLeft: isArabic ? '' : `4px solid ${statusStyles.Pending.borderColor}`,
+              borderRight: isArabic ? `4px solid ${statusStyles.Pending.borderColor}` : '',
+              pl: 2,
+              py: 1,
+              display: "flex",
+              alignItems: "center"
+            }}
+          >
+            {statusStyles.Pending.icon}
+            <Box component="span" sx={{ ml: 1 }}>{t('Pending')}</Box>
+          </MenuItem>
         )}
+
+        {/* Rejected */}
+        <MenuItem
+          onClick={() => handleStatusSelect("Rejected")}
+          sx={{
+            color: statusStyles.Rejected.textColor,
+            borderLeft: isArabic ? '' : `4px solid ${statusStyles.Rejected.borderColor}`,
+            borderRight: isArabic ? `4px solid ${statusStyles.Rejected.borderColor}` : '',
+            pl: 2,
+            py: 1,
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          {statusStyles.Rejected.icon}
+          <Box component="span" sx={{ ml: 1 }}>{t('Rejected')}</Box>
+        </MenuItem>
+      </>
+    )}
+  </>
+)}
+
       </Menu>
     </TableContainer>
   );

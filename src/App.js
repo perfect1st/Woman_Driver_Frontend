@@ -23,6 +23,9 @@ import AddCarPage from "./pages/AddCarPage/AddCarPage";
 import CarTypesPage from "./pages/CarTypesPage/CarTypesPage";
 import CarTypeDetailsPage from "./pages/CarTypeDetailsPage/CarTypeDetailsPage";
 import AddCarTypePage from "./pages/AddCarTypePage/AddCarTypePage";
+import CarDriverPage from "./pages/CarDriverPage/CarDriverPage";
+import { CarDriverDetailsPage } from "./pages/CarDriverDetailsPage/CarDriverDetailsPage";
+import LinkCarDriverPage from "./pages/LinkCarDriverPage/LinkCarDriverPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -378,6 +381,26 @@ import AddCarTypePage from "./pages/AddCarTypePage/AddCarTypePage";
     }
   />
   <Route
+    path="/CarDriver"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <CarDriverPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/CarDriverDetails/AddCarDrive"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <LinkCarDriverPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
     path="/tripDetails/:id"
     element={
       // <ProtectedRoute>
@@ -423,6 +446,16 @@ import AddCarTypePage from "./pages/AddCarTypePage/AddCarTypePage";
       // <ProtectedRoute>
         <MainLayout>
           <CarTypeDetailsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/CarDriverDetails/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <CarDriverDetailsPage />
         </MainLayout>
       // </ProtectedRoute>
     }
