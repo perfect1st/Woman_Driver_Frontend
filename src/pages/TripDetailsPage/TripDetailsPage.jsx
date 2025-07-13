@@ -139,7 +139,7 @@ export default function TripDetailsPage() {
   };
 
   return (
-    <Box p={isMobile ? 1 : 2}>
+    <Box p={isMobile ? 1 : 2} maxWidth={'md'}>
       {/* Breadcrumb */}
 
       <Box display="flex" alignItems="center" flexWrap="wrap" mb={2}>
