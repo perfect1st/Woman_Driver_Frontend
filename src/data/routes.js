@@ -80,6 +80,12 @@ const routesData = {
       path: "/404",
       // icon: HomeIcon,
     },
+    {
+      key: "Maintenance",
+      label: { en: "Maintenance", ar: "الصيانة" },
+      path: "/Maintenance",
+      // icon: HomeIcon,
+    },
     // {
     //   key: "home",
     //   label: { en: "home", ar: "الرئيسيه" },
