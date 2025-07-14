@@ -107,7 +107,7 @@ const WalletPage = () => {
 
   // Handle view details
   const handleViewDetails = (row) => {
-    navigate(`/TransactionDetails/${row.id}`);
+    navigate(`/walletDetails/${row.id}`);
   };
 
   // Prevent horizontal scrolling

@@ -27,6 +27,7 @@ const FilterComponent = ({
   companyCarOptions = [],
   isTrafficTime = false,
   isWallet = false,
+  isInWalletDetails=false
 }) => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -55,6 +56,9 @@ const FilterComponent = ({
       companyCar: queryParams.get("companyCar") || "",
       status: queryParams.get("status") || "",
       tripType: queryParams.get("tripType") || "",
+          userType: queryParams.get("userType") || "",
+    transactionType: queryParams.get("transactionType") || "",
+    transactionReason: queryParams.get("transactionReason") || "",
     });
   }, [location.search]);
 
@@ -64,7 +68,8 @@ const FilterComponent = ({
   };
   const handleSubmit = () => {
     const queryParams = new URLSearchParams();
-
+    
+    if (isInWalletDetails) queryParams.set("tab", "history");
     if (filters.search) queryParams.set("keyword", filters.search);
     if (filters.city) queryParams.set("city", filters.city);
     if (filters.carType) queryParams.set("carType", filters.carType);
@@ -95,9 +100,9 @@ const FilterComponent = ({
       companyCar: "",
       status: "",
       tripType: "",
-        userType: "",
-  transactionType: "",
-  transactionReason: "",
+      userType: "",
+      transactionType: "",
+      transactionReason: "",
     });
 
     // إزالة الباراميترز من الـ URL
@@ -113,9 +118,9 @@ const FilterComponent = ({
       carType: "",
       status: "",
       tripType: "",
-        userType: "",
-  transactionType: "",
-  transactionReason: "",
+      userType: "",
+      transactionType: "",
+      transactionReason: "",
     });
   };
 
@@ -137,7 +142,19 @@ const FilterComponent = ({
           item
           xs={12}
           sm={6}
-          md={isWallet ? 6 :isCarType ? 7 : isCar ? 4 : isTrip ? 4 : isDriver ? 4 : 7}
+          md={
+            isWallet
+              ? 6
+              : isCarType
+              ? 7
+              : isCar
+              ? 4
+              : isTrip
+              ? 4
+              : isDriver
+              ? 4
+              : 7
+          }
         >
           <CustomTextField
             fullWidth
@@ -477,7 +494,7 @@ const FilterComponent = ({
           item
           xs={12}
           sm={3}
-          md={isWallet? 4 :isCarType ? 3 : isCar ? 2 : isTrip ? 2 : 3}
+          md={isWallet ? 4 : isCarType ? 3 : isCar ? 2 : isTrip ? 2 : 3}
         >
           <CustomTextField
             select

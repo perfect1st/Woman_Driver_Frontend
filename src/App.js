@@ -30,6 +30,8 @@ import TrafficTimePage from "./pages/TrafficTimePage/TrafficTimePage";
 import TrafficTimeDetailsPage from "./pages/TrafficTimeDetailsPage/TrafficTimeDetailsPage";
 import AddTrafficTimePage from "./pages/AddTrafficTimePage/AddTrafficTimePage";
 import WalletPage from "./pages/WalletPage/WalletPage";
+import WalletDetailsPage from "./pages/WalletDetailsPage/WalletDetailsPage";
+import AddTransactionPage from "./pages/AddTransactionPage/AddTransactionPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -410,6 +412,26 @@ import WalletPage from "./pages/WalletPage/WalletPage";
       // <ProtectedRoute>
         <MainLayout>
           <WalletPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/Wallet/AddTransaction"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <AddTransactionPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/WalletDetails/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <WalletDetailsPage />
         </MainLayout>
       // </ProtectedRoute>
     }

@@ -111,7 +111,8 @@ const TableComponent = ({
   isCarType = false,
   isCarDriver=false,
   isTrafficTime=false,
-  isWallet=false
+  isWallet=false,
+  isInDetails=false
 }) => {
   const {t, i18n} = useTranslation();
   const isArabic = i18n.language === 'ar';
@@ -330,13 +331,13 @@ const navigate = useNavigate();
         }}
       >
         {/* Details */}
-        <MenuItem onClick={handleDetailsClick} sx={{
+       {!isInDetails && <MenuItem onClick={handleDetailsClick} sx={{
           borderLeft: isArabic ? '' : `4px solid ${alpha(theme.palette.text.primary, 0.5)}`,
           borderRight: isArabic ? `4px solid ${alpha(theme.palette.text.primary, 0.5)}` : '',
           py: 1,
         }}>
           {t('Details')}
-        </MenuItem>
+        </MenuItem>}
         
         {/* Status options - only show if enabled */}
         {showStatusChange && selectedRow && (
