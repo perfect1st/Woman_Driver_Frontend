@@ -1,58 +1,48 @@
 import React from "react";
-import { Box, keyframes } from "@mui/material";
-import logo from "../assets/Logo.png"; // ✅ غيّر المسار حسب مكان اللوجو
+import { Box } from "@mui/material";
+import { styled, keyframes } from "@mui/system";
 
-// ✨ أنميشن وميض / ترسم
-const pulse = keyframes`
+const draw = keyframes`
   0% {
-    opacity: 0;
-    transform: scale(0.8);
+    stroke-dashoffset: 500;
   }
   50% {
-    opacity: 1;
-    transform: scale(1.05);
+    stroke-dashoffset: 0;
   }
   100% {
-    opacity: 0.9;
-    transform: scale(1);
+    stroke-dashoffset: 500;
   }
 `;
 
-const LoadingComponent = () => {
+const AnimatedText = styled("text")(({ theme }) => ({
+  fill: "none",
+  stroke: theme.palette.primary.main,
+  strokeWidth: 2,
+  strokeDasharray: 500,
+  strokeDashoffset: 500,
+  animation: `${draw} 4s linear infinite`,
+  fontSize: 48,
+  fontFamily: "Arial, sans-serif",
+}));
+
+const LoadingPage = () => {
   return (
     <Box
       sx={{
-        height: "100vh",
-        // width: "100vw",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        bgcolor: "#fff", // لون الخلفية
-        flexDirection: "column",
+        height: "100vh",
+        backgroundColor: "background.default",
       }}
     >
-      <Box
-        component="img"
-        src={logo}
-        alt="App Logo"
-        sx={{
-          width: 200,
-          height: 200,
-          animation: `${pulse} 1.5s ease-in-out infinite`,
-        }}
-      />
-      <Box
-        sx={{
-          mt: 2,
-          fontSize: 18,
-          color: "#888",
-          animation: "fadein 2s ease-in-out infinite",
-        }}
-      >
-        جاري التحميل...
-      </Box>
+      <svg width="400" height="100" viewBox="0 0 400 100">
+        <AnimatedText x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
+          WOMAN DRIVER
+        </AnimatedText>
+      </svg>
     </Box>
   );
 };
 
-export default LoadingComponent;
+export default LoadingPage;

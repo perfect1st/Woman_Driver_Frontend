@@ -35,6 +35,7 @@ import AddTransactionPage from "./pages/AddTransactionPage/AddTransactionPage";
 import PaymentMethodsPage from "./pages/PaymentMethodsPage/PaymentMethodsPage";
 import PaymentMethodsDetailsPage from "./pages/PaymentMethodsDetailsPage/PaymentMethodsDetailsPage";
 import AddPaymentMethodPage from "./pages/AddPaymentMethodPage/AddPaymentMethodPage";
+import LoadingPage from "./components/LoadingComponent";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -425,6 +426,16 @@ import AddPaymentMethodPage from "./pages/AddPaymentMethodPage/AddPaymentMethodP
       // <ProtectedRoute>
         <MainLayout>
           <AddPaymentMethodPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/Loading"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <LoadingPage />
         </MainLayout>
       // </ProtectedRoute>
     }
