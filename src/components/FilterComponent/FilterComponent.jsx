@@ -27,7 +27,8 @@ const FilterComponent = ({
   companyCarOptions = [],
   isTrafficTime = false,
   isWallet = false,
-  isInWalletDetails=false
+  isInWalletDetails=false,
+  paymentMethod=false
 }) => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -143,7 +144,9 @@ const FilterComponent = ({
           xs={12}
           sm={6}
           md={
-            isWallet
+            paymentMethod
+              ? 7
+            : isWallet
               ? 6
               : isCarType
               ? 7
@@ -161,7 +164,9 @@ const FilterComponent = ({
             size="small"
             name="search"
             placeholder={
-              isWallet
+              paymentMethod
+                ? t("Search by Payment Method ID and Payment Methods Name")
+              : isWallet
                 ? t("Search by User name and Wallet ID")
                 : isTrafficTime
                 ? t("Search by Traffic Time ID and Traffic Time Name")
@@ -501,7 +506,9 @@ const FilterComponent = ({
             fullWidth
             size="small"
             label={
-              isCarType
+              paymentMethod 
+              ? t('Status')
+              : isCarType
                 ? t("Car Type Status")
                 : isCar
                 ? t("Car status")

@@ -32,6 +32,9 @@ import AddTrafficTimePage from "./pages/AddTrafficTimePage/AddTrafficTimePage";
 import WalletPage from "./pages/WalletPage/WalletPage";
 import WalletDetailsPage from "./pages/WalletDetailsPage/WalletDetailsPage";
 import AddTransactionPage from "./pages/AddTransactionPage/AddTransactionPage";
+import PaymentMethodsPage from "./pages/PaymentMethodsPage/PaymentMethodsPage";
+import PaymentMethodsDetailsPage from "./pages/PaymentMethodsDetailsPage/PaymentMethodsDetailsPage";
+import AddPaymentMethodPage from "./pages/AddPaymentMethodPage/AddPaymentMethodPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -402,6 +405,36 @@ import AddTransactionPage from "./pages/AddTransactionPage/AddTransactionPage";
       // <ProtectedRoute>
         <MainLayout>
           <TrafficTimePage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/PaymentMethods"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <PaymentMethodsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/PaymentMethod/AddPaymentMethod"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <AddPaymentMethodPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/paymentMethodDetails/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <PaymentMethodsDetailsPage />
         </MainLayout>
       // </ProtectedRoute>
     }

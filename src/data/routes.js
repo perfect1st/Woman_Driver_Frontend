@@ -62,6 +62,12 @@ const routesData = {
       path: "/Wallet",
       // icon: HomeIcon,
     },
+    {
+      key: "PaymentMethods",
+      label: { en: "Payment Methods", ar: "وسائل الدفع" },
+      path: "/PaymentMethods",
+      // icon: HomeIcon,
+    },
     // {
     //   key: "home",
     //   label: { en: "home", ar: "الرئيسيه" },

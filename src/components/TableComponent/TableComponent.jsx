@@ -112,7 +112,8 @@ const TableComponent = ({
   isCarDriver=false,
   isTrafficTime=false,
   isWallet=false,
-  isInDetails=false
+  isInDetails=false,
+  paymentMethod=false
 }) => {
   const {t, i18n} = useTranslation();
   const isArabic = i18n.language === 'ar';
@@ -449,7 +450,7 @@ const navigate = useNavigate();
         }
 
         {/* Pending */}
-        {(!isCar && !isCarType && !isTrafficTime && !isWallet) && (
+        {(!isCar && !isCarType && !isTrafficTime && !isWallet && !paymentMethod) && (
           <MenuItem
             onClick={() => handleStatusSelect("Pending")}
             sx={{
