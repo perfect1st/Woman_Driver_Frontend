@@ -306,6 +306,11 @@
   "Payment Method Name Arabic": "اسم وسيلة الدفع بالعربية",
    "Enter the Payment Method Name English": "ادخل اسم وسيلة الدفع بالإنجليزية",
   "Enter the Payment Method Name Arabic": "ادخل اسم وسيلة الدفع بالعربية",
+  "notfound": {
+    "title": "عذرًا! الصفحة غير موجودة",
+    "description": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها. دعنا نعيدك إلى الصفحة الرئيسية.",
+    "back_home": "العودة إلى الصفحة الرئيسية"
+  },
   "Close": "إغلاق",
   "mon": "الاثنين",
   "tue": "الثلاثاء",

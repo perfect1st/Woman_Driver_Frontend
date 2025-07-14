@@ -74,6 +74,12 @@ const routesData = {
       path: "/Loading",
       // icon: HomeIcon,
     },
+    {
+      key: "404",
+      label: { en: "404 page", ar: "الصفحه غير موجوده" },
+      path: "/404",
+      // icon: HomeIcon,
+    },
     // {
     //   key: "home",
     //   label: { en: "home", ar: "الرئيسيه" },

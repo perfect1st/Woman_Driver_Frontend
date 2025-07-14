@@ -297,6 +297,11 @@
   "Payment Method Name Arabic": "Payment Method Name Arabic",
     "Enter the Payment Method Name English": "Enter the Payment Method Name English",
   "Enter the Payment Method Name Arabic": "Enter the Payment Method Name Arabic",
+      "notfound": {
+    "title": "Oops! Page Not Found",
+    "description": "The page you’re looking for doesn’t exist or has been moved. Let’s get you back home.",
+    "back_home": "Back to Home"
+  },
   "mon": "Mon",
   "tue": "Tue",
   "wed": "Wed",

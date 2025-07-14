@@ -36,6 +36,7 @@ import PaymentMethodsPage from "./pages/PaymentMethodsPage/PaymentMethodsPage";
 import PaymentMethodsDetailsPage from "./pages/PaymentMethodsDetailsPage/PaymentMethodsDetailsPage";
 import AddPaymentMethodPage from "./pages/AddPaymentMethodPage/AddPaymentMethodPage";
 import LoadingPage from "./components/LoadingComponent";
+import NotFoundPage from "./components/NotFoundPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -610,6 +611,9 @@ import LoadingPage from "./components/LoadingComponent";
       // </ProtectedRoute>
     }
   />
+
+                <Route path="*" element={<NotFoundPage />} />
+
 </Routes>
             </main>
           </div>
