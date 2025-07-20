@@ -16,6 +16,7 @@ const DriversPage = () => {
     {
       id: 1,
       name: "Ahmed Hassan",
+      phone: "01234567890",
       carType: "Toyota Corolla",
       nationalId: "29805231234567",
       driverLicenseExpiry: "2025-10-01",
@@ -25,6 +26,7 @@ const DriversPage = () => {
     {
       id: 2,
       name: "Mona Ali",
+      phone:"01234567890",
       carType: "Hyundai Elantra",
       nationalId: "29906021234567",
       driverLicenseExpiry: "2024-11-15",
@@ -34,6 +36,7 @@ const DriversPage = () => {
     {
       id: 3,
       name: "Youssef Khaled",
+      phone:"01234567890",
       carType: "Kia Sportage",
       nationalId: "30007181234567",
       driverLicenseExpiry: "2026-03-20",
@@ -43,6 +46,7 @@ const DriversPage = () => {
     {
       id: 4,
       name: "Sara Mohamed",
+      phone:"01234567890",
       carType: "Honda Civic",
       nationalId: "29708251234567",
       driverLicenseExpiry: "2025-07-01",
@@ -52,6 +56,7 @@ const DriversPage = () => {
     {
       id: 5,
       name: "Omar Farouk",
+      phone:"01234567890",
       carType: "Nissan Sunny",
       nationalId: "29609141234567",
       driverLicenseExpiry: "2024-12-05",
@@ -89,6 +94,7 @@ const DriversPage = () => {
   const tableColumns = [
     { key: "id", label: t("Driver ID") },
     { key: "name", label: t("Driver name") },
+    { key: "phone", label: t("phone number") },
     { key: "carType", label: t("Car type") },
     { key: "nationalId", label: t("National ID") },
     { key: "driverLicenseExpiry", label: t("Driver license expiry") },

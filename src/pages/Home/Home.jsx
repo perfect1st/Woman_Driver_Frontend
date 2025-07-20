@@ -20,14 +20,28 @@ import {
 } from "recharts";
 import { useTranslation } from "react-i18next";
 import LoadingComponent from "../../components/LoadingComponent";
+import { useSearchParams } from "react-router-dom";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import SearchIcon from "@mui/icons-material/Search";
+import TextField from "@mui/material/TextField";
 
 const Home = () => {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language == 'ar'
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [activeTab, setActiveTab] = useState(1);
-
-  // Dummy data
+  const periodOptions = ["day", "week", "month"];
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialDate = searchParams.get("date") || "";
+  const initialPeriod = searchParams.get("period") || "week"; // default to 'week'
+  const [searchDate, setSearchDate] = useState(initialDate);
+  const [activeTab, setActiveTab] = useState(
+    periodOptions.indexOf(initialPeriod) !== -1
+      ? periodOptions.indexOf(initialPeriod)
+      : 1
+  );
+  
   const tripsData = [
     { day: "mon", trips: 400 },
     { day: "tue", trips: 300 },
@@ -51,6 +65,21 @@ const Home = () => {
   ];
   const maxValue = Math.max(...citiesData.map((item) => item.trips));
 
+  const handleTabChange = (_, newVal) => {
+    setActiveTab(newVal);
+    searchParams.set("period", periodOptions[newVal]);
+    setSearchParams(searchParams);
+  };
+  
+  const handleSearch = () => {
+    if (searchDate) {
+      searchParams.set("date", searchDate);
+    } else {
+      searchParams.delete("date");
+    }
+    setSearchParams(searchParams);
+  };
+
   // return (
   //   <LoadingComponent />
   // )
@@ -59,45 +88,104 @@ const Home = () => {
     <Box sx={{ p: isMobile ? 1 : 3 }}>
       {/* Header */}
       <Typography variant="h6">{t("home")}</Typography>
-      <Typography variant="h5" sx={{ mt: 1, fontWeight: "bold" }}>
-        {t("overview")}
-      </Typography>
+      <Box
+  sx={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    mt: 1,
+    width: "100%",
+    flexWrap: "wrap",
+    gap: 2,
+  }}
+>
+  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+    {t("overview")}
+  </Typography>
+
+  <Box
+  sx={{
+    display: "flex",
+    flexDirection: "row",
+    width: "fit-content",
+  }}
+>
+  <TextField
+    size="small"
+    type="date"
+    value={searchDate}
+    onChange={(e) => setSearchDate(e.target.value)}
+    sx={{
+      width: 220,
+      "& .MuiOutlinedInput-root": {
+        borderTopLeftRadius: isArabic ? 0 : "4px",
+        borderBottomLeftRadius: isArabic ? 0 : "4px",
+        borderTopRightRadius: isArabic ? "4px" : 0,
+        borderBottomRightRadius: isArabic ? "4px" : 0,
+      },
+    }}
+  />
+  <Box
+    component="button"
+    onClick={handleSearch}
+    style={{
+      background: theme.palette.primary.main,
+      color: "#fff",
+      border: "1px solid rgba(0, 0, 0, 0.23)",
+      borderLeft: isArabic ? "1px solid rgba(0, 0, 0, 0.23)" : "none",
+      borderRight: isArabic ? "none" : "1px solid rgba(0, 0, 0, 0.23)",
+      padding: "0 16px",
+      fontSize: "1rem",
+      cursor: "pointer",
+      fontWeight: "bold",
+      borderTopLeftRadius: isArabic ? "4px" : 0,
+      borderBottomLeftRadius: isArabic ? "4px" : 0,
+      borderTopRightRadius: isArabic ? 0 : "4px",
+      borderBottomRightRadius: isArabic ? 0 : "4px",
+      height: 40,
+    }}
+  >
+    {t("filter")}
+  </Box>
+</Box>
+
+
+</Box>
+
+
 
       {/* Tabs */}
       <Tabs
-        value={activeTab}
-        onChange={(_, newVal) => setActiveTab(newVal)}
-        variant="fullWidth"
-        sx={{
-          mt: 2,
-          backgroundColor: theme.palette.background.secDefault,
-          borderRadius: 1,
-          "& .MuiTabs-indicator": {
-            display: "none",
-          },
-        }}
-      >
-        {[t("daily"), t("weekly"), t("monthly")].map((label, index) => (
-          <Tab
-            key={index}
-            label={label}
-            sx={{
-              flex: 1,
-              mx: 0.5,
-              borderRadius: 1,
-              minHeight: 48,
-              bgcolor:
-                activeTab === index
-                  ? theme.palette.primary.main
-                  : theme.palette.background.secDefault,
-              color: theme.palette.primary.main,
-              "&.Mui-selected": {
-                color: "#ffffff",
-              },
-            }}
-          />
-        ))}
-      </Tabs>
+  value={activeTab}
+  onChange={handleTabChange}
+  variant="fullWidth"
+  sx={{
+    mt: 2,
+    backgroundColor: theme.palette.background.secDefault,
+    borderRadius: 1,
+    "& .MuiTabs-indicator": { display: "none" },
+  }}
+>
+  {periodOptions.map((option, index) => (
+    <Tab
+      key={option}
+      label={t(option)}
+      sx={{
+        flex: 1,
+        mx: 0.5,
+        borderRadius: 1,
+        minHeight: 48,
+        bgcolor:
+          activeTab === index
+            ? theme.palette.primary.main
+            : theme.palette.background.secDefault,
+        color: theme.palette.primary.main,
+        "&.Mui-selected": { color: "#fff" },
+      }}
+    />
+  ))}
+</Tabs>
+
 
       {/* Key Metrics */}
       <Typography variant="h5" sx={{ mt: 4, fontWeight: "bold" }}>
