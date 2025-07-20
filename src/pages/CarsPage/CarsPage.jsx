@@ -153,6 +153,9 @@ const CarsPage = () => {
           btn={t("Add Car")}
           btnIcon={<ControlPointIcon />}
           onSubmit={addCarSubmit}
+          isExcel={true}
+          isPdf={true}
+          isPrinter={true}
         />
       </Box>
 

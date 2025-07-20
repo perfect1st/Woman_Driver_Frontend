@@ -145,6 +145,9 @@ const CarDriverPage = () => {
           btn={t("Link Car-Driver")}
           btnIcon={<ControlPointIcon />}
           onSubmit={addCarDriverSubmit}
+          isExcel={true}
+          isPdf={true}
+          isPrinter={true}
         />
       </Box>
 

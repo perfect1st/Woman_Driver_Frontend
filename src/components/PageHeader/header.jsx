@@ -1,10 +1,30 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import {
+  Box,
+  Typography,
+  Button,
+  IconButton,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { ReactComponent as ExcelIcon } from "../../assets/xsl-02.svg";
+import { ReactComponent as PdfIcon } from "../../assets/pdf-02.svg";
+import { ReactComponent as PrinterIcon } from "../../assets/printer.svg";
 
-const Header = ({ title, subtitle, i18n, haveBtn = false, btn, btnIcon, onSubmit }) => {
+const Header = ({
+  title,
+  subtitle,
+  i18n,
+  haveBtn = false,
+  btn,
+  btnIcon,
+  onSubmit,
+  isExcel = false,
+  isPdf = false,
+  isPrinter = false,
+  onExcel,
+  onPdf,
+  onPrinter
+}) => {
   const theme = useTheme();
   const isRtl = i18n.language === 'ar';
 
@@ -13,46 +33,57 @@ const Header = ({ title, subtitle, i18n, haveBtn = false, btn, btnIcon, onSubmit
       component="header"
       sx={{
         direction: isRtl ? 'rtl' : 'ltr',
-        display: haveBtn ? 'block': 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        display: 'flex',
+        flexDirection: 'column',
         mb: 3,
       }}
     >
-      {/* Titles */}
-      <Box>
-        <Typography variant="h6">{title}</Typography>
-        {!haveBtn &&<Typography variant="h5" sx={{ mt: 1, fontWeight: 'bold' }}>
-          {subtitle}
-        </Typography>}
-      </Box>
+      <Typography variant="h6">{title}</Typography>
 
-{haveBtn &&      <Box display="flex" justifyContent={"space-between"}>
-      <Typography variant="h5" sx={{ mt: 1, fontWeight: 'bold' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mt: 1,
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
           {subtitle}
         </Typography>
-        <Button
-          variant="contained"
-          endIcon={btnIcon}
-          onClick={onSubmit}
-          sx={{
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-            '&:hover': {
-              backgroundColor: theme.palette.primary.dark,
-            },
-            '& .MuiButton-endIcon': {
-              mx: 1,  
-            },
-          }}
-        >
-          {btn}
-        </Button>
 
-      </Box>}
-      
+        <Box display="flex" alignItems="center" gap={1.5}>
+          {haveBtn && (
+            <Button
+              variant="contained"
+              endIcon={btnIcon}
+              onClick={onSubmit}
+              sx={{
+                fontWeight: 'bold',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {btn}
+            </Button>
+          )}
 
-      {/* Optional action button */}
+          {isExcel && (
+            <IconButton color="primary" onClick={onExcel} sx={{ p: 0.25 }}>
+              <ExcelIcon width={25} height={25} />
+            </IconButton>
+          )}
+          {isPdf && (
+            <IconButton color="primary" onClick={onPdf} sx={{ p:  0.25 }}>
+              <PdfIcon width={25} height={25} />
+            </IconButton>
+          )}
+          {isPrinter && (
+            <IconButton color="primary" onClick={onPrinter} sx={{ p:  0.25 }}>
+              <PrinterIcon width={25} height={25} />
+            </IconButton>
+          )}
+        </Box>
+      </Box>
     </Box>
   );
 };

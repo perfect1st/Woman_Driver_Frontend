@@ -153,7 +153,7 @@ const TripsPage = () => {
     >
       {/* Header Section */}
       <Box sx={{ width: "100%", flexShrink: 0 }}>
-        <Header title={t("Trips")} subtitle={t("Trips Details")} i18n={i18n} />
+        <Header title={t("Trips")} subtitle={t("Trips Details")} i18n={i18n} isExcel={true} isPdf={true} isPrinter={true} />
       </Box>
 
       {/* Filter Section */}

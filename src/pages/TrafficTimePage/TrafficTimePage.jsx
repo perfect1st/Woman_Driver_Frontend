@@ -136,6 +136,9 @@ const TrafficTimePage = () => {
           btn={t("Add Traffic Time")}
           btnIcon={<ControlPointIcon />}
           onSubmit={addCarTypeSubmit}
+          isExcel={true}
+          isPdf={true}
+          isPrinter={true}
         />
       </Box>
 

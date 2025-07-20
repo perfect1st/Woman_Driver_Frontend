@@ -168,6 +168,9 @@ const DriversPage = () => {
           title={t("Drivers")}
           subtitle={t("Drivers Details")}
           i18n={i18n}
+          isExcel={true}
+          isPdf={true}
+          isPrinter={true}
         />
       </Box>
 

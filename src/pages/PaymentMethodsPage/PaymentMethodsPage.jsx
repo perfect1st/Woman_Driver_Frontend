@@ -119,6 +119,9 @@ const PaymentMethodsPage = () => {
           btn={t("Add Payment Method")}
           btnIcon={<ControlPointIcon />}
           onSubmit={addPaymentMethodSubmit}
+          isExcel={true}
+          isPdf={true}
+          isPrinter={true}
         />
       </Box>
 

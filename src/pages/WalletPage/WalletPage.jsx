@@ -149,6 +149,9 @@ const WalletPage = () => {
           btn={t("Add Transaction")}
           btnIcon={<ControlPointIcon />}
           onSubmit={addCarTypeSubmit}
+          isExcel={true}
+          isPdf={true}
+          isPrinter={true}
         />
       </Box>
 

@@ -16,6 +16,7 @@ const PassengersPage = () => {
     {
       id: 1,
       number: 'PAX001',
+      phone:"123123122",
       name: 'John Doe',
       rate:'4.7',
       city: 'New York',
@@ -25,6 +26,7 @@ const PassengersPage = () => {
     {
       id: 2,
       number: 'PAX002',
+      phone:"100122123",
       name: 'Jane Smith',
       rate:'4.2',
       city: 'London',
@@ -34,6 +36,7 @@ const PassengersPage = () => {
     {
       id: 3,
       number: 'PAX003',
+      phone:"100108703",
       name: 'Bob Johnson',
       rate:'3.5',
       city: 'Paris',
@@ -43,6 +46,7 @@ const PassengersPage = () => {
     {
       id: 4,
       number: 'PAX004',
+      phone:"100087623",
       name: 'Alice Williams',
       city: 'Tokyo',
       rate:'5',
@@ -52,6 +56,7 @@ const PassengersPage = () => {
     {
       id: 5,
       number: 'PAX005',
+      phone:"1001221123",
       name: 'Charlie Brown',
       city: 'Berlin',
       rate:'4.98',
@@ -86,6 +91,7 @@ const PassengersPage = () => {
   const tableColumns = [
     { key: "id", label: t("Rider ID") },
     { key: "name", label: t("Rider name") },
+    { key: "phone", label: t("phone number") },
     { key: "rate", label: t("Rate") },
     { key: "trips", label: t("Trips number") },
     { key: "accountStatus", label: t("Account status") },
@@ -160,6 +166,9 @@ const PassengersPage = () => {
           title={t('Rider')} 
           subtitle={t('Riders Details')}
           i18n={i18n}
+          isExcel={true}
+          isPdf={true}
+          isPrinter={true}
         />
       </Box>
       
