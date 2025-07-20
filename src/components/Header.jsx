@@ -38,13 +38,15 @@ import {
 } from '@mui/icons-material';
 import { ColorModeContext } from '../App';
 import logo from '../assets/Logo.png';
-import languageIcon from '../assets/languageIcon.png';
-import notificationIcon from '../assets/natificationIcon.png';
 import routes from "../data/routes";
 import { Link } from 'react-router-dom';
+import { ReactComponent as LanguageIcon } from "../assets/language.svg";
+import { ReactComponent as NotificationIcon } from "../assets/natification.svg";
+import { ReactComponent as SettingIcon } from "../assets/setting.svg";
+
 
 const Header = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang = i18n.language
   const colorMode = useContext(ColorModeContext);
   const theme = useTheme();
@@ -52,6 +54,21 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
   const [langMenuAnchor, setLangMenuAnchor] = useState(null);
+  const [notificationAnchor, setNotificationAnchor] = useState(null);
+const [settingAnchor, setSettingAnchor] = useState(null);
+const [settingMenuOpen, setSettingMenuOpen] = useState(false);
+const [settingMenuAnchor, setSettingMenuAnchor] = useState(null);
+
+const handleSettingMenuOpen = (event) => {
+  setSettingMenuAnchor(event.currentTarget);
+  setSettingMenuOpen(true);
+};
+
+const handleSettingMenuClose = () => {
+  setSettingMenuAnchor(null);
+  setSettingMenuOpen(false);
+};
+
   const [user] = useState(() => {
     const storedUser = localStorage.getItem('user');
     return storedUser ? JSON.parse(storedUser) : null;
@@ -236,46 +253,51 @@ const drawerContent = (
   
     {/* Additional Menu Items */}
     <List>
-      {/* Notifications */}
-      <ListItem 
-        button 
-        sx={{ 
-          mb: 1,
-          flexDirection: lang === 'ar' ? 'row' : 'row'
-        }}
-      >
-        <Badge 
-          badgeContent={3} 
-          color="primary" 
-          sx={{ 
-            marginRight: lang === 'ar' ? 0 : 2,
-            marginLeft: lang === 'ar' ? 2 : 0
-          }}
-        >
-          <Box 
-            component="img" 
-            src={notificationIcon} 
-            alt="Notification"
-            sx={{
-              width: 28,
-              height: 28,
-              // ml: lang === 'ar' ? 0 : 0,
-              // mr: lang === 'ar' ? 0 : 0,
-              filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
-            }} 
-          />
-        </Badge>
-        <ListItemText 
-          primary={
-            <Typography 
-              fontWeight="bold"
-              sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
-            >
-              {i18n.t('notification')}
-            </Typography>
-          } 
-        />
-      </ListItem>
+     {/* Notifications */}
+     <List>
+  <ListItemButton onClick={(e) => setNotificationAnchor(e.currentTarget)}>
+    <Badge badgeContent={3} color="primary" sx={{ mr: 2 }}>
+      <NotificationIcon style={{ width: 28, height: 28, filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none' }} />
+    </Badge>
+    <ListItemText primary={t('notification')} />
+    {notificationAnchor ? <ExpandLess /> : <ExpandMore />}
+  </ListItemButton>
+
+  <Menu
+    anchorEl={notificationAnchor}
+    open={Boolean(notificationAnchor)}
+    onClose={() => setNotificationAnchor(null)}
+    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+  >
+    <MenuItem>New User Registered</MenuItem>
+    <MenuItem>Driver Completed Trip</MenuItem>
+    <MenuItem>Payment Received</MenuItem>
+  </Menu>
+
+
+  <ListItemButton onClick={() => setSettingMenuOpen(!settingMenuOpen)}>
+  <SettingIcon style={{ width: 24, height: 24, marginRight: 16, filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none' }} />
+  <ListItemText primary={t('settings')} />
+  {settingMenuOpen ? <ExpandLess /> : <ExpandMore />}
+</ListItemButton>
+
+<Collapse in={settingMenuOpen} timeout="auto" unmountOnExit>
+  <List component="div" disablePadding>
+    <ListItemButton sx={{ pl: 4 }} onClick={handleDrawerToggle}>
+      <ListItemText primary={t('settings')} />
+    </ListItemButton>
+    <ListItemButton sx={{ pl: 4 }} onClick={handleDrawerToggle}>
+      <ListItemText primary={t('account')} />
+    </ListItemButton>
+    <ListItemButton sx={{ pl: 4 }} onClick={handleDrawerToggle}>
+      <ListItemText primary={t('Tracking Frequency')} />
+    </ListItemButton>
+  </List>
+</Collapse>
+
+</List>
+
   
       <Divider sx={{ my: 2 }} />
   
@@ -288,17 +310,13 @@ const drawerContent = (
           flexDirection: lang === 'ar' ? 'row' : 'row'
         }}
       >
-        <Box 
-          component="img" 
-          src={languageIcon} 
-          alt="Language"
-          sx={{
-            width: 28,
-            height: 28,
-            mx: 2,
-            filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
-          }} 
-        />
+       <LanguageIcon 
+  style={{ 
+    width: 28, 
+    height: 28, 
+    filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none' 
+  }} 
+/>
         <ListItemText 
           primary={
             <Typography 
@@ -461,30 +479,70 @@ const drawerContent = (
 
         {/* Desktop Content - Hidden on Mobile */}
         <Hidden mdDown>
-          {/* Notification */}
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center',
-            mr: { xs: 1, md: 3 },
-            color: theme.palette.primary.main
-          }}>
-            <Badge badgeContent={3} color="primary">
-              <Box 
-                component="img" 
-                src={notificationIcon} 
-                alt="Notification"
-                sx={{
-                  width: 28,
-                  height: 28,
-                  ml:1,
-                  filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
-                }} 
-              />
-            </Badge>
-            <Typography variant="body1" sx={{ ml: { xs: 0.5, md: 1.5 }, fontWeight: 'bold', display: { xs: 'none', sm: 'block' }, color: theme.palette.primary.main }}>
-              {i18n.t('notification')}
-            </Typography>
-          </Box>
+        {/* Notifications with Menu */}
+{/* Notifications */}
+<Box sx={{ position: 'relative', mr: { xs: 1, md: 3 } }}>
+  <Button onClick={(e) => setNotificationAnchor(e.currentTarget)} sx={{ color: theme.palette.primary.main }}>
+    <Badge badgeContent={3} color="primary">
+      <NotificationIcon style={{ width: 28, height: 28, filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none' }} />
+    </Badge>
+    <Typography sx={{ mx: 1 }}>{t('notification')}</Typography>
+
+    {notificationAnchor ? <ArrowDropUp /> : <ArrowDropDown />}
+  </Button>
+  <Menu
+    anchorEl={notificationAnchor}
+    open={Boolean(notificationAnchor)}
+    onClose={() => setNotificationAnchor(null)}
+    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+  >
+    <MenuItem>New User Registered</MenuItem>
+    <MenuItem>Driver Completed Trip</MenuItem>
+    <MenuItem>Payment Received</MenuItem>
+  </Menu>
+</Box>
+<Divider 
+            orientation="vertical" 
+            flexItem 
+            sx={{ 
+              mx: { xs: 1, md: 3 },
+              height: 40,
+              alignSelf: 'center',
+              borderColor: theme.palette.divider,
+              borderWidth: 1
+            }} 
+          />
+<Box sx={{ position: 'relative', mr: { xs: 1, md: 3 } }}>
+  <Button
+    onClick={(e) => setSettingAnchor(e.currentTarget)}
+    sx={{
+      color: theme.palette.primary.main,
+      textTransform: 'none',
+      // minWidth: 'auto',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 1
+    }}
+  >
+    <SettingIcon sx={{ width: 28, height: 28, filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none' }} />
+    <Typography fontWeight="bold" sx={{ display: { xs: 'none', sm: 'block' } }}>{t('settings')}</Typography>
+    {settingAnchor ? <ArrowDropUp /> : <ArrowDropDown />}
+  </Button>
+
+  <Menu
+    anchorEl={settingAnchor}
+    open={Boolean(settingAnchor)}
+    onClose={() => setSettingAnchor(null)}
+  >
+    <MenuItem onClick={() => setSettingAnchor(null)}>{t('settings')}</MenuItem>
+    <MenuItem onClick={() => setSettingAnchor(null)}>{t('account')}</MenuItem>
+    <MenuItem onClick={() => setSettingAnchor(null)}>{t('Tracking Frequency')}</MenuItem>
+  </Menu>
+</Box>
+
+
+
 
           {/* Vertical divider */}
           <Divider 
@@ -501,30 +559,30 @@ const drawerContent = (
 
           {/* Language Menu */}
           <Button 
-            onClick={handleLangMenuOpen}
-            sx={{
-              mr: { xs: 1, md: 3 },
-              color: theme.palette.primary.main,
-              textTransform: 'none',
-              minWidth: 'auto'
-            }}
-          >
-            <Box 
-              component="img" 
-              src={languageIcon} 
-              alt="Language"
-              sx={{
-                width: 28,
-                height: 28,
-                mx: { xs: 0, sm: 1 },
-                filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
-              }} 
-            />
-            <Typography variant="body1" fontWeight="bold" sx={{ display: { xs: 'none', sm: 'block' } }}>
-              {i18n.language === 'en' ? 'En' : 'Ar'}
-            </Typography>
-            {langMenuAnchor ? <ArrowDropUp /> : <ArrowDropDown />}
-          </Button>
+  onClick={handleLangMenuOpen}
+  sx={{
+    mr: { xs: 1, md: 3 },
+    color: theme.palette.primary.main,
+    textTransform: 'none',
+    minWidth: 'auto'
+  }}
+>
+  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <LanguageIcon 
+      sx={{ 
+        width: 28, 
+        height: 28, 
+        mr: 1,  // مسافة يمين الأيقونة
+        filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none' 
+      }} 
+    />
+    <Typography variant="body1" fontWeight="bold" sx={{ display: { xs: 'none', sm: 'block' }, mx:2 }}>
+      {i18n.language === 'en' ? 'En' : 'Ar'}
+    </Typography>
+    {langMenuAnchor ? <ArrowDropUp /> : <ArrowDropDown />}
+  </Box>
+</Button>
+
           
           {/* Language Menu Dropdown */}
           <Menu
