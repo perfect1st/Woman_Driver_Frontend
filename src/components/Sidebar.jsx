@@ -117,7 +117,7 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
                   }}
                 >
                   {IconComponent ? (
-                    <ListItemIcon sx={{ minWidth: 30 }}>
+                    <ListItemIcon sx={{ minWidth: 24 }}>
                       <IconComponent
                         sx={{
                           color: isDirectlyActive 
@@ -127,7 +127,7 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
                       />
                     </ListItemIcon>
                   ) : (
-                    <ListItemIcon sx={{ minWidth: 30 }}>
+                    <ListItemIcon sx={{ minWidth: 24 }}>
                       <Box
                         sx={{
                           width: 6,
@@ -185,7 +185,7 @@ return (
                               borderRadius: "8px",
                             }}
                           >
-                             <ListItemIcon sx={{ minWidth: 30 }}>
+                             <ListItemIcon sx={{ minWidth: 24 }}>
                       <Box
                         sx={{
                           width: 6,

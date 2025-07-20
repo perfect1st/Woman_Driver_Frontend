@@ -69,6 +69,24 @@ const routesData = {
       // icon: HomeIcon,
     },
     {
+      key: "WaitingTime",
+      label: { en: "Waiting Times", ar: "أوقات الانتظار" },
+      path: "/WaitingTime",
+      // icon: HomeIcon,
+    },
+    {
+      key: "Commission",
+      label: { en: "Commission", ar: "العمولة" },
+      path: "/Commission",
+      // icon: HomeIcon,
+    },
+    {
+      key: "CommissionCategory",
+      label: { en: "Commission Category", ar: "فئة العمولة" },
+      path: "/CommissionCategory",
+      // icon: HomeIcon,
+    },
+    {
       key: "Loading",
       label: { en: "Loading", ar: "صفحه التحميل" },
       path: "/Loading",

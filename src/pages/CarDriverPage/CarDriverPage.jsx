@@ -11,6 +11,7 @@ import ControlPointIcon from '@mui/icons-material/ControlPoint';
 const CarDriverPage = () => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  const isArabic = i18n.language == 'ar';
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
 
@@ -143,7 +144,7 @@ const CarDriverPage = () => {
           haveBtn={true}
           i18n={i18n}
           btn={t("Link Car-Driver")}
-          btnIcon={<ControlPointIcon />}
+          btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
           onSubmit={addCarDriverSubmit}
           isExcel={true}
           isPdf={true}

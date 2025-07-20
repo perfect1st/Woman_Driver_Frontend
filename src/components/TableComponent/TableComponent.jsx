@@ -14,7 +14,8 @@ import {
   Divider,
   useTheme,
   Box,
-  alpha
+  alpha,
+  Button
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 // import InfoIcon from "@mui/icons-material/Info";
@@ -113,7 +114,8 @@ const TableComponent = ({
   isTrafficTime=false,
   isWallet=false,
   isInDetails=false,
-  paymentMethod=false
+  paymentMethod=false,
+  isCommissionCategory=false
 }) => {
   const {t, i18n} = useTranslation();
   const isArabic = i18n.language === 'ar';
@@ -227,86 +229,89 @@ const navigate = useNavigate();
               return (
                 <TableRow key={row.id} hover>
                   {columns.map((column) => (
-                    <TableCell
-                      key={`${row.id}-${column.key}`}
-                      align={i18n.dir() === 'rtl' ? 'right' : 'left'}
-                      sx={{
-                        border: "1px solid #e0e0e0",
-                        py: { xs: 0.75, sm: 1.5 }
-                      }}
-                    >
-                      {column.key === statusKey ? (
-                        <Chip
-                          label={t(status)}
-                          ref={(el) => (chipRefs.current[row.id] = el)}
-                          // onClick={showStatusChange ? (e) => handleClick(e, row) : undefined}
-                          icon={styles.icon}
-                          sx={{
-                            cursor: showStatusChange ? "pointer" : "default",
-                            color: styles.textColor,
-                            backgroundColor: styles.bgColor,
-                            border: `1px solid ${styles.borderColor}`,
-                            fontWeight: "bold",
-                            minWidth: maxChipWidth,
-                            borderRadius: 1,
-                            textTransform: "none",
-                            // px: 1.5,
-                            py: 0.5,
-                            "&:hover": showStatusChange ? {
-                              opacity: 0.9,
-                              transform: "scale(1.02)"
-                            } : {}
-                          }}
-                        />
-                      ) : (
-                        row[column.key]
-                      )}
-                    </TableCell>
-                  ))}
+  <TableCell
+    key={`${row.id}-${column.key}`}
+    align={i18n.dir() === 'rtl' ? 'right' : 'left'}
+    sx={{
+      border: "1px solid #e0e0e0",
+      py: { xs: 0.75, sm: 1.5 }
+    }}
+  >
+    {column.key === statusKey ? (
+      <Chip
+        label={t(status)}
+        ref={(el) => (chipRefs.current[row.id] = el)}
+        icon={styles.icon}
+        sx={{
+          cursor: showStatusChange ? "pointer" : "default",
+          color: styles.textColor,
+          backgroundColor: styles.bgColor,
+          border: `1px solid ${styles.borderColor}`,
+          fontWeight: "bold",
+          minWidth: maxChipWidth,
+          borderRadius: 1,
+          textTransform: "none",
+          py: 0.5,
+          "&:hover": showStatusChange
+            ? {
+                opacity: 0.9,
+                transform: "scale(1.02)"
+              }
+            : {}
+        }}
+      />
+    ) : column.render ? (
+      column.render(row)
+    ) : (
+      row[column.key]
+    )}
+  </TableCell>
+))}
+
                   {/* Actions column */}
                   <TableCell
-                    align="center"
-                    sx={{
-                      border: "1px solid #e0e0e0",
-                      py: { xs: 0.75, sm: 1.5 }
-                    }}
-                  >
-   <IconButton
-  size="small"
-  onClick={(e) => {
-    if (actionIconType === "info") {
-      navigate(`/tripDetails/${row.id}`);
-    } else {
-      handleClick(e, row);
-    }
-  }}
+  align="center"
   sx={{
-    border: `1px solid ${theme.palette.primary.main}`,
-    borderRadius: 1,
-    p: 0.5,
-    backgroundColor: actionIconType === "info" ? theme.palette.primary.main : '',
-    "&:hover": {
-      backgroundColor: theme.palette.primary.main,
-    }
+    border: "1px solid #e0e0e0",
+    py: { xs: 0.75, sm: 1.5 }
   }}
 >
-  {actionIconType === "info" ? (
-   <InfoIcon style={{ 
-    width: 20, 
-    height: 20,
-    padding:1, 
-    display: "block", 
-    verticalAlign: "middle", 
-    strokeWidth: 4, 
-    fill: "currentColor" 
-  }} />
+  {actionIconType === "details" ? (
+ <Button
+ variant="contained"
+ color="primary"
+ onClick={() => navigate(`/CommissionsDetails/${row.id}`)}
+ sx={{
+   textTransform: "none",
+   fontWeight: "bold",
+   fontSize: "0.875rem",
+   borderRadius: 1,
+   px: 2,
+   py: 0.5,
+   minWidth: "auto"
+ }}
+>
+ {t("Details")}
+</Button>
   ) : (
-    <MoreHorizIcon fontSize="small" />
+    <IconButton
+      size="small"
+      onClick={(e) => handleClick(e, row)}
+      sx={{
+        border: `1px solid ${theme.palette.primary.main}`,
+        borderRadius: 1,
+        p: 0.5,
+        "&:hover": {
+          backgroundColor: theme.palette.primary.main,
+          color: "#fff"
+        }
+      }}
+    >
+      <MoreHorizIcon fontSize="small" />
+    </IconButton>
   )}
-</IconButton>
+</TableCell>
 
-
-                  </TableCell>
                 </TableRow>
               );
             })}
@@ -450,7 +455,7 @@ const navigate = useNavigate();
         }
 
         {/* Pending */}
-        {(!isCar && !isCarType && !isTrafficTime && !isWallet && !paymentMethod) && (
+        {(!isCar && !isCarType && !isTrafficTime && !isWallet && !paymentMethod && !isCommissionCategory) && (
           <MenuItem
             onClick={() => handleStatusSelect("Pending")}
             sx={{

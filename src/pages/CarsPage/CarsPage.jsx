@@ -9,6 +9,7 @@ import ControlPointIcon from '@mui/icons-material/ControlPoint';
 const CarsPage = () => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  const isArabic = i18n.language == 'ar'
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
 
@@ -151,7 +152,7 @@ const CarsPage = () => {
           i18n={i18n}
           haveBtn={true}
           btn={t("Add Car")}
-          btnIcon={<ControlPointIcon />}
+          btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
           onSubmit={addCarSubmit}
           isExcel={true}
           isPdf={true}

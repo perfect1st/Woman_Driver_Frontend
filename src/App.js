@@ -38,6 +38,9 @@ import AddPaymentMethodPage from "./pages/AddPaymentMethodPage/AddPaymentMethodP
 import LoadingPage from "./components/LoadingComponent";
 import NotFoundPage from "./components/NotFoundPage";
 import Maintenance from "./components/Maintenance";
+import CommissionPage from "./pages/CommissionPage/CommissionPage";
+import WaitingTimePage from "./pages/WaitingTimesPage/WaitingTimesPage";
+import CommissionCategoryPage from "./pages/CommissionCategoryPage/CommissionCategoryPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -418,6 +421,36 @@ import Maintenance from "./components/Maintenance";
       // <ProtectedRoute>
         <MainLayout>
           <PaymentMethodsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/WaitingTime"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <WaitingTimePage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/Commission"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <CommissionPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/CommissionCategory"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <CommissionCategoryPage />
         </MainLayout>
       // </ProtectedRoute>
     }

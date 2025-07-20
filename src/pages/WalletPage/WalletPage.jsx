@@ -11,6 +11,7 @@ import ControlPointIcon from '@mui/icons-material/ControlPoint';
 const WalletPage = () => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  const isArabic = i18n.language == 'ar'
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
 
@@ -147,7 +148,7 @@ const WalletPage = () => {
           haveBtn={true}
           i18n={i18n}
           btn={t("Add Transaction")}
-          btnIcon={<ControlPointIcon />}
+          btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
           onSubmit={addCarTypeSubmit}
           isExcel={true}
           isPdf={true}

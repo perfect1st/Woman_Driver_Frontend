@@ -27,8 +27,11 @@ const FilterComponent = ({
   companyCarOptions = [],
   isTrafficTime = false,
   isWallet = false,
-  isInWalletDetails=false,
-  paymentMethod=false
+  isInWalletDetails = false,
+  paymentMethod = false,
+  isCommission = false,
+  isWaitingTime = false,
+  isCommissionCategory = false
 }) => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -46,6 +49,8 @@ const FilterComponent = ({
     userType: "",
     transactionType: "",
     transactionReason: "",
+    appVehicle: "",
+    date: "",
   });
 
   useEffect(() => {
@@ -57,9 +62,9 @@ const FilterComponent = ({
       companyCar: queryParams.get("companyCar") || "",
       status: queryParams.get("status") || "",
       tripType: queryParams.get("tripType") || "",
-          userType: queryParams.get("userType") || "",
-    transactionType: queryParams.get("transactionType") || "",
-    transactionReason: queryParams.get("transactionReason") || "",
+      userType: queryParams.get("userType") || "",
+      transactionType: queryParams.get("transactionType") || "",
+      transactionReason: queryParams.get("transactionReason") || "",
     });
   }, [location.search]);
 
@@ -69,7 +74,7 @@ const FilterComponent = ({
   };
   const handleSubmit = () => {
     const queryParams = new URLSearchParams();
-    
+
     if (isInWalletDetails) queryParams.set("tab", "history");
     if (filters.search) queryParams.set("keyword", filters.search);
     if (filters.city) queryParams.set("city", filters.city);
@@ -82,6 +87,8 @@ const FilterComponent = ({
       queryParams.set("transactionType", filters.transactionType);
     if (filters.transactionReason)
       queryParams.set("transactionReason", filters.transactionReason);
+    if (filters.appVehicle) queryParams.set("appVehicle", filters.appVehicle);
+if (filters.date) queryParams.set("date", filters.date);
     const queryString = queryParams.toString();
 
     // ✅ اطبع الكويري في الكونسل فقط
@@ -104,6 +111,8 @@ const FilterComponent = ({
       userType: "",
       transactionType: "",
       transactionReason: "",
+      appVehicle: "",
+date: "",
     });
 
     // إزالة الباراميترز من الـ URL
@@ -146,7 +155,7 @@ const FilterComponent = ({
           md={
             paymentMethod
               ? 7
-            : isWallet
+              : isWallet
               ? 6
               : isCarType
               ? 7
@@ -155,7 +164,9 @@ const FilterComponent = ({
               : isTrip
               ? 4
               : isDriver
-              ? 4
+              ? 4 
+              : isCommission ? 4
+              : isCommissionCategory ? 4
               : 7
           }
         >
@@ -166,7 +177,7 @@ const FilterComponent = ({
             placeholder={
               paymentMethod
                 ? t("Search by Payment Method ID and Payment Methods Name")
-              : isWallet
+                : isWallet
                 ? t("Search by User name and Wallet ID")
                 : isTrafficTime
                 ? t("Search by Traffic Time ID and Traffic Time Name")
@@ -180,6 +191,12 @@ const FilterComponent = ({
                 ? t("Search by Rider name and Driver name")
                 : isDriver
                 ? t("Search by Driver name and number")
+                : isCommission
+                ? t("Search by Commission ID and Driver Name")
+                : isCommissionCategory
+                ? t("Search by Commission Category ID")
+                : isWaitingTime
+                ? t("Search by Waiting Time ID and Trip ID")
                 : t("Search by Passenger name and number")
             }
             sx={{
@@ -350,6 +367,62 @@ const FilterComponent = ({
             </CustomTextField>
           </Grid>
         )}
+ 
+    {/* App Vehicle Select */}
+   {isCommission &&  <Grid item xs={12} sm={3} md={3}>
+      <CustomTextField
+        select
+        fullWidth
+        size="small"
+        label={t("App Vehicle?")}
+        name="appVehicle"
+        value={filters.appVehicle || ""}
+        onChange={handleChange}
+        variant="outlined"
+        isRtl={isArabic}
+        SelectProps={{
+          IconComponent: (props) => (
+            <ArrowDropDown
+              {...props}
+              sx={{
+                left: "auto",
+                right: 8,
+                position: "absolute",
+              }}
+            />
+          ),
+          MenuProps: { PaperProps: { style: { maxHeight: 250 } } },
+        }}
+        sx={{
+          backgroundColor: theme.palette.secondary.sec,
+          borderRadius: 1,
+        }}
+      >
+        <MenuItem value="">{t("All")}</MenuItem>
+        <MenuItem value="true">{t("Yes")}</MenuItem>
+        <MenuItem value="false">{t("No")}</MenuItem>
+      </CustomTextField>
+    </Grid>}
+
+    {/* Date Select */}
+   {(isCommission ||isWaitingTime)&& <Grid item xs={12} sm={3} md={3}>
+      <CustomTextField
+        type="date"
+        fullWidth
+        size="small"
+        label={t("Date")}
+        name="date"
+        value={filters.date || ""}
+        onChange={handleChange}
+        isRtl={isArabic}
+        sx={{
+          backgroundColor: theme.palette.secondary.sec,
+          borderRadius: 1,
+        }}
+        InputLabelProps={{ shrink: true }}
+      />
+    </Grid>}
+
 
         {/* City Select */}
         {false && (
@@ -398,8 +471,8 @@ const FilterComponent = ({
           </Grid>
         )}
         {/* Car Type Select (for trips and drivers) */}
-        {(isCar || isTrip || isDriver) && (
-          <Grid item xs={12} sm={3} md={isDriver ? 3 : 2}>
+        {(isCar || isTrip || isDriver || isCommissionCategory) && (
+          <Grid item xs={12} sm={3} md={isCommissionCategory ? 3 :isDriver ? 3 : 2}>
             <CustomTextField
               select
               fullWidth
@@ -495,7 +568,7 @@ const FilterComponent = ({
         )}
 
         {/* Status Select */}
-        <Grid
+       {!isCommission&&!isWaitingTime && <Grid
           item
           xs={12}
           sm={3}
@@ -506,9 +579,9 @@ const FilterComponent = ({
             fullWidth
             size="small"
             label={
-              paymentMethod 
-              ? t('Status')
-              : isCarType
+              paymentMethod
+                ? t("Status")
+                : isCarType
                 ? t("Car Type Status")
                 : isCar
                 ? t("Car status")
@@ -547,7 +620,7 @@ const FilterComponent = ({
             ))}
           </CustomTextField>
         </Grid>
-
+}
         {/* Search Button */}
         <Grid item xs={12} sm={12} md={1}>
           <Button
