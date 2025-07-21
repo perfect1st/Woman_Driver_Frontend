@@ -201,7 +201,7 @@ const TripsPage = () => {
             data={filteredTrips}
             onViewDetails={handleViewDetails}
             statusKey="tripStatus" // Use tripStatus field for styling
-            showStatusChange={false} // Hide status change options
+            showStatusChange={true} // Hide status change options
             actionIconType="info" // Use info icon instead of more icon
           />
         </Box>

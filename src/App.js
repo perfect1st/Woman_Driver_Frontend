@@ -41,6 +41,7 @@ import Maintenance from "./components/Maintenance";
 import CommissionPage from "./pages/CommissionPage/CommissionPage";
 import WaitingTimePage from "./pages/WaitingTimesPage/WaitingTimesPage";
 import CommissionCategoryPage from "./pages/CommissionCategoryPage/CommissionCategoryPage";
+import WaitingTimesDetailsPage from "./pages/WaitingTimesDetailsPage/WaitingTimesDetailsPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -481,6 +482,16 @@ import CommissionCategoryPage from "./pages/CommissionCategoryPage/CommissionCat
       // <ProtectedRoute>
         <MainLayout>
           <PaymentMethodsDetailsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/WaitingTimesDetails/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <WaitingTimesDetailsPage />
         </MainLayout>
       // </ProtectedRoute>
     }
