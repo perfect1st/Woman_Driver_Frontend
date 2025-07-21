@@ -4,12 +4,13 @@ import Header from "../../components/PageHeader/header";
 import FilterComponent from "../../components/FilterComponent/FilterComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const WaitingTimePage = () => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
+  const navigate = useNavigate();
   const initialWaitingTimes = [
     {
       id: 1,
@@ -72,7 +73,9 @@ const WaitingTimePage = () => {
       document.body.style.overflowX = "auto";
     };
   }, []);
-
+  const onActionClick = (e, row) => {
+    navigate(`/WaitingTimesDetails/${row.id}`);
+  };
   return (
     <Box
       sx={{
@@ -105,6 +108,7 @@ const WaitingTimePage = () => {
           data={filteredWaitingTimes}
           actionIconType="details"
           showStatusChange={false}
+          onActionClick={onActionClick}
         />
       </Box>
     </Box>

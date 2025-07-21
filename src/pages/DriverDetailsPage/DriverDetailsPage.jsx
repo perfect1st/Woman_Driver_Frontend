@@ -47,6 +47,7 @@ import { useTranslation } from "react-i18next";
 import DomiCar from "../../assets/DomiCar.png";
 import DomiDriverImage from "../../assets/DomiDriverImage.png";
 import IOSSwitch from "../../components/IOSSwitch";
+import RouteMap from "../RouteMap/RouteMap";
 
 // Mock assets
 const statusStyles = {
@@ -722,73 +723,86 @@ export default function DriverDetailsPage() {
       </Box>
 
       {/* Tabs */}
-      <Box maxWidth="md" sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
-  {isMobile ? (
-    <Grid container spacing={1}>
-      <Grid item xs={6}>
-        <Tab
-          label={t("Driver Details")}
-          value={0}
-          onClick={() => setActiveTab(0)}
-          sx={{
-            width: "100%",
-            borderBottom: activeTab === 0 ? `2px solid ${theme.palette.primary.main}` : "none",
-            fontWeight: activeTab === 0 ? "bold" : "normal",
-          }}
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <Tab
-          label={t("Car Documents")}
-          value={1}
-          onClick={() => setActiveTab(1)}
-          sx={{
-            width: "100%",
-            borderBottom: activeTab === 1 ? `2px solid ${theme.palette.primary.main}` : "none",
-            fontWeight: activeTab === 1 ? "bold" : "normal",
-          }}
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <Tab
-          label={t("Payment Details")}
-          value={2}
-          onClick={() => setActiveTab(2)}
-          sx={{
-            width: "100%",
-            borderBottom: activeTab === 2 ? `2px solid ${theme.palette.primary.main}` : "none",
-            fontWeight: activeTab === 2 ? "bold" : "normal",
-          }}
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <Tab
-          label={t("Trips")}
-          value={3}
-          onClick={() => setActiveTab(3)}
-          sx={{
-            width: "100%",
-            borderBottom: activeTab === 3 ? `2px solid ${theme.palette.primary.main}` : "none",
-            fontWeight: activeTab === 3 ? "bold" : "normal",
-          }}
-        />
-      </Grid>
-    </Grid>
-  ) : (
-    <Tabs
-      value={activeTab}
-      onChange={(e, newValue) => setActiveTab(newValue)}
-      variant="standard"
-    >
-      <Tab label={t("Driver Details")} />
-      <Tab label={t("Car Documents")} />
-      <Tab label={t("Payment Details")} />
-      <Tab label={t("Trips")} />
-    </Tabs>
-  )}
-</Box>
-
-
+      <Box
+        maxWidth="md"
+        sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}
+      >
+        {isMobile ? (
+          <Grid container spacing={1}>
+            <Grid item xs={6}>
+              <Tab
+                label={t("Driver Details")}
+                value={0}
+                onClick={() => setActiveTab(0)}
+                sx={{
+                  width: "100%",
+                  borderBottom:
+                    activeTab === 0
+                      ? `2px solid ${theme.palette.primary.main}`
+                      : "none",
+                  fontWeight: activeTab === 0 ? "bold" : "normal",
+                }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <Tab
+                label={t("Car Documents")}
+                value={1}
+                onClick={() => setActiveTab(1)}
+                sx={{
+                  width: "100%",
+                  borderBottom:
+                    activeTab === 1
+                      ? `2px solid ${theme.palette.primary.main}`
+                      : "none",
+                  fontWeight: activeTab === 1 ? "bold" : "normal",
+                }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <Tab
+                label={t("Payment Details")}
+                value={2}
+                onClick={() => setActiveTab(2)}
+                sx={{
+                  width: "100%",
+                  borderBottom:
+                    activeTab === 2
+                      ? `2px solid ${theme.palette.primary.main}`
+                      : "none",
+                  fontWeight: activeTab === 2 ? "bold" : "normal",
+                }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <Tab
+                label={t("Trips")}
+                value={3}
+                onClick={() => setActiveTab(3)}
+                sx={{
+                  width: "100%",
+                  borderBottom:
+                    activeTab === 3
+                      ? `2px solid ${theme.palette.primary.main}`
+                      : "none",
+                  fontWeight: activeTab === 3 ? "bold" : "normal",
+                }}
+              />
+            </Grid>
+          </Grid>
+        ) : (
+          <Tabs
+            value={activeTab}
+            onChange={(e, newValue) => setActiveTab(newValue)}
+            variant="standard"
+          >
+            <Tab label={t("Driver Details")} />
+            <Tab label={t("Car Documents")} />
+            <Tab label={t("Payment Details")} />
+            <Tab label={t("Trips")} />
+          </Tabs>
+        )}
+      </Box>
 
       {/* Tab Content */}
       <Box maxWidth="md">
@@ -975,7 +989,7 @@ export default function DriverDetailsPage() {
                     checked={editableFields.isCompanyCar}
                     onChange={toggleCompanyCar}
                     color="primary"
-                    sx={{mx:1}}
+                    sx={{ mx: 1 }}
                   />
                 </Box>
               </Box>
@@ -1275,7 +1289,7 @@ export default function DriverDetailsPage() {
 
       {/* Trip Details Drawer */}
       <Drawer
-        anchor={isArabic ? "left" :"right"}
+        anchor={isArabic ? "left" : "right"}
         open={drawerOpen}
         onClose={handleCloseDrawer}
         sx={{
@@ -1312,20 +1326,17 @@ export default function DriverDetailsPage() {
             {/* Map iframe placeholder */}
             <Box
               sx={{
-                height: "200px",
+                // height: "200px",
                 bgcolor: "grey.200",
                 mb: 2,
                 borderRadius: 1,
               }}
             >
-              <iframe
-                title="map"
-                width="100%"
-                height="100%"
-                frameBorder="0"
-                style={{ border: 0, borderRadius: "4px" }}
-                src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13673.119570834748!2d31.235365!3d30.044419!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDAyJzM5LjkiTiAzMcKwMTQnMDcuMyJF!5e0!3m2!1sen!2seg!4v1650000000000!5m2!1sen!2seg`}
-                allowFullScreen
+              <RouteMap
+                fromLat={30.0444}
+                fromLng={31.2357}
+                toLat={30.072}
+                toLng={31.346}
               />
             </Box>
 
@@ -1679,7 +1690,7 @@ export default function DriverDetailsPage() {
                 variant="outlined"
                 color="error"
                 onClick={handleDeleteImage}
-                sx={{mx:1}}
+                sx={{ mx: 1 }}
               >
                 {t("Delete")}
               </Button>
@@ -1687,7 +1698,7 @@ export default function DriverDetailsPage() {
                 variant="contained"
                 color="primary"
                 onClick={handleEditImage}
-                sx={{mx:1}}
+                sx={{ mx: 1 }}
               >
                 {t("Update")}
               </Button>

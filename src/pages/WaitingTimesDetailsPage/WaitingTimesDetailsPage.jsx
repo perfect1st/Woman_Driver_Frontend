@@ -30,19 +30,20 @@ export default function WaitingTimesDetailsPage() {
     location: "123 Main St, Cairo",
   };
 
+
   return (
     <Box p={isMobile ? 1 : 2} maxWidth="md">
       {/* Breadcrumb */}
       <Box display="flex" alignItems="center" flexWrap="wrap" mb={2}>
         <Typography
-          onClick={() => navigate("/WaitingTimes")}
+          onClick={() => navigate("/WaitingTime")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Waiting Times")}
         </Typography>
         <Typography mx={1}>{`<`}</Typography>
         <Typography
-          onClick={() => navigate("/WaitingTimes")}
+          onClick={() => navigate("/WaitingTime")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Waiting Times Details")}
@@ -57,7 +58,7 @@ export default function WaitingTimesDetailsPage() {
       </Typography>
 
       {/* Underline */}
-      <RouteMap fromLat={30.067} fromLng={31.380} toLat={30.072} toLng={31.400} />
+      <RouteMap fromLat={30.0444} fromLng={31.2357} toLat={30.0720} toLng={31.3460} />
 
 
 
@@ -72,44 +73,57 @@ export default function WaitingTimesDetailsPage() {
 
       {/* Details List */}
       <List disablePadding>
-        {[
-          { key: "Date", value: waitingData.date },
-          { key: "Time", value: waitingData.time },
-          { key: "Waiting Time", value: waitingData.waitingTime },
-          {
-            key: "Trip ID",
-            value: (
-              <Typography
-                onClick={() => navigate(`/TripDetails/${waitingData.tripId}`)}
-                sx={{
-                  color: theme.palette.primary.main,
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                #{waitingData.tripId}
-              </Typography>
-            ),
-          },
-        ].map((item, index) => (
-          <ListItem
-            key={item.key}
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              bgcolor: index % 2 === 0 ? theme.palette.secondary.sec : "background.paper",
-              py: 2,
-            }}
-          >
-            <Typography fontWeight="medium">{t(item.key)}</Typography>
-            {typeof item.value === "string" ? (
-              <Typography fontWeight="bold">{item.value}</Typography>
-            ) : (
-              item.value
-            )}
-          </ListItem>
-        ))}
-      </List>
+  {[
+    { key: "Date", value: waitingData.date },
+    { key: "Time", value: waitingData.time },
+    { key: "Waiting Time", value: waitingData.waitingTime },
+    {
+      key: "Trip ID",
+      value: (
+        <Typography
+          onClick={() => navigate(`/TripDetails/${waitingData.tripId}`)}
+          sx={{
+            color: theme.palette.primary.main,
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          #{waitingData.tripId}
+        </Typography>
+      ),
+    },
+  ].map((item, index) => (
+    <ListItem
+      key={item.key}
+      sx={{
+        bgcolor: index % 2 === 0 ? theme.palette.secondary.sec : "background.paper",
+        py: 1.5,
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          width: "100%",
+          flexDirection: "row",
+          textAlign: "start",
+        }}
+      >
+        <Box sx={{ width: "40%", pl: 1 }}>
+          <Typography fontWeight="medium">{t(item.key)}</Typography>
+        </Box>
+        <Box sx={{ width: "60%", pr: 1 }}>
+          {typeof item.value === "string" ? (
+            <Typography fontWeight="bold">{item.value}</Typography>
+          ) : (
+            item.value
+          )}
+        </Box>
+      </Box>
+    </ListItem>
+  ))}
+</List>
+
+
     </Box>
   );
 }

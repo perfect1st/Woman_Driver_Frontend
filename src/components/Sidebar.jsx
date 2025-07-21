@@ -78,14 +78,14 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
           (item.key === "PaymentMethods" && matchPath("/PaymentMethod/AddPaymentMethod", location.pathname))||
           (item.key === "PaymentMethods" && matchPath("/paymentMethodDetails/:id", location.pathname))||
           (item.key === "TrafficTime" && matchPath("/TrafficTimes/AddTrafficTime", location.pathname))||
-          (item.key === "TrafficTime" && matchPath("/TrafficTimeDetails/:id", location.pathname));
+          (item.key === "TrafficTime" && matchPath("/TrafficTimeDetails/:id", location.pathname)) ||
+          (item.key === "WaitingTime" && matchPath("/WaitingTimesDetails/:id", location.pathname));
         
 
-          const isActiveParent =
-            hasChildren &&
-            item.children.some((child) =>
-              matchPath(child.path, location.pathname)
-            );
+          const isActiveParent = !!(hasChildren && item.children.some((child) =>
+            matchPath(child.path, location.pathname)
+          ));
+          
 
           const IconComponent = item.icon;
 
@@ -96,7 +96,7 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
                   component={item.path ? Link : "div"}
                   to={item.path || undefined}
                   onClick={() => hasChildren && toggleOpen(item.key)}
-                  selected={isDirectlyActive || isActiveParent}
+                  selected={!!(isDirectlyActive || isActiveParent)}
                   sx={{
                     pl: 3,
                     mb: 0.5,
@@ -171,7 +171,7 @@ return (
                             key={child.key}
                             component={Link}
                             to={child.path}
-                            selected={isChildActive}
+                            selected={!!isChildActive}
                             sx={{
                               // pl: 8,
                               mb: 0.5,

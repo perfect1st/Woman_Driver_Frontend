@@ -343,5 +343,15 @@
   "cityB": "City B",
   "cityC": "City C",
   "cityD": "City D",
-  "cityE": "City E"
+  "cityE": "City E",
+  "Waiting Times": "Waiting Times",
+  "Waiting Times Details": "Waiting Times Details",
+  "Location Details": "Location Details",
+  "Commission": "Commissions",
+  "Commission Details": "Commission Details",
+  "Filter Date": "Filter Date",
+  "History": "History",
+  "Commission Category": "Commission Category",
+  "Ride": "Ride",
+  "Delivery": "Delivery"
 }

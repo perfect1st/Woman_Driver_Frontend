@@ -353,5 +353,15 @@
   "cityB": "المدينة ب",
   "cityC": "المدينة ج",
   "cityD": "المدينة د",
-  "cityE": "المدينة ه"
+  "cityE": "المدينة ه",
+  "Waiting Times": "أوقات الانتظار",
+  "Waiting Times Details": "تفاصيل أوقات الانتظار",
+  "Location Details": "تفاصيل الموقع",
+  "Commission": "العمولات",
+  "Commission Details": "تفاصيل العمولة",
+  "Filter Date": "تصفية بالتاريخ",
+  "History": "السجل",
+  "Commission Category": "نوع العمولة",
+  "Ride": "مشوار",
+  "Delivery": "توصيل"
 }

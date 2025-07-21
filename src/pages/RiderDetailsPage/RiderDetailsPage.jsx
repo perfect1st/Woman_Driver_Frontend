@@ -38,6 +38,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DomiCar from "../../assets/DomiCar.png";
 import DomiDriverImage from "../../assets/DomiDriverImage.png";
+import RouteMap from "../RouteMap/RouteMap";
 
 // Mock assets - in real app, import from actual files
 
@@ -631,21 +632,14 @@ export default function RiderDetailsPage() {
             {/* Map iframe placeholder */}
             <Box
               sx={{
-                height: "200px",
+                // height: "200px",
                 bgcolor: "grey.200",
                 mb: 2,
                 borderRadius: 1,
               }}
             >
-              <iframe
-                title="map"
-                width="100%"
-                height="100%"
-                frameBorder="0"
-                style={{ border: 0, borderRadius: "4px" }}
-                src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13673.119570834748!2d31.235365!3d30.044419!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDAyJzM5LjkiTiAzMcKwMTQnMDcuMyJF!5e0!3m2!1sen!2seg!4v1650000000000!5m2!1sen!2seg`}
-                allowFullScreen
-              />
+                   <RouteMap fromLat={30.0444} fromLng={31.2357} toLat={30.0720} toLng={31.3460} />
+
             </Box>
 
             {/* Driver & Car Info */}

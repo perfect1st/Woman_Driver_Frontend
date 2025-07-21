@@ -137,6 +137,11 @@ const TripsPage = () => {
     };
   }, []);
 
+  const onActionClick = (e, row) => {
+    navigate(`/tripDetails/${row.id}`);
+  };
+  
+
   return (
     <Box
       component="main"
@@ -201,8 +206,9 @@ const TripsPage = () => {
             data={filteredTrips}
             onViewDetails={handleViewDetails}
             statusKey="tripStatus" // Use tripStatus field for styling
-            showStatusChange={true} // Hide status change options
+            showStatusChange={false} // Hide status change options
             actionIconType="info" // Use info icon instead of more icon
+            onActionClick={onActionClick}
           />
         </Box>
       </Box>
