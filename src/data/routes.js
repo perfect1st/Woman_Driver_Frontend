@@ -51,42 +51,64 @@ const routesData = {
       path: "/CarDriver",
       // icon: HomeIcon,
     },
-    {
-      key: "TrafficTime",
-      label: { en: "Traffic Time", ar: "مواعيد الذروة" },
-      path: "/TrafficTime",
-      // icon: HomeIcon,
-    },
-    {
-      key: "Wallet",
-      label: { en: "Wallet", ar: "المحفظة" },
-      path: "/Wallet",
-      // icon: HomeIcon,
-    },
-    {
-      key: "PaymentMethods",
-      label: { en: "Payment Methods", ar: "وسائل الدفع" },
-      path: "/PaymentMethods",
-      // icon: HomeIcon,
-    },
-    {
-      key: "WaitingTime",
-      label: { en: "Waiting Times", ar: "أوقات الانتظار" },
-      path: "/WaitingTime",
-      // icon: HomeIcon,
-    },
-    {
-      key: "Commission",
-      label: { en: "Commission", ar: "العمولة" },
-      path: "/Commission",
-      // icon: HomeIcon,
-    },
-    {
-      key: "CommissionCategory",
-      label: { en: "Commission Category", ar: "فئة العمولة" },
-      path: "/CommissionCategory",
-      // icon: HomeIcon,
-    },
+    // {
+    //   key: "TrafficTime",
+    //   label: { en: "Traffic Time", ar: "مواعيد الذروة" },
+    //   path: "/TrafficTime",
+    //   // icon: HomeIcon,
+    // },
+    // {
+    //   key: "Wallet",
+    //   label: { en: "Wallet", ar: "المحفظة" },
+    //   path: "/Wallet",
+    //   // icon: HomeIcon,
+    // },
+    // {
+    //   key: "PaymentMethods",
+    //   label: { en: "Payment Methods", ar: "وسائل الدفع" },
+    //   path: "/PaymentMethods",
+    //   // icon: HomeIcon,
+    // },
+    // {
+    //   key: "WaitingTime",
+    //   label: { en: "Waiting Times", ar: "أوقات الانتظار" },
+    //   path: "/WaitingTime",
+    //   // icon: HomeIcon,
+    // },
+    // {
+    //   key: "Commission",
+    //   label: { en: "Commission", ar: "العمولة" },
+    //   path: "/Commission",
+    //   // icon: HomeIcon,
+    // },
+    // {
+    //   key: "CommissionCategory",
+    //   label: { en: "Commission Category", ar: "فئة العمولة" },
+    //   path: "/CommissionCategory",
+    //   // icon: HomeIcon,
+    // },
+    // {
+    //   key: "settings",
+    //   label: { en: "settings", ar: "الاعدادات" },
+    //   icon: setting,
+    //   children: [
+    //     {
+    //       key: "TrackingFrequency",
+    //       label: { en: "Tracking Frequency", ar: "تردد التتبع" },
+    //       action: "openTrackingModal",
+    //       path: "",
+    //       // icon: 
+    //     },
+    //     {
+    //       key: "NotifyRadius",
+    //       label: { en: "Notify Radius", ar: "نطاق الإشعار" },
+    //       action: "openNotifyRadiusModal",
+    //       path: "",
+    //       // icon: More,
+
+    //     },
+    //   ],
+    // },
     {
       key: "Loading",
       label: { en: "Loading", ar: "صفحه التحميل" },
@@ -111,28 +133,7 @@ const routesData = {
     //   path: "/home",
     //   // icon: HomeIcon,
     // },
-    {
-      key: "settings",
-      label: { en: "settings", ar: "الاعدادات" },
-      icon: setting,
-      children: [
-        {
-          key: "TrackingFrequency",
-          label: { en: "Tracking Frequency", ar: "تردد التتبع" },
-          action: "openTrackingModal",
-          path: "",
-          // icon: 
-        },
-        {
-          key: "NotifyRadius",
-          label: { en: "Notify Radius", ar: "نطاق الإشعار" },
-          action: "openNotifyRadiusModal",
-          path: "",
-          // icon: More,
 
-        },
-      ],
-    },
     // {
     //   key: "users",
     //   label: { en: "Users", ar: "المستخدمين" },
