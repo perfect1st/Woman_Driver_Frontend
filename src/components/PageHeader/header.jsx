@@ -36,6 +36,7 @@ const Header = ({
         display: 'flex',
         flexDirection: 'column',
         mb: 3,
+        flexWrap: 'wrap',
       }}
     >
       <Typography variant="h6">{title}</Typography>
@@ -46,6 +47,7 @@ const Header = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           mt: 1,
+          flexWrap: 'wrap',
         }}
       >
         <Typography variant="h5" sx={{ fontWeight: 'bold' }}>

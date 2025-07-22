@@ -4,6 +4,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { ReactComponent as More } from '../assets/More.svg'
+import { ReactComponent as setting } from '../assets/setting.svg'
 
 
 const routesData = {
@@ -113,7 +114,7 @@ const routesData = {
     {
       key: "settings",
       label: { en: "settings", ar: "الاعدادات" },
-      icon: More,
+      icon: setting,
       children: [
         {
           key: "TrackingFrequency",
@@ -132,45 +133,45 @@ const routesData = {
         },
       ],
     },
-    {
-      key: "users",
-      label: { en: "Users", ar: "المستخدمين" },
-      icon: More,
-      children: [
-        {
-          key: "allUsers",
-          label: { en: "All Users", ar: "جميع المستخدمين" },
-          path: "/admin/users",
-          icon: HomeIcon,
-        },
-        {
-          key: "createUser",
-          label: { en: "Create User", ar: "إنشاء مستخدم" },
-          path: "/admin/users/create",
-          // icon: More,
+    // {
+    //   key: "users",
+    //   label: { en: "Users", ar: "المستخدمين" },
+    //   icon: More,
+    //   children: [
+    //     {
+    //       key: "allUsers",
+    //       label: { en: "All Users", ar: "جميع المستخدمين" },
+    //       path: "/admin/users",
+    //       icon: HomeIcon,
+    //     },
+    //     {
+    //       key: "createUser",
+    //       label: { en: "Create User", ar: "إنشاء مستخدم" },
+    //       path: "/admin/users/create",
+    //       // icon: More,
 
-        },
-      ],
-    },
-    {
-      key: "drivers",
-      label: { en: "Drivers", ar: "السائقين" },
-      icon: More,
-      children: [
-        {
-          key: "allDrivers",
-          label: { en: "All Drivers", ar: "جميع السائقين" },
-          path: "/admin/Drivers",
-          icon: HomeIcon,
-        },
-        {
-          key: "createDriver",
-          label: { en: "Create Driver", ar: "إنشاء سائق" },
-          path: "/admin/Driver/create",
-          icon: HomeIcon,
-        },
-      ],
-    },
+    //     },
+    //   ],
+    // },
+    // {
+    //   key: "drivers",
+    //   label: { en: "Drivers", ar: "السائقين" },
+    //   icon: More,
+    //   children: [
+    //     {
+    //       key: "allDrivers",
+    //       label: { en: "All Drivers", ar: "جميع السائقين" },
+    //       path: "/admin/Drivers",
+    //       icon: HomeIcon,
+    //     },
+    //     {
+    //       key: "createDriver",
+    //       label: { en: "Create Driver", ar: "إنشاء سائق" },
+    //       path: "/admin/Driver/create",
+    //       icon: HomeIcon,
+    //     },
+    //   ],
+    // },
   ],
   accountant: [
     {

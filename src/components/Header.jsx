@@ -34,12 +34,13 @@ import {
   ExpandLess,
   ExpandMore,
   Logout,
-  Person
+  Person,
+  AccountCircle
 } from '@mui/icons-material';
 import { ColorModeContext } from '../App';
 import logo from '../assets/Logo.png';
 import routes from "../data/routes";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ReactComponent as LanguageIcon } from "../assets/language.svg";
 import { ReactComponent as NotificationIcon } from "../assets/natification.svg";
 import { ReactComponent as SettingIcon } from "../assets/setting.svg";
@@ -120,95 +121,83 @@ const handleSettingMenuClose = () => {
     colorMode.toggleColorMode();
     if (isMobile) setMobileOpen(false);
   };
+  const location = useLocation();
 
+  const isActiveRoute = (path) => {
+    return location.pathname === path;
+  };
 // Mobile drawer content
 // Mobile drawer content
+
 const drawerContent = (
-  <Box 
-    sx={{ 
-      width: 250, 
-      padding: 2, 
-      height: '100%', 
+  <Box
+    sx={{
+      width: 250,
+      p: 2,
+      height: "100%",
       background: theme.palette.secondary.sec,
-      direction: lang === 'ar' ? 'rtl' : 'ltr'
+      direction: lang === "ar" ? "rtl" : "ltr",
     }}
   >
     {/* Close Button */}
-    <Box sx={{ 
-      display: 'flex', 
-      justifyContent: lang === 'ar' ? 'flex-start' : 'flex-end', 
-      mb: 2 
-    }}>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: lang === "ar" ? "flex-start" : "flex-end",
+        mb: 2,
+      }}
+    >
       <IconButton onClick={handleDrawerToggle}>
         <CloseIcon />
       </IconButton>
     </Box>
 
     {/* User Profile */}
-    <Box 
-      sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        flexDirection: lang === 'ar' ? 'row' : 'row',
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
         mb: 3,
         p: 2,
         borderRadius: 2,
-        background: 'rgba(255,255,255,0.1)'
+        background: "rgba(255,255,255,0.1)",
       }}
     >
-      <Avatar 
-        src={user?.image} 
-        sx={{ 
-          width: 60, 
+      <Avatar
+        src={user?.image}
+        sx={{
+          width: 60,
           height: 60,
           border: `2px solid ${theme.palette.primary.main}`,
-          marginLeft: lang === 'ar' ? 2 : 0,
-          marginRight: lang === 'ar' ? 0 : 2
-        }} 
+          ml: lang === "ar" ? 2 : 0,
+          mr: lang === "ar" ? 0 : 2,
+        }}
       />
-      <Box sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}>
-        <Typography variant="h6" fontWeight="bold" sx={{color: theme.palette.primary.main}}>
+      <Box sx={{ textAlign: lang === "ar" ? "right" : "left" }}>
+        <Typography variant="h6" fontWeight="bold" color="primary">
           {user?.name}
         </Typography>
-        <Typography variant="body2" sx={{color: theme.palette.primary.main}}>
+        <Typography variant="body2" color="primary">
           {user?.type}
         </Typography>
       </Box>
     </Box>
 
     <Divider sx={{ my: 2 }} />
-  
-    {/* Navigation Menu */}
+
+    {/* Main Routes */}
     <List>
       {currentRoutes?.map((route) =>
         route.children ? (
           <React.Fragment key={route.key}>
-            <ListItemButton 
-              onClick={() => handleToggleMenu(route.key)}
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                flexDirection: lang === 'ar' ? 'row' : 'row'
-              }}
-            >
-              {/* Left-aligned content (icon + text) */}
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center',
-                flexDirection: lang === 'ar' ? 'row' : 'row'
-              }}>
-
-                <ListItemText 
-                  primary={route.label[lang]} 
-                  sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
-                />
-              </Box>
-              
-              {/* Right-aligned arrow */}
+            <ListItemButton onClick={() => handleToggleMenu(route.key)}>
+              <ListItemText
+                primary={route.label[lang]}
+                sx={{ textAlign: lang === "ar" ? "right" : "left" }}
+              />
               {openMenus[route.key] ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
 
-            {/* Nested Children */}
             <Collapse in={openMenus[route.key]} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
                 {route.children.map((child) => (
@@ -216,20 +205,31 @@ const drawerContent = (
                     key={child.key}
                     component={Link}
                     to={child.path}
-                    onClick={()=>{
-                      if (child.action && onAction) {
-                        onAction(child.action);
-                      }
-                      handleDrawerToggle()}}
-                    sx={{ 
-                      pl: lang === 'ar' ? 0 : 4,
-                      pr: lang === 'ar' ? 4 : 0,
-                      flexDirection: lang === 'ar' ? 'row' : 'row'
+                    onClick={() => {
+                      if (child.action && onAction) onAction(child.action);
+                      handleDrawerToggle();
+                    }}
+                    sx={{
+                      pl: lang === "ar" ? 0 : 4,
+                      pr: lang === "ar" ? 4 : 0,
+                      backgroundColor: isActiveRoute(child.path)
+                        ? theme.palette.primary.main
+                        : "transparent",
+                      color: isActiveRoute(child.path)
+                        ? "#fff"
+                        : theme.palette.text.primary,
+                      "&:hover": {
+                        backgroundColor: theme.palette.primary.light,
+                        color: "#fff",
+                      },
                     }}
                   >
-                    <ListItemText 
-                      primary={child.label[lang]} 
-                      sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
+                    <ListItemText
+                      primary={child.label[lang]}
+                      sx={{
+                        textAlign: lang === "ar" ? "right" : "left",
+                        fontWeight: isActiveRoute(child.path) ? "bold" : "normal",
+                      }}
                     />
                   </ListItemButton>
                 ))}
@@ -243,166 +243,134 @@ const drawerContent = (
             to={route.path}
             onClick={handleDrawerToggle}
             sx={{
-              flexDirection: lang === 'ar' ? 'row' : 'row'
+              backgroundColor: isActiveRoute(route.path)
+                ? theme.palette.primary.main
+                : "transparent",
+              color: isActiveRoute(route.path)
+                ? "#fff"
+                : theme.palette.text.primary,
+              "&:hover": {
+                backgroundColor: theme.palette.primary.light,
+                color: "#fff",
+              },
             }}
           >
-            <ListItemText 
-              primary={route.label[lang]} 
-              sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
+            <ListItemText
+              primary={route.label[lang]}
+              sx={{
+                textAlign: lang === "ar" ? "right" : "left",
+                fontWeight: isActiveRoute(route.path) ? "bold" : "normal",
+              }}
             />
           </ListItemButton>
         )
       )}
     </List>
-  
-    {/* Additional Menu Items */}
+
     <List>
-     {/* Notifications */}
-     <List>
+  {/* Notifications */}
   <ListItemButton onClick={(e) => setNotificationAnchor(e.currentTarget)}>
-    <Badge badgeContent={3} color="primary" sx={{ mr: 2 }}>
-      <NotificationIcon style={{ width: 28, height: 28, filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none' }} />
-    </Badge>
-    <ListItemText primary={t('notification')} />
-    {notificationAnchor ? <ExpandLess /> : <ExpandMore />}
+    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+      <Badge badgeContent={3} color="primary" sx={{ mr: 2 }}>
+        <NotificationIcon
+          style={{
+            width: 24,
+            height: 24,
+            filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
+          }}
+        />
+      </Badge>
+      <ListItemText
+        primary={
+          <Typography fontWeight="bold">{t("notification")}</Typography>
+        }
+      />
+      {notificationAnchor ? <ExpandLess /> : <ExpandMore />}
+    </Box>
   </ListItemButton>
 
   <Menu
     anchorEl={notificationAnchor}
     open={Boolean(notificationAnchor)}
     onClose={() => setNotificationAnchor(null)}
-    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+    transformOrigin={{ vertical: "top", horizontal: "right" }}
   >
-    <MenuItem>New User Registered</MenuItem>
-    <MenuItem>Driver Completed Trip</MenuItem>
-    <MenuItem>Payment Received</MenuItem>
+    <MenuItem>{t("new_user_registered")}</MenuItem>
+    <MenuItem>{t("driver_completed_trip")}</MenuItem>
+    <MenuItem>{t("payment_received")}</MenuItem>
   </Menu>
 
-
-  <ListItemButton onClick={() => setSettingMenuOpen(!settingMenuOpen)}>
-  <SettingIcon style={{ width: 24, height: 24, marginRight: 16, filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none' }} />
-  <ListItemText primary={t('settings')} />
-  {settingMenuOpen ? <ExpandLess /> : <ExpandMore />}
-</ListItemButton>
-
-<Collapse in={settingMenuOpen} timeout="auto" unmountOnExit>
-  <List component="div" disablePadding>
-    <ListItemButton sx={{ pl: 4 }} onClick={handleDrawerToggle}>
-      <ListItemText primary={t('settings')} />
-    </ListItemButton>
-    <ListItemButton sx={{ pl: 4 }} onClick={handleDrawerToggle}>
-      <ListItemText primary={t('account')} />
-    </ListItemButton>
-    <ListItemButton sx={{ pl: 4 }} onClick={handleDrawerToggle}>
-      <ListItemText primary={t('Tracking Frequency')} />
-    </ListItemButton>
-  </List>
-</Collapse>
-
+  {/* Language Selector */}
+  <ListItemButton onClick={handleLangMenuOpen}>
+    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+      <LanguageIcon
+        style={{
+          width: 24,
+          height: 24,
+          filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
+          marginRight: 8,
+        }}
+      />
+      <ListItemText
+        primary={
+          <Typography fontWeight="bold">
+            {i18n.language === "en" ? "English" : "العربية"}
+          </Typography>
+        }
+      />
+      {langMenuAnchor ? <ArrowDropUp /> : <ArrowDropDown />}
+    </Box>
+  </ListItemButton>
 </List>
 
-  
-      <Divider sx={{ my: 2 }} />
-  
-      {/* Language Selector */}
-      <ListItem 
-        button 
-        onClick={handleLangMenuOpen} 
-        sx={{ 
-          mb: 1,
-          flexDirection: lang === 'ar' ? 'row' : 'row'
+
+    <Divider sx={{ my: 2 }} />
+
+    <List>
+  {/* Profile */}
+  <ListItemButton onClick={handleUserMenuOpen}>
+    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+      <AccountCircle
+        style={{
+          width: 24,
+          height: 24,
+          filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
+          marginRight: 8,
         }}
-      >
-       <LanguageIcon 
-  style={{ 
-    width: 28, 
-    height: 28, 
-    filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none' 
-  }} 
-/>
-        <ListItemText 
-          primary={
-            <Typography 
-              fontWeight="bold"
-              sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
-            >
-              {i18n.language === 'en' ? 'En' : 'Ar'}
-            </Typography>
-          } 
-        />
-        {langMenuAnchor ? <ArrowDropUp /> : <ArrowDropDown />}
-      </ListItem>
-  
-      <Divider sx={{ my: 2 }} />
-  
-      {/* User Menu */}
-      <ListItem 
-        button 
-        onClick={handleUserMenuOpen} 
-        sx={{ 
-          mb: 1,
-          flexDirection: lang === 'ar' ? 'row' : 'row'
+      />
+      <ListItemText
+        primary={
+          <Typography fontWeight="bold">{t("profile")}</Typography>
+        }
+      />
+    </Box>
+  </ListItemButton>
+
+  {/* Logout */}
+  <ListItemButton onClick={handleLogout}>
+    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+      <Logout
+        style={{
+          width: 24,
+          height: 24,
+          filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
+          marginRight: 8,
         }}
-      >
-        {/* <Box 
-          component="img" 
-          src={Person} 
-          alt="Profile"
-          sx={{
-            width: 28,
-            height: 28,
-            mr: lang === 'ar' ? 0 : 2,
-            ml: lang === 'ar' ? 2 : 0,
-            filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
-          }} 
-        /> */}
-        <ListItemText 
-          primary={
-            <Typography 
-              fontWeight="bold"
-              sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
-            >
-              {i18n.t('profile')}
-            </Typography>
-          } 
-        />
-      </ListItem>
-      
-      <ListItem 
-        button 
-        onClick={handleLogout} 
-        sx={{ 
-          mb: 1,
-          flexDirection: lang === 'ar' ? 'row' : 'row'
-        }}
-      >
-        {/* <Box 
-          component="img" 
-          src={Logout} 
-          alt="Logout"
-          sx={{
-            width: 28,
-            height: 28,
-            mr: lang === 'ar' ? 0 : 2,
-            ml: lang === 'ar' ? 2 : 0,
-            filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
-          }} 
-        /> */}
-        <ListItemText 
-          primary={
-            <Typography 
-              fontWeight="bold"
-              sx={{ textAlign: lang === 'ar' ? 'right' : 'left' }}
-            >
-              {i18n.t('logout')}
-            </Typography>
-          } 
-        />
-      </ListItem>
-    </List>
+      />
+      <ListItemText
+        primary={
+          <Typography fontWeight="bold">{t("logout")}</Typography>
+        }
+      />
+    </Box>
+  </ListItemButton>
+</List>
+
+
   </Box>
 );
+
   
   
 
@@ -517,7 +485,7 @@ const drawerContent = (
               borderWidth: 1
             }} 
           />
-<Box sx={{ position: 'relative', mr: { xs: 1, md: 3 } }}>
+{/* <Box sx={{ position: 'relative', mr: { xs: 1, md: 3 } }}>
   <Button
     onClick={(e) => setSettingAnchor(e.currentTarget)}
     sx={{
@@ -543,13 +511,13 @@ const drawerContent = (
     <MenuItem onClick={() => setSettingAnchor(null)}>{t('account')}</MenuItem>
     <MenuItem onClick={() => setSettingAnchor(null)}>{t('Tracking Frequency')}</MenuItem>
   </Menu>
-</Box>
+</Box> */}
 
 
 
 
           {/* Vertical divider */}
-          <Divider 
+          {/* <Divider 
             orientation="vertical" 
             flexItem 
             sx={{ 
@@ -559,7 +527,7 @@ const drawerContent = (
               borderColor: theme.palette.divider,
               borderWidth: 1
             }} 
-          />
+          /> */}
 
           {/* Language Menu */}
           <Button 

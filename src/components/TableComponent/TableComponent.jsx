@@ -188,6 +188,7 @@ const navigate = useNavigate();
                   key={column.key}
                   sx={{
                     backgroundColor: theme.palette.background.secDefault,
+                    whiteSpace: 'nowrap',
                     border: "1px solid #F5F0F2",
                     fontWeight: "bold",
                     py: { xs: 1, sm: 1.5 },
@@ -214,6 +215,7 @@ const navigate = useNavigate();
                 align={i18n.dir() === 'rtl' ? 'right' : 'left'}
                 sx={{
                   backgroundColor: theme.palette.background.secDefault,
+                   whiteSpace: 'nowrap',
                   border: "1px solid #F5F0F2",
                   fontWeight: "bold",
                   py: { xs: 1, sm: 1.5 }

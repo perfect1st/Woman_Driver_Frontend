@@ -378,5 +378,8 @@
   },
   "common": {
     "done": "Done"
-  }
+  },
+  "day": "Day",
+  "week": "Week",
+  "month": "Month"
 }
