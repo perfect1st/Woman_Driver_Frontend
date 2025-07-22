@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation, matchPath } from "react-router-dom";
 import routesData from "../data/routes";
 
-const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
+const Sidebar = ({ userType = "admin", mobileOpen, onClose, onAction }) => {
   const theme = useTheme();
   const { i18n } = useTranslation();
   const location = useLocation();
@@ -39,15 +39,8 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
     setOpenKeys((prev) => ({ ...prev, ...newOpenKeys }));
   }, [location.pathname, menuItems]);
 
-
   const toggleOpen = (key) =>
     setOpenKeys((prev) => ({ ...prev, [key]: !prev[key] }));
-
-  const isSubRouteOf = (childPath, targetPath) => {
-    const match = matchPath(childPath, location.pathname);
-    return match && location.pathname.startsWith(targetPath);
-  };
-
 
   const drawerContent = (
     <Box
@@ -60,32 +53,52 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
       }}
     >
       <List component="nav">
-      {menuItems.map((item, index) => {
+        {menuItems.map((item, index) => {
           const hasChildren = !!item.children;
           const isDirectlyActive =
-          (!hasChildren && matchPath(item.path, location.pathname)) ||
-          (item.key === "Passengers" && matchPath("/riderDetails/:id", location.pathname)) ||
-          (item.key === "Trips" && matchPath("/tripDetails/:id", location.pathname)) ||
-          (item.key === "Drivers" && matchPath("/DriverDetails/:id", location.pathname))||
-          (item.key === "CarTypes" && matchPath("/CarTypeDetails/:id", location.pathname))||
-          (item.key === "CarTypes" && matchPath("/CarTypes/AddCarType", location.pathname))||
-          (item.key === "Cars" && matchPath("/Cars/AddCar", location.pathname)) ||
-          (item.key === "Cars" && matchPath("/CarDetails/:id", location.pathname))||
-          (item.key === "CarDriver" && matchPath("/CarDriverDetails/AddCarDrive", location.pathname))||
-          (item.key === "CarDriver" && matchPath("/CarDriverDetails/:id", location.pathname))||
-          (item.key === "Wallet" && matchPath("/Wallet/AddTransaction", location.pathname))||
-          (item.key === "Wallet" && matchPath("/walletDetails/:id", location.pathname))||
-          (item.key === "PaymentMethods" && matchPath("/PaymentMethod/AddPaymentMethod", location.pathname))||
-          (item.key === "PaymentMethods" && matchPath("/paymentMethodDetails/:id", location.pathname))||
-          (item.key === "TrafficTime" && matchPath("/TrafficTimes/AddTrafficTime", location.pathname))||
-          (item.key === "TrafficTime" && matchPath("/TrafficTimeDetails/:id", location.pathname)) ||
-          (item.key === "WaitingTime" && matchPath("/WaitingTimesDetails/:id", location.pathname));
-        
+            (!hasChildren && matchPath(item.path, location.pathname)) ||
+            (item.key === "Passengers" &&
+              matchPath("/riderDetails/:id", location.pathname)) ||
+            (item.key === "Trips" &&
+              matchPath("/tripDetails/:id", location.pathname)) ||
+            (item.key === "Drivers" &&
+              matchPath("/DriverDetails/:id", location.pathname)) ||
+            (item.key === "CarTypes" &&
+              (matchPath("/CarTypeDetails/:id", location.pathname) ||
+                matchPath("/CarTypes/AddCarType", location.pathname))) ||
+            (item.key === "Cars" &&
+              (matchPath("/Cars/AddCar", location.pathname) ||
+                matchPath("/CarDetails/:id", location.pathname))) ||
+            (item.key === "CarDriver" &&
+              (matchPath(
+                "/CarDriverDetails/AddCarDrive",
+                location.pathname
+              ) ||
+                matchPath("/CarDriverDetails/:id", location.pathname))) ||
+            (item.key === "Wallet" &&
+              (matchPath("/Wallet/AddTransaction", location.pathname) ||
+                matchPath("/walletDetails/:id", location.pathname))) ||
+            (item.key === "PaymentMethods" &&
+              (matchPath(
+                "/PaymentMethod/AddPaymentMethod",
+                location.pathname
+              ) ||
+                matchPath("/paymentMethodDetails/:id", location.pathname))) ||
+            (item.key === "TrafficTime" &&
+              (matchPath("/TrafficTimes/AddTrafficTime", location.pathname) ||
+                matchPath("/TrafficTimeDetails/:id", location.pathname))) ||
+            (item.key === "Commission" &&
+              matchPath("/CommissionDetails/:id", location.pathname)) ||
+            (item.key === "CommissionCategory" &&
+              matchPath("/CommissionCategoryDetails/:id", location.pathname)) ||
+            (item.key === "WaitingTime" &&
+              matchPath("/WaitingTimesDetails/:id", location.pathname));
 
-          const isActiveParent = !!(hasChildren && item.children.some((child) =>
-            matchPath(child.path, location.pathname)
-          ));
-          
+          const isActiveParent =
+            !!(hasChildren &&
+              item.children.some((child) =>
+                matchPath(child.path, location.pathname)
+              ));
 
           const IconComponent = item.icon;
 
@@ -101,17 +114,17 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
                     pl: 3,
                     mb: 0.5,
                     "&.Mui-selected": {
-                      backgroundColor: isDirectlyActive 
-                        ? theme.palette.background.default 
-                        : 'transparent',
-                      color: isDirectlyActive 
+                      backgroundColor: isDirectlyActive
+                        ? theme.palette.background.default
+                        : "transparent",
+                      color: isDirectlyActive
                         ? theme.palette.primary.main
                         : "inherit",
                     },
                     "&.Mui-selected:hover": {
-                      backgroundColor: isDirectlyActive 
-                        ? theme.palette.background.default  
-                        : 'rgba(255, 255, 255, 0.1)',
+                      backgroundColor: isDirectlyActive
+                        ? theme.palette.background.default
+                        : "rgba(255, 255, 255, 0.1)",
                     },
                     borderRadius: "8px",
                   }}
@@ -120,8 +133,8 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
                     <ListItemIcon sx={{ minWidth: 24 }}>
                       <IconComponent
                         sx={{
-                          color: isDirectlyActive 
-                            ? theme.palette.primary.main 
+                          color: isDirectlyActive
+                            ? theme.palette.primary.main
                             : "inherit",
                         }}
                       />
@@ -133,9 +146,7 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
                           width: 6,
                           height: 24,
                           borderRadius: "3px",
-                          backgroundColor: isDirectlyActive 
-                            ? theme.palette.primary.main 
-                            : theme.palette.primary.main,
+                          backgroundColor: theme.palette.primary.main,
                         }}
                       />
                     </ListItemIcon>
@@ -158,51 +169,59 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose }) => {
                 </ListItemButton>
 
                 {hasChildren && (
-                  <Collapse
-                    in={openKeys[item.key]}
-                    timeout="auto"
-                    unmountOnExit
-                  >
+                  <Collapse in={openKeys[item.key]} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                       {item.children.map((child) => {
-const isChildActive = !!matchPath(child.path, location.pathname);
-return (
+                        const isChildActive = !!matchPath(
+                          child.path,
+                          location.pathname
+                        );
+
+                        return (
                           <ListItemButton
                             key={child.key}
-                            component={Link}
-                            to={child.path}
+                            component={child.path ? Link : "button"}
+                            to={child.path || undefined}
+                            onClick={() => {
+                              if (child.action && onAction) {
+                                onAction(child.action);
+                              }
+                            }}
                             selected={!!isChildActive}
                             sx={{
-                              // pl: 8,
                               mb: 0.5,
+                              width: "100%",
+                              borderRadius: "8px",
                               "&.Mui-selected": {
-                                backgroundColor: theme.palette.background.default ,
+                                backgroundColor:
+                                  theme.palette.background.default,
                                 color: theme.palette.primary.main,
                               },
                               "&.Mui-selected:hover": {
-                                backgroundColor: theme.palette.background.default ,
+                                backgroundColor:
+                                  theme.palette.background.default,
                               },
-                              borderRadius: "8px",
                             }}
                           >
-                             <ListItemIcon sx={{ minWidth: 24 }}>
-                      <Box
-                        sx={{
-                          width: 6,
-                          height: 24,
-                          borderRadius: "3px",
-                          backgroundColor: isDirectlyActive 
-                            ? theme.palette.primary.main 
-                            : theme.palette.primary.main,
-                        }}
-                      />
-                    </ListItemIcon>
+                            <ListItemIcon sx={{ minWidth: 24 }}>
+                              <Box
+                                sx={{
+                                  width: 6,
+                                  height: 24,
+                                  borderRadius: "3px",
+                                  backgroundColor: theme.palette.primary.main,
+                                }}
+                              />
+                            </ListItemIcon>
+
                             <ListItemText
                               primary={
                                 <Typography
                                   sx={{ display: "flex", alignItems: "start" }}
                                   variant="body1"
-                                  color={isChildActive ? "primary.main" : "inherit"}
+                                  color={
+                                    isChildActive ? "primary.main" : "inherit"
+                                  }
                                 >
                                   {child.label[i18n.language]}
                                 </Typography>

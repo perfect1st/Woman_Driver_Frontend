@@ -111,6 +111,28 @@ const routesData = {
     //   // icon: HomeIcon,
     // },
     {
+      key: "settings",
+      label: { en: "settings", ar: "الاعدادات" },
+      icon: More,
+      children: [
+        {
+          key: "TrackingFrequency",
+          label: { en: "Tracking Frequency", ar: "تردد التتبع" },
+          action: "openTrackingModal",
+          path: "",
+          // icon: 
+        },
+        {
+          key: "NotifyRadius",
+          label: { en: "Notify Radius", ar: "نطاق الإشعار" },
+          action: "openNotifyRadiusModal",
+          path: "",
+          // icon: More,
+
+        },
+      ],
+    },
+    {
       key: "users",
       label: { en: "Users", ar: "المستخدمين" },
       icon: More,

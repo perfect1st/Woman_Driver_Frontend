@@ -353,5 +353,30 @@
   "History": "History",
   "Commission Category": "Commission Category",
   "Ride": "Ride",
-  "Delivery": "Delivery"
+  "Delivery": "Delivery",
+  "Commission Value %": "Commission Value %",
+  "Enter Commission Value": "Enter Commission Value",
+  "Commission Value is required": "Commission Value is required",
+  "Commission Value must be positive": "Commission Value must be positive",
+  "Car Type is required": "Car Type is required",
+  "Enter Amount From": "Enter Amount From",
+  "Amount From is required": "Amount From is required",
+  "Amount From must be positive": "Amount From must be positive",
+  "Enter Amount To": "Enter Amount To",
+  "Amount To is required": "Amount To is required",
+  "Amount To must be positive": "Amount To must be positive",
+  "Commission category added successfully!": "Commission category added successfully!",
+  "trackingModal": {
+    "title": "Tracking Frequency",
+    "label": "Tracking Frequency Per Sec.",
+    "placeholder": "Enter Frequency Per Sec."
+  },
+  "notifyModal": {
+    "title": "Notify Radius",
+    "label": "Notification Radius (meters)",
+    "placeholder": "Enter Notification Radius"
+  },
+  "common": {
+    "done": "Done"
+  }
 }

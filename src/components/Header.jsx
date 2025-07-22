@@ -45,7 +45,7 @@ import { ReactComponent as NotificationIcon } from "../assets/natification.svg";
 import { ReactComponent as SettingIcon } from "../assets/setting.svg";
 
 
-const Header = () => {
+const Header = ({ onAction }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language
   const colorMode = useContext(ColorModeContext);
@@ -216,7 +216,11 @@ const drawerContent = (
                     key={child.key}
                     component={Link}
                     to={child.path}
-                    onClick={handleDrawerToggle}
+                    onClick={()=>{
+                      if (child.action && onAction) {
+                        onAction(child.action);
+                      }
+                      handleDrawerToggle()}}
                     sx={{ 
                       pl: lang === 'ar' ? 0 : 4,
                       pr: lang === 'ar' ? 4 : 0,

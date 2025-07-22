@@ -43,6 +43,10 @@ import WaitingTimePage from "./pages/WaitingTimesPage/WaitingTimesPage";
 import CommissionCategoryPage from "./pages/CommissionCategoryPage/CommissionCategoryPage";
 import WaitingTimesDetailsPage from "./pages/WaitingTimesDetailsPage/WaitingTimesDetailsPage";
 import CommissionDetailsPage from "./pages/CommissionDetailsPage/CommissionDetailsPage";
+import CommissionCategoryDetails from "./pages/CommissionCategoryDetails/CommissionCategoryDetails";
+import AddCommissionCategory from "./pages/AddCommissionCategory/AddCommissionCategory";
+import TrackingFrequencyModal from "./components/Modals/TrackingFrequencyModal";
+import NotifyRadiusModal from "./components/Modals/NotifyRadiusModal";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -316,6 +320,13 @@ import CommissionDetailsPage from "./pages/CommissionDetailsPage/CommissionDetai
       [mode, i18n.language]
     );
     
+    const [openTracking, setOpenTracking] = useState(false);
+    const [openNotify, setOpenNotify] = useState(false);
+  
+    const handleSidebarAction = (action) => {
+      if (action === "openTrackingModal") setOpenTracking(true);
+      if (action === "openNotifyRadiusModal") setOpenNotify(true);
+    };
 
     return (
       <ColorModeContext.Provider value={colorMode}>
@@ -329,7 +340,9 @@ import CommissionDetailsPage from "./pages/CommissionDetailsPage/CommissionDetai
               minHeight: "100vh",
             }}
           >
-            <Header />
+            <Header  onAction={handleSidebarAction} />
+               {/* Modals */}
+  
             <main style={{ flex: 1 }}>
             <Routes>
   {/* المسارات العامة */}
@@ -488,6 +501,16 @@ import CommissionDetailsPage from "./pages/CommissionDetailsPage/CommissionDetai
     }
   />
   <Route
+    path="CommissionCategory/AddCommissionCategory"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <AddCommissionCategory />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
     path="/WaitingTimesDetails/:id"
     element={
       // <ProtectedRoute>
@@ -503,6 +526,16 @@ import CommissionDetailsPage from "./pages/CommissionDetailsPage/CommissionDetai
       // <ProtectedRoute>
         <MainLayout>
           <CommissionDetailsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/CommissionCategoryDetails/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <CommissionCategoryDetails />
         </MainLayout>
       // </ProtectedRoute>
     }
@@ -674,6 +707,9 @@ import CommissionDetailsPage from "./pages/CommissionDetailsPage/CommissionDetai
 </Routes>
             </main>
           </div>
+          <TrackingFrequencyModal open={openTracking} onClose={() => setOpenTracking(false)} />
+          <NotifyRadiusModal open={openNotify} onClose={() => setOpenNotify(false)} />
+          
           <ToastContainer
             position="top-right"
             autoClose={3000}

@@ -101,7 +101,7 @@ const CommissionCategoryPage = () => {
   }, []);
 
   const handleAddCategory = () => {
-    navigate("/CommissionCategory/Add");
+    navigate("/CommissionCategory/AddCommissionCategory");
   };
 
   return (

@@ -38,7 +38,7 @@
   "Drivers": "السائقين",
   "Drivers Details": "تفاصيل السائقين",
   "Search": "بحث",
-  "SAR": "ريال سعودي",
+  "SAR": "ريال",
   "Rider Details": "تفاصيل الراكبة",
   "Total Trip": "إجمالي الرحلات",
   "Full Name": "الاسم الكامل",
@@ -363,5 +363,30 @@
   "History": "السجل",
   "Commission Category": "نوع العمولة",
   "Ride": "مشوار",
-  "Delivery": "توصيل"
+  "Delivery": "توصيل",
+  "Commission Value %": "قيمة العمولة %",
+  "Enter Commission Value": "أدخل قيمة العمولة",
+  "Commission Value is required": "قيمة العمولة مطلوبة",
+  "Commission Value must be positive": "يجب أن تكون قيمة العمولة رقم موجب",
+  "Car Type is required": "نوع السيارة مطلوب",
+  "Enter Amount From": "أدخل المبلغ من",
+  "Amount From is required": "المبلغ من مطلوب",
+  "Amount From must be positive": "يجب أن يكون المبلغ من رقم موجب",
+  "Enter Amount To": "أدخل المبلغ إلى",
+  "Amount To is required": "المبلغ إلى مطلوب",
+  "Amount To must be positive": "يجب أن يكون المبلغ إلى رقم موجب",
+  "Commission category added successfully!": "تمت إضافة فئة العمولة بنجاح!",
+  "trackingModal": {
+    "title": "تردد التتبع",
+    "label": "تردد التتبع بالثانية",
+    "placeholder": "أدخل التردد بالثانية"
+  },
+  "notifyModal": {
+    "title": "نطاق التنبيه",
+    "label": "نطاق التنبيه (بالمتر)",
+    "placeholder": "أدخل نطاق التنبيه"
+  },
+  "common": {
+    "done": "تم"
+  }
 }

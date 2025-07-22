@@ -47,7 +47,7 @@ export default function CommissionDetailsPage() {
   };
 
   return (
-    <Box p={2}>
+    <Box p={2} maxWidth={'md'}>
       {/* Breadcrumb */}
       <Box display="flex" alignItems="center" flexWrap="wrap" mb={2}>
         <Typography
@@ -82,7 +82,7 @@ export default function CommissionDetailsPage() {
     fullWidth
     sx={{
       "& .MuiOutlinedInput-root": {
-        borderRadius: "4px 0 0 4px",
+        borderRadius: isArabic ? "0 4px 4px 0" :"4px 0 0 4px",
       },
     }}
   />
@@ -97,7 +97,7 @@ export default function CommissionDetailsPage() {
       fontSize: "1rem",
       cursor: "pointer",
       fontWeight: "bold",
-      borderRadius: "0 4px 4px 0",
+      borderRadius: isArabic ? "4px 0 0 4px" :"0 4px 4px 0",
       height: 40,
       whiteSpace: "nowrap",
     }}
