@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -42,7 +42,7 @@ import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DomiCar from "../../assets/DomiCar.png";
 import DomiDriverImage from "../../assets/DomiDriverImage.png";
@@ -230,6 +230,7 @@ const driver = {
     },
   ],
 };
+const tabOptions = ["driver-details", "car-documents", "payment-details", "trips"];
 
 export default function DriverDetailsPage() {
   const { t, i18n } = useTranslation();
@@ -237,6 +238,8 @@ export default function DriverDetailsPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState(null);
@@ -246,6 +249,8 @@ export default function DriverDetailsPage() {
   const [editingImage, setEditingImage] = useState(false);
   const [newImage, setNewImage] = useState(null);
   const fileInputRef = useRef(null);
+  const defaultTab = tabOptions[0]; // first tab by default
+  const currentTab = tabParam && tabOptions.includes(tabParam) ? tabParam : defaultTab;
 
   // State for editable fields
   const [editableFields, setEditableFields] = useState({
@@ -271,6 +276,9 @@ export default function DriverDetailsPage() {
     isCompanyCar: driver.isCompanyCar,
   });
 
+  const handleTabChange = (e, newValue) => {
+    setSearchParams({ tab: tabOptions[newValue] });
+  };
   // State for edit mode and loading
   const [editMode, setEditMode] = useState({
     fullName: false,
@@ -317,6 +325,13 @@ export default function DriverDetailsPage() {
     carLicenseExpiry: false,
     isCompanyCar: false,
   });
+
+  useEffect(() => {
+    if (!tabParam) {
+      setSearchParams({ tab: defaultTab });
+    }
+  }, []);
+
 
   const handleOpenDrawer = (trip) => {
     setSelectedTrip(trip);
@@ -723,86 +738,19 @@ export default function DriverDetailsPage() {
       </Box>
 
       {/* Tabs */}
-      <Box
-        maxWidth="md"
-        sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}
+      <Box width="100%" maxWidth="md" sx={{ borderBottom: 1, borderColor: "divider", mt: { xs: 2, sm: 0 } }}>
+      <Tabs
+        value={tabOptions.indexOf(currentTab)}
+        onChange={handleTabChange}
+        variant={isMobile ? "scrollable" : "standard"}
+        scrollButtons="auto"
       >
-        {isMobile ? (
-          <Grid container spacing={1}>
-            <Grid item xs={6}>
-              <Tab
-                label={t("Driver Details")}
-                value={0}
-                onClick={() => setActiveTab(0)}
-                sx={{
-                  width: "100%",
-                  borderBottom:
-                    activeTab === 0
-                      ? `2px solid ${theme.palette.primary.main}`
-                      : "none",
-                  fontWeight: activeTab === 0 ? "bold" : "normal",
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <Tab
-                label={t("Car Documents")}
-                value={1}
-                onClick={() => setActiveTab(1)}
-                sx={{
-                  width: "100%",
-                  borderBottom:
-                    activeTab === 1
-                      ? `2px solid ${theme.palette.primary.main}`
-                      : "none",
-                  fontWeight: activeTab === 1 ? "bold" : "normal",
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <Tab
-                label={t("Payment Details")}
-                value={2}
-                onClick={() => setActiveTab(2)}
-                sx={{
-                  width: "100%",
-                  borderBottom:
-                    activeTab === 2
-                      ? `2px solid ${theme.palette.primary.main}`
-                      : "none",
-                  fontWeight: activeTab === 2 ? "bold" : "normal",
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <Tab
-                label={t("Trips")}
-                value={3}
-                onClick={() => setActiveTab(3)}
-                sx={{
-                  width: "100%",
-                  borderBottom:
-                    activeTab === 3
-                      ? `2px solid ${theme.palette.primary.main}`
-                      : "none",
-                  fontWeight: activeTab === 3 ? "bold" : "normal",
-                }}
-              />
-            </Grid>
-          </Grid>
-        ) : (
-          <Tabs
-            value={activeTab}
-            onChange={(e, newValue) => setActiveTab(newValue)}
-            variant="standard"
-          >
-            <Tab label={t("Driver Details")} />
-            <Tab label={t("Car Documents")} />
-            <Tab label={t("Payment Details")} />
-            <Tab label={t("Trips")} />
-          </Tabs>
-        )}
-      </Box>
+        <Tab label={t("Driver Details")} />
+        <Tab label={t("Car Documents")} />
+        <Tab label={t("Payment Details")} />
+        <Tab label={t("Trips")} />
+      </Tabs>
+    </Box>
 
       {/* Tab Content */}
       <Box maxWidth="md">
