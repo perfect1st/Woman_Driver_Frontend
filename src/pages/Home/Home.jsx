@@ -107,7 +107,7 @@ const Home = () => {
   sx={{
     display: "flex",
     flexDirection: "row",
-    width: "fit-content",
+    width: "50%",
   }}
 >
   <TextField
@@ -115,8 +115,8 @@ const Home = () => {
     type="date"
     value={searchDate}
     onChange={(e) => setSearchDate(e.target.value)}
+    fullWidth
     sx={{
-      width: 220,
       "& .MuiOutlinedInput-root": {
         borderTopLeftRadius: isArabic ? 0 : "4px",
         borderBottomLeftRadius: isArabic ? 0 : "4px",
