@@ -48,6 +48,10 @@ import DomiCar from "../../assets/DomiCar.png";
 import DomiDriverImage from "../../assets/DomiDriverImage.png";
 import IOSSwitch from "../../components/IOSSwitch";
 import RouteMap from "../RouteMap/RouteMap";
+import { ReactComponent as FrontCar } from "../../assets/frontCar.svg";
+import { ReactComponent as BackCar } from "../../assets/backCar.svg";
+import { ReactComponent as LeftCar } from "../../assets/leftCar.svg";
+import { ReactComponent as RigthCar } from "../../assets/rigthCar.svg";
 
 // Mock assets
 const statusStyles = {
@@ -230,7 +234,12 @@ const driver = {
     },
   ],
 };
-const tabOptions = ["driver-details", "car-documents", "payment-details", "trips"];
+const tabOptions = [
+  "driver-details",
+  "car-documents",
+  "payment-details",
+  "trips",
+];
 
 export default function DriverDetailsPage() {
   const { t, i18n } = useTranslation();
@@ -238,7 +247,7 @@ export default function DriverDetailsPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -250,7 +259,8 @@ export default function DriverDetailsPage() {
   const [newImage, setNewImage] = useState(null);
   const fileInputRef = useRef(null);
   const defaultTab = tabOptions[0]; // first tab by default
-  const currentTab = tabParam && tabOptions.includes(tabParam) ? tabParam : defaultTab;
+  const currentTab =
+    tabParam && tabOptions.includes(tabParam) ? tabParam : defaultTab;
 
   // State for editable fields
   const [editableFields, setEditableFields] = useState({
@@ -331,7 +341,6 @@ export default function DriverDetailsPage() {
       setSearchParams({ tab: defaultTab });
     }
   }, []);
-
 
   const handleOpenDrawer = (trip) => {
     setSelectedTrip(trip);
@@ -597,8 +606,20 @@ export default function DriverDetailsPage() {
     >
       <CardContent>
         <Box display="flex" alignItems="center" mb={1}>
-          <DirectionsCarIcon fontSize="small" />
-          <Typography variant="subtitle2" sx={{ ml: 1 }}>
+          <IconButton>
+          {type == "carFront" ? (
+            <FrontCar />
+          ) : type == "carBack" ? (
+            <BackCar />
+          ) : type == "carRight" ? (
+            <RigthCar />
+          ) : type == "carLeft" ? (
+            <LeftCar />
+          ) : (
+            <DirectionsCarIcon fontSize="small" />
+          )}
+          </IconButton>
+          <Typography variant="subtitle2" sx={{ mx:1 }}>
             {t(title)}
           </Typography>
         </Box>
@@ -611,7 +632,7 @@ export default function DriverDetailsPage() {
     <Card sx={{ background: theme.palette.secondary.sec, mb: 2 }}>
       <CardContent>
         <Box display="flex" alignItems="center">
-          <Box
+          <IconButton
             sx={{
               width: 40,
               height: 40,
@@ -620,12 +641,13 @@ export default function DriverDetailsPage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              mr: 2,
+              mr: isArabic ? 0 :2,
+              ml: isArabic ? 2 : 0,
               color: theme.palette.primary.main,
             }}
           >
             {transaction.icon}
-          </Box>
+          </IconButton>
           <Box flexGrow={1}>
             <Typography fontWeight="bold">{t(transaction.title)}</Typography>
             <Typography variant="body2" color="text.secondary">
@@ -738,7 +760,6 @@ export default function DriverDetailsPage() {
       </Box>
 
       {/* Tabs */}
-      <Box width="100%" maxWidth="md" sx={{ borderBottom: 1, borderColor: "divider", mt: { xs: 2, sm: 0 } }}>
       <Tabs
         value={tabOptions.indexOf(currentTab)}
         onChange={handleTabChange}
@@ -750,12 +771,11 @@ export default function DriverDetailsPage() {
         <Tab label={t("Payment Details")} />
         <Tab label={t("Trips")} />
       </Tabs>
-    </Box>
 
       {/* Tab Content */}
       <Box maxWidth="md">
         {/* Driver Details Tab */}
-        {activeTab === 0 && (
+        {tabParam === "driver-details" && (
           <Grid container spacing={2}>
             {/* Row 1 */}
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
@@ -913,7 +933,7 @@ export default function DriverDetailsPage() {
         )}
 
         {/* Car Documents Tab */}
-        {activeTab === 1 && (
+        {tabParam === "car-documents" && (
           <Grid container spacing={2}>
             {/* Company Car Indicator */}
             <Grid item xs={12}>
@@ -1071,7 +1091,7 @@ export default function DriverDetailsPage() {
         )}
 
         {/* Payment Details Tab */}
-        {activeTab === 2 && (
+        {tabParam === "payment-details" && (
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Paper
@@ -1134,7 +1154,7 @@ export default function DriverDetailsPage() {
         )}
 
         {/* Trips Tab */}
-        {activeTab === 3 && (
+        {tabParam === "trips" && (
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h6" color="primary" mb={1}>
