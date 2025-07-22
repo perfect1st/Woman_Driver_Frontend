@@ -551,7 +551,7 @@ export default function DriverDetailsPage() {
             }}
           />
           <IconButton onClick={() => toggleEditMode(field)}>
-            <EditIcon />
+            <EditIcon sx={{color: theme.palette.primary.main}} />
           </IconButton>
         </Box>
       );
@@ -568,7 +568,7 @@ export default function DriverDetailsPage() {
           {editableFields[field]}
         </Typography>
         <IconButton onClick={() => toggleEditMode(field)}>
-          <EditIcon />
+          <EditIcon sx={{color: theme.palette.primary.main}} />
         </IconButton>
       </Box>
     );
@@ -590,7 +590,7 @@ export default function DriverDetailsPage() {
         {t("Click Here To Download")}
       </Typography>
       <IconButton onClick={() => handleOpenImageModal(DomiCar, type)}>
-        <VisibilityIcon />
+        <VisibilityIcon sx={{color: theme.palette.primary.main}} />
       </IconButton>
     </Box>
   );
@@ -1032,7 +1032,7 @@ export default function DriverDetailsPage() {
                         handleOpenImageModal(DomiCar, "plateNumber")
                       }
                     >
-                      <VisibilityIcon />
+                      <VisibilityIcon sx={{color: theme.palette.primary.main}} />
                     </IconButton>
                   </Box>
                 </CardContent>
@@ -1059,7 +1059,7 @@ export default function DriverDetailsPage() {
                     <IconButton
                       onClick={() => handleOpenImageModal(DomiCar, "carColor")}
                     >
-                      <VisibilityIcon />
+                      <VisibilityIcon sx={{color: theme.palette.primary.main}} />
                     </IconButton>
                   </Box>
                 </CardContent>

@@ -47,25 +47,25 @@ export default function RouteMap({ fromLat, fromLng, toLat, toLng }) {
         {/* Start Point - Solid Black Square */}
         <Marker
           position={{ lat: fromLat, lng: fromLng }}
-          icon={{
-            path: 'M -8,-8 8,-8 8,8 -8,8 z',  // Corrected square path
-            fillColor: '#000000',
-            fillOpacity: 1,
-            strokeWeight: 0,
-            scale: 1.5,  // Increased size for better visibility
-          }}
+          // icon={{
+          //   path: 'M -8,-8 8,-8 8,8 -8,8 z',  // Corrected square path
+          //   fillColor: '#000000',
+          //   fillOpacity: 1,
+          //   strokeWeight: 0,
+          //   scale: 1.5,  // Increased size for better visibility
+          // }}
         />
         
         {/* End Point - Themed Circle */}
         <Marker
           position={{ lat: toLat, lng: toLng }}
-          icon={{
-            path: window.google.maps.SymbolPath.CIRCLE,
-            fillColor: theme.palette.primary.main,
-            fillOpacity: 1,
-            strokeWeight: 0,
-            scale: 8,
-          }}
+          // icon={{
+          //   path: window.google.maps.SymbolPath.CIRCLE,
+          //   fillColor: theme.palette.primary.main,
+          //   fillOpacity: 1,
+          //   strokeWeight: 0,
+          //   scale: 8,
+          // }}
         />
         
         {directions && <DirectionsRenderer directions={directions} />}
