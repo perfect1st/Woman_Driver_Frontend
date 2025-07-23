@@ -391,5 +391,8 @@
   },
   "day": "يوم",
   "week": "أسبوع",
-  "month": "شهر"
+  "month": "شهر",
+  "new_user_registered": "تم تسجيل مستخدم جديد",
+  "driver_completed_trip": "أكمل السائق رحلة",
+  "payment_received": "تم استلام دفعة"
 }

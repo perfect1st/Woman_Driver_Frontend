@@ -381,5 +381,8 @@
   },
   "day": "Day",
   "week": "Week",
-  "month": "Month"
+  "month": "Month",
+  "new_user_registered": "New user registered",
+  "driver_completed_trip": "Driver completed a trip",
+  "payment_received": "Payment received"
 }

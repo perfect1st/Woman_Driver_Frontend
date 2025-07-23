@@ -270,8 +270,8 @@ const drawerContent = (
     <List>
   {/* Notifications */}
   <ListItemButton onClick={(e) => setNotificationAnchor(e.currentTarget)}>
-    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
-      <Badge badgeContent={3} color="primary" sx={{ mr: 2 }}>
+    <Box sx={{ display: "flex", alignItems: "center", width: "100%" , flex:0}}>
+      {/* <Badge badgeContent={3} color="primary" sx={{ mr: 2 }}>
         <NotificationIcon
           style={{
             width: 24,
@@ -279,7 +279,7 @@ const drawerContent = (
             filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
           }}
         />
-      </Badge>
+      </Badge> */}
       <ListItemText
         primary={
           <Typography fontWeight="bold">{t("notification")}</Typography>
@@ -303,15 +303,15 @@ const drawerContent = (
 
   {/* Language Selector */}
   <ListItemButton onClick={handleLangMenuOpen}>
-    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
-      <LanguageIcon
+    <Box sx={{ display: "flex", alignItems: "center", width: "100%", flex:0 }}>
+      {/* <LanguageIcon
         style={{
           width: 24,
           height: 24,
           filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
           marginRight: 8,
         }}
-      />
+      /> */}
       <ListItemText
         primary={
           <Typography fontWeight="bold">
@@ -330,18 +330,18 @@ const drawerContent = (
     <List>
   {/* Profile */}
   <ListItemButton onClick={handleUserMenuOpen}>
-    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
-      <AccountCircle
+    <Box sx={{ display: "flex", alignItems: "center", width: "100%", flex:0 }}>
+      {/* <AccountCircle
         style={{
           width: 24,
           height: 24,
           filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
           marginRight: 8,
         }}
-      />
+      /> */}
       <ListItemText
         primary={
-          <Typography fontWeight="bold">{t("profile")}</Typography>
+          <Typography fontWeight="bold" sx={{width:150, display:'flex',justifyContent:'flex-start'}}>{t("profile")}</Typography>
         }
       />
     </Box>
@@ -349,18 +349,18 @@ const drawerContent = (
 
   {/* Logout */}
   <ListItemButton onClick={handleLogout}>
-    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
-      <Logout
+    <Box sx={{ display: "flex", alignItems: "center", width: "100%", flex:0 }}>
+      {/* <Logout
         style={{
           width: 24,
           height: 24,
           filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
           marginRight: 8,
         }}
-      />
+      /> */}
       <ListItemText
         primary={
-          <Typography fontWeight="bold">{t("logout")}</Typography>
+          <Typography fontWeight="bold" color='error' sx={{width:150, display:'flex',justifyContent:'flex-start'}} >{t("logout")}</Typography>
         }
       />
     </Box>
@@ -469,9 +469,9 @@ const drawerContent = (
     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
     transformOrigin={{ vertical: 'top', horizontal: 'right' }}
   >
-    <MenuItem>New User Registered</MenuItem>
-    <MenuItem>Driver Completed Trip</MenuItem>
-    <MenuItem>Payment Received</MenuItem>
+    <MenuItem>{t("new_user_registered")}</MenuItem>
+    <MenuItem>{t("driver_completed_trip")}</MenuItem>
+    <MenuItem>{t("payment_received")}</MenuItem>
   </Menu>
 </Box>
 <Divider 
