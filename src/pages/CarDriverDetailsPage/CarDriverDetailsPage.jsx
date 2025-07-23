@@ -36,7 +36,7 @@ import DomiDriverImage from "../../assets/DomiDriverImage.png";
 // Status styles
 const statusStyles = {
   Linked: { textColor: "#085D3A", bgColor: "#ECFDF3", borderColor: "#ABEFC6" },
-  "On Request": { textColor: "#93370D", bgColor: "#FFFAEB", borderColor: "#FEDF89" },
+  "OnRequest": { textColor: "#93370D", bgColor: "#FFFAEB", borderColor: "#FEDF89" },
   Leaved: { textColor: "#1F2A37", bgColor: "#F9FAFB", borderColor: "#E5E7EB" },
   Rejected: { textColor: "#912018", bgColor: "#FEF3F2", borderColor: "#FECDCA" }
 };
@@ -72,7 +72,7 @@ export function CarDriverDetailsPage() {
   const [releaseDate, setReleaseDate] = useState("2026-01-25");
   const [editingAssign, setEditingAssign] = useState(false);
   const [editingRelease, setEditingRelease] = useState(false);
-  const [status, setStatus] = useState("On Request");
+  const [status, setStatus] = useState("OnRequest");
 
   const styles = statusStyles[status] || {};
 

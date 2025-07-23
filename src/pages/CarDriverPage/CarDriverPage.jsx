@@ -32,7 +32,7 @@ const CarDriverPage = () => {
       carModel: "Hyundai Elantra",
       assignDate: "2025-06-15",
       releaseDate: "2025-07-05",
-      status: "On Request",
+      status: "OnRequest",
     },
     {
       id: 3,
@@ -61,7 +61,7 @@ const CarDriverPage = () => {
   ];
   
 
-  const statusOptions = ["On Request", "Linked", "Leaved", "Rejected"];
+  const statusOptions = ["OnRequest", "Linked", "Leaved", "Rejected"];
 
   const [carDriver, setCarDriver] = useState(initialCarDrivers);
   const [filteredCarDriver, setFilteredCarDriver] = useState(initialCarDrivers);

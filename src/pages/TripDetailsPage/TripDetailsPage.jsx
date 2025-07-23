@@ -49,7 +49,7 @@ const tripStatusStyles = {
     borderColor: "#ABEFC6",
     icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />,
   },
-  "On Request": {
+  "OnRequest": {
     textColor: "#93370D",
     bgColor: "#FFFAEB",
     borderColor: "#FEDF89",

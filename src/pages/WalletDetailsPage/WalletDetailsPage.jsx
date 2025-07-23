@@ -57,7 +57,7 @@ const statusStyles = {
     bgColor: "#ECFDF3",
     borderColor: "#ABEFC6",
   },
-  "On Request": {
+  "OnRequest": {
     textColor: "#93370D",
     bgColor: "#FFFAEB",
     borderColor: "#FEDF89",

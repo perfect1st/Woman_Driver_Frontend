@@ -30,7 +30,7 @@ const TripsPage = () => {
       driverName: "Robert Brown",
       tripType: "Premium",
       carType: "SUV",
-      tripStatus: "On Request",
+      tripStatus: "OnRequest",
     },
     {
       id: 3,
@@ -79,7 +79,7 @@ const TripsPage = () => {
   const statusOptions = [
     "Complete",
     "Cancelled",
-    "On Request",
+    "OnRequest",
     "Approved by driver",
     "Start",
   ];

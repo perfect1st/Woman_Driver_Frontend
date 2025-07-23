@@ -74,7 +74,7 @@ const statusStyles = {
     borderColor: "#ABEFC6",
     // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
   },
-  'On Request': {
+  'OnRequest': {
     textColor: "#93370D",
     bgColor: "#FFFAEB",
     borderColor: "#FEDF89",
@@ -388,21 +388,21 @@ const navigate = useNavigate();
           {statusStyles.Linked.icon}
           <Box component="span" sx={{ ml: 1 }}>{t('Linked')}</Box>
         </MenuItem>
-         {/* On Request */}
+         {/* OnRequest */}
          <MenuItem
-          onClick={() => handleStatusSelect("On Request")}
+          onClick={() => handleStatusSelect("OnRequest")}
           sx={{
-            color: statusStyles["On Request"].textColor,
-            borderLeft: isArabic ? '' : `4px solid ${statusStyles["On Request"].borderColor}`,
-            borderRight: isArabic ? `4px solid ${statusStyles["On Request"].borderColor}` : '',
+            color: statusStyles["OnRequest"].textColor,
+            borderLeft: isArabic ? '' : `4px solid ${statusStyles["OnRequest"].borderColor}`,
+            borderRight: isArabic ? `4px solid ${statusStyles["OnRequest"].borderColor}` : '',
             pl: 2,
             py: 1,
             display: "flex",
             alignItems: "center"
           }}
         >
-          {statusStyles["On Request"].icon}
-          <Box component="span" sx={{ ml: 1 }}>{t('On Request')}</Box>
+          {statusStyles["OnRequest"].icon}
+          <Box component="span" sx={{ ml: 1 }}>{t('OnRequest')}</Box>
         </MenuItem>
            {/* Leaved */}
            <MenuItem
