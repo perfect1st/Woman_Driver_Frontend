@@ -38,13 +38,12 @@ export const getOnePassenger = createAsyncThunk(
         }
     }
 );
-//get one Passenger
+//edit Passenger
 export const editPassenger = createAsyncThunk(
     "/passengerSlice/editPassenger",
-    async (id='') => {
+    async ({id='',data}) => {
         try {
-            const user = JSON.parse(localStorage.getItem("user"));
-            const response = await useUpdateData(`/users/${id}`);
+            const response = await useUpdateData(`/users/${id}`,data);
             return response;
         } catch (error) {
             if (error.message == "Network Error")

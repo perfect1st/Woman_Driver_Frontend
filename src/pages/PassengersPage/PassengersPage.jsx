@@ -1,52 +1,61 @@
-
-
-import React, { useEffect } from 'react';
-import { Box, useMediaQuery, useTheme, Typography } from '@mui/material';
-import Header from '../../components/PageHeader/header';
-import FilterComponent from '../../components/FilterComponent/FilterComponent';
-import TableComponent from '../../components/TableComponent/TableComponent';
-import { useTranslation } from 'react-i18next';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllPassengers } from '../../redux/slices/passenger/thunk';
-import PaginationFooter from '../PaginationFooter/PaginationFooter';
-import LoadingPage from '../../components/LoadingComponent';
+import React, { useEffect } from "react";
+import { Box, useMediaQuery, useTheme, Typography } from "@mui/material";
+import Header from "../../components/PageHeader/header";
+import FilterComponent from "../../components/FilterComponent/FilterComponent";
+import TableComponent from "../../components/TableComponent/TableComponent";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  editPassenger,
+  getAllPassengers,
+} from "../../redux/slices/passenger/thunk";
+import PaginationFooter from "../PaginationFooter/PaginationFooter";
+import LoadingPage from "../../components/LoadingComponent";
 
 const PassengersPage = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const page = parseInt(searchParams.get('page') || '1', 10);
-  const limit = parseInt(searchParams.get('limit') || '10', 10);
-  const keyword = searchParams.get('keyword') || '';
-  const status = searchParams.get('status') || '';
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const keyword = searchParams.get("keyword") || "";
+  const status = searchParams.get("status") || "";
+  const currentStatusFilter = status; 
 
   const { passengers = {}, loading } = useSelector((state) => state.passenger);
-  const { users = [], currentPage = 1, totalPages = 1, totalUsers = 0 } = passengers;
+  const {
+    users = [],
+    currentPage = 1,
+    totalPages = 1,
+    totalUsers = 0,
+  } = passengers;
 
-  console.log("loading",loading)
+  console.log("loading", loading);
   useEffect(() => {
-    const query = `page=${page}&limit=${limit}` +
-                  (keyword ? `&keyword=${keyword}` : '') +
-                  (status ? `&status=${status}` : '');
+    const query =
+      `page=${page}&limit=${limit}` +
+      (keyword ? `&keyword=${keyword}` : "") +
+      (status ? `&status=${status}` : "");
     dispatch(getAllPassengers({ query }));
   }, [dispatch, page, limit, status, keyword]);
 
   const updateParams = (updates) => {
     const params = Object.fromEntries(searchParams);
     Object.entries(updates).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') params[key] = value;
+      if (value !== undefined && value !== "") params[key] = value;
       else delete params[key];
     });
     setSearchParams(params);
   };
 
   const handleSearch = (filters) => updateParams({ ...filters, page: 1 });
-  const handleLimitChange = (e) => updateParams({ limit: e.target.value, page: 1 });
+  const handleLimitChange = (e) =>
+    updateParams({ limit: e.target.value, page: 1 });
   const handlePageChange = (_, value) => updateParams({ page: value });
 
   const rows = users.map((u) => ({
@@ -54,56 +63,79 @@ const PassengersPage = () => {
     riderId: u._id.slice(-6).toUpperCase(),
     name: u.fullname,
     phone: u.phone_number,
-    rate: u.rate || 'N/A',
+    rate: u.rate || "N/A",
     trips: u.trips || 0,
     accountStatus:
-      u.status === 'active' ? 'Available' : u.status === 'pending' ? 'Pending' : 'Rejected',
+      u.status === "active"
+        ? "Available"
+        : u.status === "pending"
+        ? "Pending"
+        : "Rejected",
   }));
 
   const columns = [
-    { key: 'riderId', label: t('Rider ID') },
-    { key: 'name', label: t('Rider name') },
-    { key: 'phone', label: t('Phone Number') },
-    { key: 'rate', label: t('Rate') },
-    { key: 'trips', label: t('Trips number') },
-    { key: 'accountStatus', label: t('Account Status') },
+    { key: "riderId", label: t("Rider ID") },
+    { key: "name", label: t("Rider name") },
+    { key: "phone", label: t("Phone Number") },
+    { key: "rate", label: t("Rate") },
+    { key: "trips", label: t("Trips number") },
+    { key: "accountStatus", label: t("Account Status") },
   ];
 
   useEffect(() => {
-    document.documentElement.style.overflowX = 'hidden';
-    document.body.style.overflowX = 'hidden';
+    document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
     return () => {
-      document.documentElement.style.overflowX = 'auto';
-      document.body.style.overflowX = 'auto';
+      document.documentElement.style.overflowX = "auto";
+      document.body.style.overflowX = "auto";
     };
   }, []);
 
   useEffect(() => {
     if (loading) {
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [loading]);
   if (loading) {
     return <LoadingPage />;
   }
 
+  const onStatusChange = async (id, status) => {
+    console.log("id", id, "status", status);
+    const PassengerId = id?.id;
+    const accountStatus =
+      status == "Accepted"
+        ? "active"
+        : status == "Rejected"
+        ? "banned"
+        : "pending";
+    await dispatch(
+      editPassenger({ id: PassengerId, data: { status: accountStatus } })
+    );
+    const query =
+    `page=${page}&limit=${limit}` +
+    (keyword ? `&keyword=${keyword}` : "") +
+    (currentStatusFilter ? `&status=${currentStatusFilter}` : "");
+
+  dispatch(getAllPassengers({ query }));
+  };
+
   return (
     <Box
       component="main"
       sx={{
         p: isSmall ? 2 : 3,
-        width: '100%',
-        maxWidth: '100vw',
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
+        width: "100%",
+        maxWidth: "100vw",
+        boxSizing: "border-box",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
       }}
     >
       <Header
-        title={t('Rider')}
-        subtitle={t('Riders Details')}
+        title={t("Rider")}
+        subtitle={t("Riders Details")}
         i18n={i18n}
         isExcel
         isPdf
@@ -114,7 +146,7 @@ const PassengersPage = () => {
         <FilterComponent
           onSearch={handleSearch}
           initialFilters={{ keyword, status }}
-          statusOptions={['Available', 'Pending', 'Rejected']}
+          statusOptions={["Available", "Pending", "Rejected"]}
         />
       </Box>
 
@@ -123,7 +155,8 @@ const PassengersPage = () => {
         data={rows}
         onViewDetails={(r) => navigate(`/riderDetails/${r.id}`)}
         loading={loading}
-        sx={{ flex: 1, overflow: 'auto', boxShadow: 1, borderRadius: 1 }}
+        sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
+        onStatusChange={onStatusChange}
       />
 
       <PaginationFooter

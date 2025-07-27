@@ -37,23 +37,27 @@ import DomiCar from "../../assets/DomiCar.png";
 import DomiDriverImage from "../../assets/DomiDriverImage.png";
 import RouteMap from "../RouteMap/RouteMap";
 import { useDispatch, useSelector } from "react-redux";
-import { getOnePassenger } from "../../redux/slices/passenger/thunk";
+import {
+  getOnePassenger,
+  editPassenger,
+} from "../../redux/slices/passenger/thunk";
 import LoadingPage from "../../components/LoadingComponent";
 import useBaseImageUrl from "../../hooks/useBaseImageUrl";
 
 const statusStyles = {
-  Available: {
+  active: {
     textColor: "#085D3A",
     bgColor: "#ECFDF3",
     borderColor: "#ABEFC6",
   },
   Pending: { textColor: "#1849A9", bgColor: "#EFF8FF", borderColor: "#B2DDFF" },
-  Rejected: {
+  banned: {
     textColor: "#912018",
     bgColor: "#FEF3F2",
     borderColor: "#FECDCA",
   },
 };
+// dispatch(editPassenger({id, data}))
 
 export default function RiderDetailsPage() {
   const { t, i18n } = useTranslation();
@@ -67,17 +71,16 @@ export default function RiderDetailsPage() {
 
   // EDITABLE STATE HOOKS
   const [editable, setEditable] = useState({
-    fullName: "",
-    phone: "",
+    fullname: "",
+    phone_number: "",
     email: "",
     password: "",
     status: "",
-    verificationCode: "",
-    verified: false,
+    verification_code: "",
+    is_code_verified: false,
   });
   const [editMode, setEditMode] = useState({});
   const [saving, setSaving] = useState({});
-
   // DRAWER
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState(null);
@@ -91,13 +94,13 @@ export default function RiderDetailsPage() {
   useEffect(() => {
     if (passenger) {
       setEditable({
-        fullName: passenger.fullname || "",
-        phone: passenger.phone_number || "",
+        fullname: passenger.fullname || "",
+        phone_number: passenger.phone_number || "",
         email: passenger.email || "",
         password: "",
         status: passenger.status === "active" ? "Available" : passenger.status,
-        verificationCode: passenger.verification_code || "",
-        verified: passenger.is_code_verified || false,
+        verification_code: passenger.verification_code || "",
+        is_code_verified: passenger.is_code_verified || false,
       });
       setEditMode({});
       setSaving({});
@@ -213,14 +216,14 @@ export default function RiderDetailsPage() {
       referredBy: passenger?.fullname,
       totalTrips: trips.length,
       rating: passenger?.rating || 0,
-      fullName: editable.fullName,
-      phone: editable.phone,
+      fullname: editable.fullname,
+      phone_number: editable.phone_number,
       email: editable.email,
       password: editable.password,
       status: editable.status,
       wallet: "EGP 98.50",
-      verificationCode: editable.verificationCode,
-      verified: editable.verified,
+      verification_code: editable.verification_code,
+      is_code_verified: editable.is_code_verified,
       trips,
     }),
     [passenger, editable, trips]
@@ -228,27 +231,39 @@ export default function RiderDetailsPage() {
 
   // EARLY RETURN SPINNER
   if (loading || !passenger) {
-    return (
-        <LoadingPage />
-    );
+    return <LoadingPage />;
   }
 
   // HANDLERS (unchanged logic)
   const handleFieldChange = (f, v) => setEditable((e) => ({ ...e, [f]: v }));
   const toggleEdit = (f) => setEditMode((m) => ({ ...m, [f]: !m[f] }));
-  const handleSave = (f) => {
-    setSaving((s) => ({ ...s, [f]: true }));
-    setTimeout(() => {
-      setSaving((s) => ({ ...s, [f]: false }));
-      setEditMode((m) => ({ ...m, [f]: false }));
-      console.log(`Saved ${f}:`, editable[f]);
-    }, 1000);
+  const handleSave = async (field) => {
+    setSaving((s) => ({ ...s, [field]: true }));
+
+    try {
+      const updatedField = { [field]: editable[field] };
+
+      // Special case: translate status back to backend value if needed
+      if (field === "status") {
+        updatedField[field] =
+          editable.status === "Available" ? "active" : editable.status;
+      }
+
+      await dispatch(editPassenger({ id, data: updatedField }));
+
+      setEditMode((m) => ({ ...m, [field]: false }));
+    } catch (error) {
+      console.error("Edit error:", error);
+    } finally {
+      setSaving((s) => ({ ...s, [field]: false }));
+    }
   };
+
   const openDrawer = (t) => (setSelectedTrip(t), setDrawerOpen(true));
   const closeDrawer = () => (setDrawerOpen(false), setSelectedTrip(null));
 
   const renderEditableField = (field) => {
-    const styles = statusStyles[editable.status] || statusStyles.Available;
+    const styles = statusStyles[editable.status] || statusStyles.active;
     if (editMode[field]) {
       return (
         <Box display="flex" alignItems="center" width="100%">
@@ -317,8 +332,6 @@ export default function RiderDetailsPage() {
     );
   };
 
-  
-
   return (
     <Box p={2}>
       {/* Breadcrumb */}
@@ -345,9 +358,11 @@ export default function RiderDetailsPage() {
         <Typography variant="h5" fontWeight="bold">
           {rider.name}
         </Typography>
-      {false &&  <Typography variant="subtitle1" color="text.secondary">
-          {rider.id}
-        </Typography>}
+        {false && (
+          <Typography variant="subtitle1" color="text.secondary">
+            {rider.id}
+          </Typography>
+        )}
       </Box>
 
       <Box maxWidth="md">
@@ -386,7 +401,7 @@ export default function RiderDetailsPage() {
             <Card sx={{ background: theme.palette.secondary.sec }}>
               <CardContent>
                 <Typography variant="subtitle2">{t("Full Name")}</Typography>
-                <Box mt={1}>{renderEditableField("fullName")}</Box>
+                <Box mt={1}>{renderEditableField("fullname")}</Box>
               </CardContent>
             </Card>
           </Grid>
@@ -395,7 +410,7 @@ export default function RiderDetailsPage() {
             <Card sx={{ background: theme.palette.secondary.sec }}>
               <CardContent>
                 <Typography variant="subtitle2">{t("Phone Number")}</Typography>
-                <Box mt={1}>{renderEditableField("phone")}</Box>
+                <Box mt={1}>{renderEditableField("phone_number")}</Box>
               </CardContent>
             </Card>
           </Grid>
@@ -465,18 +480,30 @@ export default function RiderDetailsPage() {
                   justifyContent="space-between"
                 >
                   {/* Read‑only code text */}
-                  <Typography>{editable.verificationCode}</Typography>
+                  <Typography>{editable.verification_code}</Typography>
 
                   {/* Checkbox + label */}
                   <Box display="flex" alignItems="center">
                     <Checkbox
-                      color="primary" // uses main color
-                      checked={editable.verified}
-                      onChange={(e) =>
-                        handleFieldChange("verified", e.target.checked)
-                      }
-                      disabled={saving.verified}
+                      color="primary"
+                      checked={editable.is_code_verified}
+                      onChange={(e) => {
+                        const newValue = e.target.checked;
+
+                        // Update local state
+                        handleFieldChange("is_code_verified", newValue);
+
+                        // Call Redux thunk with the correct value
+                        dispatch(
+                          editPassenger({
+                            id,
+                            data: { is_code_verified: newValue }, // pass the correct new value
+                          })
+                        );
+                      }}
+                      disabled={saving.is_code_verified}
                     />
+
                     <Typography sx={{ fontWeight: "bold" }}>
                       {t("Verified code")}
                     </Typography>
@@ -669,7 +696,11 @@ export default function RiderDetailsPage() {
                           position: "absolute",
                           left: isArabic ? "auto" : -33,
                           right: isArabic ? -33 : "auto",
-                          top: isFirst ? 0 : isLast ? "calc(100% - 12px)" : "50%",
+                          top: isFirst
+                            ? 0
+                            : isLast
+                            ? "calc(100% - 12px)"
+                            : "50%",
                           transform:
                             isFirst || isLast ? "none" : "translateY(-50%)",
                         }}
@@ -720,7 +751,12 @@ export default function RiderDetailsPage() {
             </Box>
             <Box sx={{ mt: "auto", pt: 2, mb: 2 }}>
               <Divider sx={{ mb: 2 }} />
-              <Button variant="contained" fullWidth onClick={closeDrawer} sx={{mb:2}}>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={closeDrawer}
+                sx={{ mb: 2 }}
+              >
                 {t("Done")}
               </Button>
             </Box>
