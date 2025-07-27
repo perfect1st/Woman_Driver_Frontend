@@ -24,6 +24,7 @@
   "Driver name": "اسم السائق",
   "Rider ID": "رقم الراكب",
   "Rider name": "اسم الراكب",
+  "Rider Name": "اسم الراكب",
   "City": "المدينة",
   "Trips number": "عدد الرحلات",
   "Account status": "حالة الحساب",
@@ -414,5 +415,6 @@
     "usernameRequired": "اسم المستخدم مطلوب",
     "passwordRequired": "كلمة المرور مطلوبة",
     "passwordMin": "يجب أن تكون كلمة المرور 6 أحرف على الأقل"
-  }
+  },
+  "Rows per page":"عدد الصفوف في الصفحة"
 }

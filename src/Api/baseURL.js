@@ -1,12 +1,10 @@
 import axios from "axios";
 
-const baseURL=axios.create({baseURL:"https://osra-market-backend.onrender.com/api"});
- const loggedUser=JSON.parse(localStorage.getItem('user')); 
- const token = localStorage.getItem("reservation_token");
+const baseURL=axios.create({baseURL:"http://178.128.38.212:3000/api"});
 
 export const config={
     headers:{
-        
+        Accept: "application/json",
         // Authorization: token ? `${token}` : "", // Use Bearer token if available
     }
 };

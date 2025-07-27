@@ -1,9 +1,6 @@
 import baseURL, { config } from "../Api/baseURL";
 
-// Helper function to get token from localStorage
-const getToken = () => {
-  return localStorage.getItem("token");
-};
+
 
 export const useGetData = async (url, params) => {
   const res = await baseURL.get(url, config); // No token for this request
@@ -16,7 +13,6 @@ export const useGetDataToken = async (url, params) => {
     ...config,
     headers: {
       ...config.headers,
-      reservation_token: getToken(), 
     },
   };
 

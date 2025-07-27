@@ -1,224 +1,138 @@
-import React, { useState, useEffect } from 'react';
-import { Box, useMediaQuery, useTheme } from '@mui/material';
+
+
+import React, { useEffect } from 'react';
+import { Box, useMediaQuery, useTheme, Typography } from '@mui/material';
 import Header from '../../components/PageHeader/header';
 import FilterComponent from '../../components/FilterComponent/FilterComponent';
 import TableComponent from '../../components/TableComponent/TableComponent';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllPassengers } from '../../redux/slices/passenger/thunk';
+import PaginationFooter from '../PaginationFooter/PaginationFooter';
+import LoadingPage from '../../components/LoadingComponent';
 
 const PassengersPage = () => {
   const theme = useTheme();
-  const { t , i18n } = useTranslation()
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
   const navigate = useNavigate();
-  // Initial data
-  const initialPassengers = [
-    {
-      id: 1,
-      number: 'PAX001',
-      phone:"123123122",
-      name: 'John Doe',
-      rate:'4.7',
-      city: 'New York',
-      trips: 12,
-      accountStatus: 'Available'
-    },
-    {
-      id: 2,
-      number: 'PAX002',
-      phone:"100122123",
-      name: 'Jane Smith',
-      rate:'4.2',
-      city: 'London',
-      trips: 8,
-      accountStatus: 'Pending'
-    },
-    {
-      id: 3,
-      number: 'PAX003',
-      phone:"100108703",
-      name: 'Bob Johnson',
-      rate:'3.5',
-      city: 'Paris',
-      trips: 3,
-      accountStatus: 'Rejected'
-    },
-    {
-      id: 4,
-      number: 'PAX004',
-      phone:"100087623",
-      name: 'Alice Williams',
-      city: 'Tokyo',
-      rate:'5',
-      trips: 15,
-      accountStatus: 'Available'
-    },
-    {
-      id: 5,
-      number: 'PAX005',
-      phone:"1001221123",
-      name: 'Charlie Brown',
-      city: 'Berlin',
-      rate:'4.98',
-      trips: 7,
-      accountStatus: 'Pending'
-    }
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const limit = parseInt(searchParams.get('limit') || '10', 10);
+  const keyword = searchParams.get('keyword') || '';
+  const status = searchParams.get('status') || '';
+
+  const { passengers = {}, loading } = useSelector((state) => state.passenger);
+  const { users = [], currentPage = 1, totalPages = 1, totalUsers = 0 } = passengers;
+
+  console.log("loading",loading)
+  useEffect(() => {
+    const query = `page=${page}&limit=${limit}` +
+                  (keyword ? `&keyword=${keyword}` : '') +
+                  (status ? `&status=${status}` : '');
+    dispatch(getAllPassengers({ query }));
+  }, [dispatch, page, limit, status, keyword]);
+
+  const updateParams = (updates) => {
+    const params = Object.fromEntries(searchParams);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') params[key] = value;
+      else delete params[key];
+    });
+    setSearchParams(params);
+  };
+
+  const handleSearch = (filters) => updateParams({ ...filters, page: 1 });
+  const handleLimitChange = (e) => updateParams({ limit: e.target.value, page: 1 });
+  const handlePageChange = (_, value) => updateParams({ page: value });
+
+  const rows = users.map((u) => ({
+    id: u._id,
+    riderId: u._id.slice(-6).toUpperCase(),
+    name: u.fullname,
+    phone: u.phone_number,
+    rate: u.rate || 'N/A',
+    trips: u.trips || 0,
+    accountStatus:
+      u.status === 'active' ? 'Available' : u.status === 'pending' ? 'Pending' : 'Rejected',
+  }));
+
+  const columns = [
+    { key: 'riderId', label: t('Rider ID') },
+    { key: 'name', label: t('Rider name') },
+    { key: 'phone', label: t('Phone Number') },
+    { key: 'rate', label: t('Rate') },
+    { key: 'trips', label: t('Trips number') },
+    { key: 'accountStatus', label: t('Account Status') },
   ];
 
-  const [cities, setCities] = useState([
-    { _id: "1", name: "New York" },
-    { _id: "2", name: "London" },
-    { _id: "3", name: "Paris" },
-    { _id: "4", name: "Tokyo" },
-    { _id: "5", name: "Berlin" },
-  ]);
-  const statusOptions = ["Available", "Pending", "Rejected"];
-  const handleSearch = (filters) => {
-    // filters will contain:
-    //   keyword: search term
-    //   city: city ID (e.g. '1')
-    //   status: status string (e.g. 'Available')
-
-    console.log("Search filters:", filters);
-    // Make API call with these filters
-  };
-
-  // State management
-  const [passengers, setPassengers] = useState(initialPassengers);
-  const [filteredPassengers, setFilteredPassengers] = useState(initialPassengers);
-  
-  // Table columns configuration
-  const tableColumns = [
-    { key: "id", label: t("Rider ID") },
-    { key: "name", label: t("Rider name") },
-    { key: "phone", label: t("phone number") },
-    { key: "rate", label: t("Rate") },
-    { key: "trips", label: t("Trips number") },
-    { key: "accountStatus", label: t("Account status") },
-  ];
-  
-
-  // Handle search/filter
-  // const handleSearch = (filters) => {
-  //   const filtered = passengers.filter(passenger => {
-  //     const matchesSearch = !filters.search || 
-  //       passenger.name.toLowerCase().includes(filters.search.toLowerCase()) || 
-  //       passenger.number.toLowerCase().includes(filters.search.toLowerCase());
-      
-  //     const matchesCity = !filters.city || passenger.city === filters.city;
-  //     const matchesStatus = !filters.status || passenger.accountStatus === filters.status;
-      
-  //     return matchesSearch && matchesCity && matchesStatus;
-  //   });
-    
-  //   setFilteredPassengers(filtered);
-  // };
-
-  // Handle status changes
-  const handleStatusChange = (row, newStatus) => {
-    const updatedPassengers = passengers.map(p => 
-      p.id === row.id ? {...p, accountStatus: newStatus} : p
-    );
-    
-    setPassengers(updatedPassengers);
-    setFilteredPassengers(updatedPassengers);
-    console.log(`Status changed for ${row.name} to ${newStatus}`);
-  };
-
-  // Handle view details
-  const handleViewDetails = (row) => {
-    // console.log('View details for:', row);
-    navigate(`/riderDetails/${row.id}`);
-    // alert(`Showing details for: ${row.name}\nID: ${row.id}\nStatus: ${row.accountStatus}`);
-  };
-
-  // Prevent horizontal scrolling on the entire page
   useEffect(() => {
     document.documentElement.style.overflowX = 'hidden';
     document.body.style.overflowX = 'hidden';
-    
     return () => {
       document.documentElement.style.overflowX = 'auto';
       document.body.style.overflowX = 'auto';
     };
   }, []);
 
+  useEffect(() => {
+    if (loading) {
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [loading]);
+  if (loading) {
+    return <LoadingPage />;
+  }
+
   return (
-    <Box 
+    <Box
       component="main"
-      sx={{ 
-        p: isSmallScreen ? 2 : 3,
+      sx={{
+        p: isSmall ? 2 : 3,
         width: '100%',
         maxWidth: '100vw',
-        overflowX: 'hidden',
         boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '100vh'
+        minHeight: '100vh',
       }}
     >
-      {/* Header Section */}
-      <Box sx={{ 
-        width: '100%',
-        flexShrink: 0,
-      }}>
-        <Header 
-          title={t('Rider')} 
-          subtitle={t('Riders Details')}
-          i18n={i18n}
-          isExcel={true}
-          isPdf={true}
-          isPrinter={true}
-        />
-      </Box>
-      
-      {/* Filter Section */}
-      <Box sx={{ 
-        width: '100%',
-        flexShrink: 0,
-        my: 2,
-      }}>
-        <FilterComponent 
+      <Header
+        title={t('Rider')}
+        subtitle={t('Riders Details')}
+        i18n={i18n}
+        isExcel
+        isPdf
+        isPrinter
+      />
+
+      <Box sx={{ my: 2 }}>
+        <FilterComponent
           onSearch={handleSearch}
-          cityOptions={cities}
-          statusOptions={statusOptions}
+          initialFilters={{ keyword, status }}
+          statusOptions={['Available', 'Pending', 'Rejected']}
         />
       </Box>
-      
-      {/* Table Section - Flexible container */}
-      <Box sx={{ 
-        flex: 1,
-        width: '100%',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: 0,
-      }}>
-        <Box sx={{ 
-          flex: 1,
-          minHeight: 0,
-          width: '100%',
-          overflow: 'auto',
-          // border: '1px solid #e0e0e0',
-          borderRadius: 1,
-          boxShadow: 1,
-          '&::-webkit-scrollbar': {
-            height: '6px',
-            width: '6px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: theme.palette.grey[400],
-            borderRadius: '4px',
-          },
-        }}>
-          <TableComponent 
-            columns={tableColumns}
-            data={filteredPassengers}
-            onStatusChange={handleStatusChange}
-            onViewDetails={handleViewDetails}
-          />
-        </Box>
-      </Box>
+
+      <TableComponent
+        columns={columns}
+        data={rows}
+        onViewDetails={(r) => navigate(`/riderDetails/${r.id}`)}
+        loading={loading}
+        sx={{ flex: 1, overflow: 'auto', boxShadow: 1, borderRadius: 1 }}
+      />
+
+      <PaginationFooter
+        currentPage={currentPage}
+        totalPages={totalPages}
+        limit={limit}
+        onPageChange={handlePageChange}
+        onLimitChange={handleLimitChange}
+      />
     </Box>
   );
 };

@@ -89,12 +89,12 @@ import LoginPage from "./pages/LoginPage/LoginPage";
     }
 
     if (!user) {
-      return <Navigate to="/adminHome" replace />;
+      return <Navigate to="/home" replace />;
     }
 
     switch (user.type) {
       case "admin":
-        return <Navigate to="/adminHome" replace />;
+        return <Navigate to="/home" replace />;
       case "accountant":
         return <Navigate to="/accountantHome" replace />;
       default:
@@ -363,7 +363,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
     }
   />
   <Route
-    path="/adminHome"
+    path="/home"
     element={
       // <ProtectedRoute>
         <MainLayout>

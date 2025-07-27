@@ -404,5 +404,6 @@
     "usernameRequired": "Username is required",
     "passwordRequired": "Password is required",
     "passwordMin": "Password must be at least 6 characters"
-  }
+  },
+  "Rows per page":"Rows per page"
 }

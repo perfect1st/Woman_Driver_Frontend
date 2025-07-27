@@ -12,7 +12,7 @@ const routesData = {
     {
       key: "dashboard",
       label: { en: "Dashboard", ar: "لوحة التحكم" },
-      path: "/adminHome",
+      path: "/home",
       // icon: DashboardIcon,
     },
     {
