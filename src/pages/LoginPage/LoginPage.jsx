@@ -1,33 +1,46 @@
-
 import React from 'react';
-import { Grid, Box, Typography, TextField, Button, Link, useTheme } from '@mui/material';
+import {
+  Grid,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Link,
+  useTheme,
+} from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
-
 import logo from '../../assets/Logo.png';
 
 const LoginPage = () => {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t , i18n} = useTranslation();
 
   const formik = useFormik({
     initialValues: {
       username: '',
-      password: ''
+      password: '',
     },
     validationSchema: Yup.object({
       username: Yup.string().required(t('validation.usernameRequired')),
-      password: Yup.string().min(6, t('validation.passwordMin')).required(t('validation.passwordRequired'))
+      password: Yup.string()
+        .min(6, t('validation.passwordMin'))
+        .required(t('validation.passwordRequired')),
     }),
     onSubmit: (values) => {
-      // handle login
       console.log('Logging in:', values);
-    }
+    },
   });
+
+  const changeLanguage = () => {
+    const newLang = i18n.language === 'en' ? 'ar' : 'en';
+    i18n.changeLanguage(newLang);
+  };
 
   return (
     <Grid container sx={{ minHeight: '100vh' }}>
+      {/* Left side with logo and text */}
       <Grid
         item
         xs={12}
@@ -39,7 +52,7 @@ const LoginPage = () => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}
       >
         <Box component="img" src={logo} alt="Logo" sx={{ width: 120, mb: 2 }} />
@@ -56,6 +69,8 @@ const LoginPage = () => {
           {t('intro.description')}
         </Typography>
       </Grid>
+
+      {/* Right side with form */}
       <Grid
         item
         xs={12}
@@ -64,65 +79,84 @@ const LoginPage = () => {
           p: 4,
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          position: 'relative',
         }}
       >
-        <Box component="form" onSubmit={formik.handleSubmit} sx={{ maxWidth: 600}}>
-  <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', mb: 4 }}>
-    {t('form.login')}
-  </Typography>
+        {/* Language Switch Button */}
+        <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+          <Button variant="outlined" size="small" onClick={changeLanguage}>
+            {i18n.language === 'en' ? 'AR' : 'EN'}
+          </Button>
+        </Box>
 
-  {/* Username Label */}
-  <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-    {t('form.username')}
-  </Typography>
-  <TextField
-    fullWidth
-    id="username"
-    name="username"
-    placeholder={t('form.usernamePlaceholder')}
-    value={formik.values.username}
-    onChange={formik.handleChange}
-    error={formik.touched.username && Boolean(formik.errors.username)}
-    helperText={formik.touched.username && formik.errors.username}
-    margin="none"
-    variant="outlined"
-    sx={{ mb: 3 }}
-  />
+        <Box
+          component="form"
+          onSubmit={formik.handleSubmit}
+          sx={{ maxWidth: 600 }}
+        >
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', mb: 4 }}>
+            {t('form.login')}
+          </Typography>
 
-  {/* Password Label */}
-  <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-    {t('form.password')}
-  </Typography>
-  <TextField
-    fullWidth
-    id="password"
-    name="password"
-    type="password"
-    placeholder={t('form.passwordPlaceholder')}
-    value={formik.values.password}
-    onChange={formik.handleChange}
-    error={formik.touched.password && Boolean(formik.errors.password)}
-    helperText={formik.touched.password && formik.errors.password}
-    margin="none"
-    variant="outlined"
-    sx={{ mb: 4 }}
-  />
+          {/* Username */}
+          <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+            {t('form.username')}
+          </Typography>
+          <TextField
+            fullWidth
+            id="username"
+            name="username"
+            placeholder={t('form.usernamePlaceholder')}
+            value={formik.values.username}
+            onChange={formik.handleChange}
+            error={formik.touched.username && Boolean(formik.errors.username)}
+            helperText={formik.touched.username && formik.errors.username}
+            variant="outlined"
+            sx={{ mb: 3 }}
+          />
 
-  <Button type="submit" variant="contained" fullWidth sx={{ mt: 1, mb: 2, py: 1.5 }}>
-    {t('form.loginButton')}
-  </Button>
+          {/* Password */}
+          <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+            {t('form.password')}
+          </Typography>
+          <TextField
+            fullWidth
+            id="password"
+            name="password"
+            type="password"
+            placeholder={t('form.passwordPlaceholder')}
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            error={formik.touched.password && Boolean(formik.errors.password)}
+            helperText={formik.touched.password && formik.errors.password}
+            variant="outlined"
+            sx={{ mb: 4 }}
+          />
 
-  <Link href="#" variant="body2" underline="hover" sx={{ display: 'block', textAlign: 'center' }}>
-    {t('form.forgotPassword')}
-  </Link>
-</Box>
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{ mt: 1, mb: 2, py: 1.5 }}
+          >
+            {t('form.loginButton')}
+          </Button>
 
+          {/* Forgot Password */}
+          {/* <Link
+            href="#"
+            variant="body2"
+            underline="hover"
+            sx={{ display: 'block', textAlign: 'center' }}
+          >
+            {t('form.forgotPassword')}
+          </Link> */}
+        </Box>
       </Grid>
     </Grid>
   );
 };
 
 export default LoginPage;
-
-
