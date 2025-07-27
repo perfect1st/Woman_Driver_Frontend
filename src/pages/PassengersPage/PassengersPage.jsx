@@ -74,7 +74,7 @@ const PassengersPage = () => {
     riderId: (currentPage - 1) * limit + index + 1,
     name: u.fullname,
     phone: u.phone_number,
-    rate: u.rate || "N/A",
+    rate: u.rate || "5",
     trips: u.trips || 0,
     accountStatus:
       u.status === "active"
