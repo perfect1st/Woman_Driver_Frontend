@@ -30,7 +30,7 @@ const PassengersPage = () => {
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const keyword = searchParams.get("keyword") || "";
   const status = searchParams.get("status") || "";
-  const currentStatusFilter = status; 
+  const currentStatusFilter = status;
 
   const { passengers = {}, loading } = useSelector((state) => state.passenger);
   const {
@@ -45,7 +45,13 @@ const PassengersPage = () => {
     const query =
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
-      (status ? `&status=${status}` : "");
+      (status == "Available"
+        ? `&status=active`
+        : status == "Pending"
+        ? `&status=pending`
+        : status == "Rejected"
+        ? `&status=banned`
+        : "");
     dispatch(getAllPassengers({ query }));
   }, [dispatch, page, limit, status, keyword]);
 
@@ -63,9 +69,9 @@ const PassengersPage = () => {
     updateParams({ limit: e.target.value, page: 1 });
   const handlePageChange = (_, value) => updateParams({ page: value });
 
-  const rows = users.map((u) => ({
+  const rows = users.map((u, index) => ({
     id: u._id,
-    riderId: u._id.slice(-6).toUpperCase(),
+    riderId: (currentPage - 1) * limit + index + 1,
     name: u.fullname,
     phone: u.phone_number,
     rate: u.rate || "N/A",
@@ -77,6 +83,7 @@ const PassengersPage = () => {
         ? "Pending"
         : "Rejected",
   }));
+  
 
   const columns = [
     { key: "riderId", label: t("Rider ID") },
@@ -118,11 +125,11 @@ const PassengersPage = () => {
       editPassenger({ id: PassengerId, data: { status: accountStatus } })
     );
     const query =
-    `page=${page}&limit=${limit}` +
-    (keyword ? `&keyword=${keyword}` : "") +
-    (currentStatusFilter ? `&status=${currentStatusFilter}` : "");
+      `page=${page}&limit=${limit}` +
+      (keyword ? `&keyword=${keyword}` : "") +
+      (currentStatusFilter ? `&status=${currentStatusFilter}` : "");
 
-  dispatch(getAllPassengers({ query }));
+    dispatch(getAllPassengers({ query }));
   };
 
   const fetchAndExport = async (type) => {
@@ -130,19 +137,19 @@ const PassengersPage = () => {
       const query =
         (keyword ? `&keyword=${keyword}` : "") +
         (status ? `&status=${status}` : "");
-  
+
       const response = await dispatch(
         getAllPassengersWithoutPaginations({ query })
       ).unwrap();
-  
+
       const fullUsers = response || [];
-  
+
       const exportData = fullUsers.map((user, index) => ({
-        "Rider ID": index + 1,
+        riderId: (currentPage - 1) * limit + index + 1, 
         "Full Name": user.fullname,
         "Phone Number": user.phone_number,
-        "Email": user.email,
-        "Status":
+        Email: user.email,
+        Status:
           user.status === "active"
             ? "Available"
             : user.status === "pending"
@@ -150,7 +157,7 @@ const PassengersPage = () => {
             : "Rejected",
         "Created At": new Date(user.createdAt).toLocaleDateString(),
       }));
-  
+
       if (type === "excel") {
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
@@ -211,14 +218,11 @@ const PassengersPage = () => {
       console.error("Export error:", err);
     }
   };
-  
 
   const handleSortClick = (column) => {
     console.log("Coloum Clicked", column.key);
     // نفّذ عملية الفرز هنا حسب العمود
   };
-
-
 
   return (
     <Box
