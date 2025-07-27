@@ -213,7 +213,10 @@ const PassengersPage = () => {
   };
   
 
-
+  const handleSortClick = (column) => {
+    console.log("Coloum Clicked", column.key);
+    // نفّذ عملية الفرز هنا حسب العمود
+  };
 
 
 
@@ -257,6 +260,7 @@ const PassengersPage = () => {
         loading={loading}
         sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
         onStatusChange={onStatusChange}
+        onSortClick={handleSortClick}
       />
 
       <PaginationFooter

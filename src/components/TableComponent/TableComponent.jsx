@@ -117,7 +117,8 @@ const TableComponent = ({
   paymentMethod=false,
   isCommissionCategory=false,
   dontShowActions=false,
-  onActionClick
+  onActionClick,
+  onSortClick
 }) => {
   const {t, i18n} = useTranslation();
   const isArabic = i18n.language === 'ar';
@@ -203,7 +204,7 @@ const navigate = useNavigate();
                   >
                     {column.label}
                     {column.label !== t('Account status') && column.label !== t('Trip status') && (
-                      <IconButton size="small">
+                      <IconButton size="small" onClick={() => onSortClick?.(column)} >
                         <SortIcon width={20} height={20} />
                       </IconButton>
                     )}
