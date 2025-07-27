@@ -135,7 +135,7 @@ const PassengersPage = () => {
         getAllPassengersWithoutPaginations({ query })
       ).unwrap();
   
-      const fullUsers = response.users || [];
+      const fullUsers = response || [];
   
       const exportData = fullUsers.map((user, index) => ({
         "Rider ID": index + 1,
