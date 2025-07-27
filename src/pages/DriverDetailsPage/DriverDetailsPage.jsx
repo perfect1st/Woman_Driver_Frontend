@@ -66,6 +66,23 @@ const statusStyles = {
     borderColor: "#FECDCA",
   },
 };
+const AccountStatus = {
+  Accepted: {
+    textColor: "#085D3A",
+    bgColor: "#ECFDF3",
+    borderColor: "#ABEFC6",
+  },
+  Pending: {
+    textColor: "#1849A9",
+    bgColor: "#EFF8FF",
+    borderColor: "#B2DDFF",
+  },
+  Rejected: {
+    textColor: "#912018",
+    bgColor: "#FEF3F2",
+    borderColor: "#FECDCA",
+  },
+};
 
 const carTypes = ["Economy", "Flex", "Comfortable", "Premium", "Luxury"];
 
@@ -81,6 +98,7 @@ const driver = {
   email: "sophia@example.com",
   password: "123123123",
   status: "Available",
+  accountStatus: "Pending",
   wallet: "EGP 98.50",
   verificationCode: "125753",
   verified: true,
@@ -269,6 +287,7 @@ export default function DriverDetailsPage() {
     email: driver.email,
     password: driver.password,
     status: driver.status,
+    accountStatus: driver.accountStatus,
     verificationCode: driver.verificationCode,
     verified: driver.verified,
     nationalId: driver.nationalId,
@@ -296,6 +315,7 @@ export default function DriverDetailsPage() {
     email: false,
     password: false,
     status: false,
+    AccountStatus: false,
     verificationCode: false,
     verified: false,
     nationalId: false,
@@ -319,6 +339,7 @@ export default function DriverDetailsPage() {
     email: false,
     password: false,
     status: false,
+    AccountStatus: false,
     verificationCode: false,
     verified: false,
     nationalId: false,
@@ -433,6 +454,7 @@ export default function DriverDetailsPage() {
       setEditMode((prev) => ({ ...prev, [field]: false }));
       console.log(`Saved ${field}:`, editableFields[field]);
     }, 1000);
+    console.log("editMode",editMode)
   };
 
   const toggleEditMode = (field) => {
@@ -440,6 +462,7 @@ export default function DriverDetailsPage() {
       ...prev,
       [field]: !prev[field],
     }));
+    console.log("editMode",editMode)
   };
 
   const toggleAvailability = (event) => {
@@ -486,13 +509,39 @@ export default function DriverDetailsPage() {
       return (
         <Box display="flex" alignItems="center" width="100%">
           <Select
-            value={editableFields.status}
+            value={editableFields.AccountStatus}
             onChange={(e) => handleFieldChange("status", e.target.value)}
             fullWidth
             size="small"
             sx={{ flexGrow: 1, mr: 1 }}
           >
             {Object.keys(statusStyles).map((status) => (
+              <MenuItem key={status} value={status}>
+                {t(status)}
+              </MenuItem>
+            ))}
+          </Select>
+          <IconButton
+            onClick={() => handleSave(field)}
+            disabled={loading[field]}
+          >
+            {loading[field] ? <CircularProgress size={24} /> : <SaveIcon />}
+          </IconButton>
+        </Box>
+      );
+    }
+    if (field === "accountStatus" && editMode[field]) {
+      const styles = AccountStatus[editableFields.accountStatus];
+      return (
+        <Box display="flex" alignItems="center" width="100%">
+          <Select
+            value={editableFields.accountStatus}
+            onChange={(e) => handleFieldChange("accountStatus", e.target.value)}
+            fullWidth
+            size="small"
+            sx={{ flexGrow: 1, mr: 1 }}
+          >
+            {Object.keys(AccountStatus).map((status) => (
               <MenuItem key={status} value={status}>
                 {t(status)}
               </MenuItem>
@@ -524,6 +573,34 @@ export default function DriverDetailsPage() {
             disabled={loading[field]}
           >
             {loading[field] ? <CircularProgress size={24} /> : <SaveIcon />}
+          </IconButton>
+        </Box>
+      );
+    }
+
+    if (field === "accountStatus") {
+      const styles = AccountStatus[editableFields.accountStatus];
+      return (
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          width="100%"
+        >
+          <Chip
+            label={t(editableFields.accountStatus)}
+            sx={{
+              color: styles.textColor,
+              backgroundColor: styles.bgColor,
+              border: `1px solid ${styles.borderColor}`,
+              fontWeight: "bold",
+              borderRadius: 1,
+              px: 1.5,
+              py: 0.5,
+            }}
+          />
+          <IconButton onClick={() => toggleEditMode(field)}>
+            <EditIcon sx={{color: theme.palette.primary.main}} />
           </IconButton>
         </Box>
       );
@@ -572,7 +649,11 @@ export default function DriverDetailsPage() {
         </IconButton>
       </Box>
     );
+  
   };
+
+
+
 
   const renderDownloadLink = (title, type) => (
     <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -822,14 +903,17 @@ export default function DriverDetailsPage() {
             </Grid>
 
             {/* Row 3 */}
-            <Grid item xs={12} md={6} sx={{ display: "flex" }}>
-              <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
-                <CardContent>
-                  <Typography variant="subtitle2">{t("Status")}</Typography>
-                  <Box mt={1}>{renderEditableField("status", t("Status"))}</Box>
-                </CardContent>
-              </Card>
-            </Grid>
+           <Grid item xs={12} md={6} sx={{ display: "flex" }}>
+  <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
+    <CardContent>
+      <Typography variant="subtitle2">{t("Account Status")}</Typography>
+      <Box mt={1}>
+        {renderEditableField("accountStatus", t("Account Status"))}
+      </Box>
+    </CardContent>
+  </Card>
+</Grid>
+
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
                 <CardContent>

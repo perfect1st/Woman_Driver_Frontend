@@ -394,5 +394,25 @@
   "month": "شهر",
   "new_user_registered": "تم تسجيل مستخدم جديد",
   "driver_completed_trip": "أكمل السائق رحلة",
-  "payment_received": "تم استلام دفعة"
+  "payment_received": "تم استلام دفعة",
+  "intro": {
+    "title": "لوحة تحكم سائقات",
+    "highlight": "مرحبا بعودتك",
+    "welcome": "مرحبا بعودتك",
+    "description": "سجّل الدخول لإدارة السائقين والركاب ورحلاتهم"
+  },
+  "form": {
+    "login": "تسجيل الدخول",
+    "username": "اسم المستخدم",
+    "usernamePlaceholder": "ادخل اسم المستخدم",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "ادخل كلمة المرور",
+    "loginButton": "تسجيل الدخول",
+    "forgotPassword": "نسيت كلمة المرور؟"
+  },
+  "validation": {
+    "usernameRequired": "اسم المستخدم مطلوب",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "passwordMin": "يجب أن تكون كلمة المرور 6 أحرف على الأقل"
+  }
 }

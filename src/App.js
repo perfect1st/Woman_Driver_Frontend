@@ -47,6 +47,7 @@ import CommissionCategoryDetails from "./pages/CommissionCategoryDetails/Commiss
 import AddCommissionCategory from "./pages/AddCommissionCategory/AddCommissionCategory";
 import TrackingFrequencyModal from "./components/Modals/TrackingFrequencyModal";
 import NotifyRadiusModal from "./components/Modals/NotifyRadiusModal";
+import LoginPage from "./pages/LoginPage/LoginPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -327,6 +328,7 @@ import NotifyRadiusModal from "./components/Modals/NotifyRadiusModal";
       if (action === "openTrackingModal") setOpenTracking(true);
       if (action === "openNotifyRadiusModal") setOpenNotify(true);
     };
+    const hideHeader = location.pathname != '/login';
 
     return (
       <ColorModeContext.Provider value={colorMode}>
@@ -340,7 +342,7 @@ import NotifyRadiusModal from "./components/Modals/NotifyRadiusModal";
               minHeight: "100vh",
             }}
           >
-            <Header  onAction={handleSidebarAction} />
+           {hideHeader && <Header  onAction={handleSidebarAction} />}
                {/* Modals */}
   
             <main style={{ flex: 1 }}>
@@ -350,6 +352,16 @@ import NotifyRadiusModal from "./components/Modals/NotifyRadiusModal";
   {/* <Route path="/login" element={<LoginScreen />} /> */}
 
   {/* المسارات الخاصة التي تظهر فيها Sidebar */}
+  <Route
+    path="/login"
+    element={
+      // <ProtectedRoute>
+        // <MainLayout>
+          <LoginPage />
+        // </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
   <Route
     path="/adminHome"
     element={

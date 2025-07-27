@@ -384,5 +384,25 @@
   "month": "Month",
   "new_user_registered": "New user registered",
   "driver_completed_trip": "Driver completed a trip",
-  "payment_received": "Payment received"
+  "payment_received": "Payment received",
+  "intro": {
+    "title": "Woman Driver Dashboard",
+    "highlight": "Welcome back",
+    "welcome": "Welcome back",
+    "description": "Log in to manage the Drivers, Riders and their Trips"
+  },
+  "form": {
+    "login": "Log in",
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "loginButton": "Log in",
+    "forgotPassword": "Forgot Password?"
+  },
+  "validation": {
+    "usernameRequired": "Username is required",
+    "passwordRequired": "Password is required",
+    "passwordMin": "Password must be at least 6 characters"
+  }
 }
