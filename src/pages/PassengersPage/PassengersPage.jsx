@@ -9,9 +9,14 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   editPassenger,
   getAllPassengers,
+  getAllPassengersWithoutPaginations,
 } from "../../redux/slices/passenger/thunk";
-import PaginationFooter from "../PaginationFooter/PaginationFooter";
 import LoadingPage from "../../components/LoadingComponent";
+import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable"; // ⬅️ هذا هو الجزء الناقص عندك
 
 const PassengersPage = () => {
   const theme = useTheme();
@@ -120,6 +125,98 @@ const PassengersPage = () => {
   dispatch(getAllPassengers({ query }));
   };
 
+  const fetchAndExport = async (type) => {
+    try {
+      const query =
+        (keyword ? `&keyword=${keyword}` : "") +
+        (status ? `&status=${status}` : "");
+  
+      const response = await dispatch(
+        getAllPassengersWithoutPaginations({ query })
+      ).unwrap();
+  
+      const fullUsers = response.users || [];
+  
+      const exportData = fullUsers.map((user, index) => ({
+        "Rider ID": index + 1,
+        "Full Name": user.fullname,
+        "Phone Number": user.phone_number,
+        "Email": user.email,
+        "Status":
+          user.status === "active"
+            ? "Available"
+            : user.status === "pending"
+            ? "Pending"
+            : "Rejected",
+        "Created At": new Date(user.createdAt).toLocaleDateString(),
+      }));
+  
+      if (type === "excel") {
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Riders");
+        const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+        const data = new Blob([excelBuffer], {
+          type: "application/octet-stream",
+        });
+        saveAs(data, `Riders_${new Date().toISOString()}.xlsx`);
+      } else if (type === "pdf") {
+        const doc = new jsPDF();
+        doc.text("Riders Report", 14, 10);
+        autoTable(doc, {
+          startY: 20,
+          head: [Object.keys(exportData[0])],
+          body: exportData.map((row) => Object.values(row)),
+        });
+        doc.save(`Riders_${new Date().toISOString()}.pdf`);
+      } else if (type === "print") {
+        const printableWindow = window.open("", "_blank");
+        const htmlContent = `
+          <html>
+            <head>
+              <title>Riders Report</title>
+              <style>
+                table { width: 100%; border-collapse: collapse; }
+                th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+              </style>
+            </head>
+            <body>
+              <h2>Riders Report</h2>
+              <table>
+                <thead>
+                  <tr>${Object.keys(exportData[0])
+                    .map((key) => `<th>${key}</th>`)
+                    .join("")}</tr>
+                </thead>
+                <tbody>
+                  ${exportData
+                    .map(
+                      (row) =>
+                        `<tr>${Object.values(row)
+                          .map((value) => `<td>${value}</td>`)
+                          .join("")}</tr>`
+                    )
+                    .join("")}
+                </tbody>
+              </table>
+            </body>
+          </html>
+        `;
+        printableWindow.document.write(htmlContent);
+        printableWindow.document.close();
+        printableWindow.print();
+      }
+    } catch (err) {
+      console.error("Export error:", err);
+    }
+  };
+  
+
+
+
+
+
   return (
     <Box
       component="main"
@@ -140,6 +237,9 @@ const PassengersPage = () => {
         isExcel
         isPdf
         isPrinter
+        onExcel={() => fetchAndExport("excel")}
+        onPdf={() => fetchAndExport("pdf")}
+        onPrinter={() => fetchAndExport("print")}
       />
 
       <Box sx={{ my: 2 }}>

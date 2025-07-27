@@ -14,9 +14,12 @@
     "axios": "^1.9.0",
     "browser-image-compression": "^2.0.2",
     "date-fns": "^4.1.0",
+    "file-saver": "^2.0.5",
     "formik": "^2.4.6",
     "framer-motion": "^12.23.5",
     "i18next": "^22.4.15",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "lottie-react": "^2.4.1",
@@ -33,6 +36,7 @@
     "recharts": "^3.0.0",
     "slick-carousel": "^1.8.1",
     "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5",
     "yup": "^1.6.1"
   },
   "scripts": {
