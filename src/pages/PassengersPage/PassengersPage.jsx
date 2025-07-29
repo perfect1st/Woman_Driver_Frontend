@@ -120,7 +120,7 @@ const PassengersPage = () => {
         ? "active"
         : status == "Rejected"
         ? "banned"
-        : "pending";
+        : status == "Pending" ? "pending" : status;
     await dispatch(
       editPassenger({ id: PassengerId, data: { status: accountStatus } })
     );
@@ -145,7 +145,7 @@ const PassengersPage = () => {
       const fullUsers = response || [];
 
       const exportData = fullUsers.map((user, index) => ({
-        riderId: (currentPage - 1) * limit + index + 1, 
+        riderId: index + 1, 
         "Full Name": user.fullname,
         "Phone Number": user.phone_number,
         Email: user.email,
@@ -253,7 +253,7 @@ const PassengersPage = () => {
         <FilterComponent
           onSearch={handleSearch}
           initialFilters={{ keyword, status }}
-          statusOptions={["Available", "Pending", "Rejected"]}
+          statusOptions={["active", "Pending", "banned"]}
         />
       </Box>
 

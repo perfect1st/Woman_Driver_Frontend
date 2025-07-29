@@ -48,6 +48,12 @@ const statusStyles = {
     borderColor: "#FECDCA",
     // icon: <WarningIcon fontSize="small" sx={{ color: "#912018" }} />
   },
+  banned: {
+    textColor: "#912018",
+    bgColor: "#FEF3F2",
+    borderColor: "#FECDCA",
+    // icon: <WarningIcon fontSize="small" sx={{ color: "#912018" }} />
+  },
   
   // Trip status styles
   Cancelled: {
@@ -69,6 +75,12 @@ const statusStyles = {
     // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
   },
   Accepted: {
+    textColor: "#085D3A",
+    bgColor: "#ECFDF3",
+    borderColor: "#ABEFC6",
+    // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
+  },
+  active: {
     textColor: "#085D3A",
     bgColor: "#ECFDF3",
     borderColor: "#ABEFC6",
@@ -456,19 +468,19 @@ const navigate = useNavigate();
           <Box component="span" sx={{ ml: 1 }}>{t('Accept')}</Box>
         </MenuItem> :
         <MenuItem
-        onClick={() => handleStatusSelect("Accepted")}
+        onClick={() => handleStatusSelect("active")}
         sx={{
           color: statusStyles.Accepted.textColor,
-          borderLeft: isArabic ? '' : `4px solid ${statusStyles.Accepted.borderColor}`,
-          borderRight: isArabic ? `4px solid ${statusStyles.Accepted.borderColor}` : '',
+          borderLeft: isArabic ? '' : `4px solid ${statusStyles.active.borderColor}`,
+          borderRight: isArabic ? `4px solid ${statusStyles.active.borderColor}` : '',
           pl: 2,
           py: 1,
           display: "flex",
           alignItems: "center"
         }}
       >
-        {statusStyles.Accepted.icon}
-        <Box component="span" sx={{ ml: 1 }}>{t('Accepted')}</Box>
+        {statusStyles.active.icon}
+        <Box component="span" sx={{ ml: 1 }}>{t('active')}</Box>
       </MenuItem>
         } {/* Pending */}
         {(!isCar && !isCarType && !isTrafficTime && !isWallet && !paymentMethod && !isCommissionCategory) && (
@@ -493,17 +505,17 @@ const navigate = useNavigate();
         <MenuItem
           onClick={() => handleStatusSelect("Rejected")}
           sx={{
-            color: statusStyles.Rejected.textColor,
-            borderLeft: isArabic ? '' : `4px solid ${statusStyles.Rejected.borderColor}`,
-            borderRight: isArabic ? `4px solid ${statusStyles.Rejected.borderColor}` : '',
+            color: statusStyles.banned.textColor,
+            borderLeft: isArabic ? '' : `4px solid ${statusStyles.banned.borderColor}`,
+            borderRight: isArabic ? `4px solid ${statusStyles.banned.borderColor}` : '',
             pl: 2,
             py: 1,
             display: "flex",
             alignItems: "center"
           }}
         >
-          {statusStyles.Rejected.icon}
-          <Box component="span" sx={{ ml: 1 }}>{t('Rejected')}</Box>
+          {statusStyles.banned.icon}
+          <Box component="span" sx={{ ml: 1 }}>{t('banned')}</Box>
         </MenuItem>
       </>
     )}
