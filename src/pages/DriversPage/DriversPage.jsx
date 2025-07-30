@@ -131,11 +131,12 @@ const DriversPage = () => {
         getAllDriversWithoutPaginations({ query })
       ).unwrap();
 
-      const exportData = response.map((driver, index) => ({
+      console.log("response",response)
+      const exportData = response?.drivers?.map((driver, index) => ({
         "Driver ID": index + 1,
         "Full Name": driver.fullname,
         "Phone Number": driver.phone_number,
-        "Car Model": driver.car?.car_model || "N/A",
+        "Car Type": driver.car?.car_types_id?.name_en || "N/A",
         "National ID": driver.national_id_number || "N/A",
         "Driver License Expiry": driver.driver_license_expired_date 
           ? new Date(driver.driver_license_expired_date).toLocaleDateString() 
