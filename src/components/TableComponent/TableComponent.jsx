@@ -42,6 +42,12 @@ const statusStyles = {
     borderColor: "#B2DDFF",
     // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#1849A9" }} />
   },
+  pending: {
+    textColor: "#1849A9",
+    bgColor: "#EFF8FF",
+    borderColor: "#B2DDFF",
+    // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#1849A9" }} />
+  },
   Rejected: {
     textColor: "#912018",
     bgColor: "#FEF3F2",
@@ -144,7 +150,7 @@ const navigate = useNavigate();
   const [maxChipWidth, setMaxChipWidth] = useState(0);
   
   useEffect(() => {
-    const widths = Object.values(chipRefs.current).map(ref => ref?.offsetWidth || 0);
+    const widths = Object.values(chipRefs.current)?.map(ref => ref?.offsetWidth || 0);
     const largest = Math.max(...widths);
     setMaxChipWidth(largest);
   }, [data, i18n.language]);
@@ -196,7 +202,7 @@ const navigate = useNavigate();
         >
           <TableHead>
             <TableRow>
-              {columns.map((column) => (
+              {columns?.map((column) => (
                 <TableCell
                   key={column.key}
                   sx={{
@@ -237,13 +243,13 @@ const navigate = useNavigate();
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row) => {
+            {data?.map((row) => {
               const status = row[statusKey];
               const styles = getStatusStyles(status);
               
               return (
                 <TableRow key={row.id} hover>
-                  {columns.map((column) => (
+                  {columns?.map((column) => (
   <TableCell
     key={`${row.id}-${column.key}`}
     align={i18n.dir() === 'rtl' ? 'right' : 'left'}
@@ -482,21 +488,21 @@ const navigate = useNavigate();
         {statusStyles.active.icon}
         <Box component="span" sx={{ ml: 1 }}>{t('active')}</Box>
       </MenuItem>
-        } {/* Pending */}
+        } {/* pending */}
         {(!isCar && !isCarType && !isTrafficTime && !isWallet && !paymentMethod && !isCommissionCategory) && (
           <MenuItem
-            onClick={() => handleStatusSelect("Pending")}
+            onClick={() => handleStatusSelect("pending")}
             sx={{
-              color: statusStyles.Pending.textColor,
-              borderLeft: isArabic ? '' : `4px solid ${statusStyles.Pending.borderColor}`,
-              borderRight: isArabic ? `4px solid ${statusStyles.Pending.borderColor}` : '',
+              color: statusStyles.pending.textColor,
+              borderLeft: isArabic ? '' : `4px solid ${statusStyles.pending.borderColor}`,
+              borderRight: isArabic ? `4px solid ${statusStyles.pending.borderColor}` : '',
               pl: 2,
               py: 1,
               display: "flex",
               alignItems: "center"
             }}
             >
-              {statusStyles.Pending.icon}
+              {statusStyles.pending.icon}
               <Box component="span" sx={{ ml: 1 }}>{t('Pending')}</Box>
               </MenuItem>
         )}
