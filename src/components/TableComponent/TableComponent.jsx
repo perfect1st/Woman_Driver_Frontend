@@ -190,6 +190,8 @@ const navigate = useNavigate();
     };
   };
 
+  const visibleColumns = columns?.filter((col) => !col.isPrivate);
+
   return (
     <TableContainer component={Paper} sx={{ width: "100%" }}>
       {/* Outer box to allow horizontal scroll */}
@@ -202,7 +204,7 @@ const navigate = useNavigate();
         >
           <TableHead>
             <TableRow>
-              {columns?.map((column) => (
+              {visibleColumns?.map((column) => (
                 <TableCell
                   key={column.key}
                   sx={{
@@ -249,7 +251,7 @@ const navigate = useNavigate();
               
               return (
                 <TableRow key={row.id} hover>
-                  {columns?.map((column) => (
+                  {visibleColumns?.map((column) => (
   <TableCell
     key={`${row.id}-${column.key}`}
     align={i18n.dir() === 'rtl' ? 'right' : 'left'}

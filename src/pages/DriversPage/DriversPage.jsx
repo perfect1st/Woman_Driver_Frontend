@@ -71,6 +71,7 @@ const DriversPage = () => {
   // Map API data to table rows
   const rows = driverList.map((driver, index) => ({
     id: driver._id,
+    user_type: driver.user_type,
     driverId: (currentPage - 1) * limit + index + 1,
     name: driver.fullname,
     phone: driver.phone_number,
@@ -96,15 +97,20 @@ const DriversPage = () => {
     { key: "driverLicenseExpiry", label: t("Driver license expiry") },
     { key: "carLicenseExpiry", label: t("Car license expiry") },
     { key: "accountStatus", label: t("Account status") },
+    { key: "user_type", label: t("user_type"), isPrivate:true },
   ];
 
   // Handle status change
   const onStatusChange = async (id, newStatus) => {
     const driverId = id.id;
-    const backendStatus =  newStatus
+    console.log("selectedDriver",id)
+    const data ={
+      status: newStatus,
+      user_type: id?.user_type
+    }
     
     await dispatch(
-      editDriver({ id: driverId, data: { status: backendStatus } })
+      editDriver({ id: driverId, data })
     );
     
     // Refresh data
