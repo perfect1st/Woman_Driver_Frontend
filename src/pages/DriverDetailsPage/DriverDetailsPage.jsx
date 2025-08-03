@@ -55,6 +55,7 @@ import { ReactComponent as BackCar } from "../../assets/backCar.svg";
 import { ReactComponent as LeftCar } from "../../assets/leftCar.svg";
 import { ReactComponent as RigthCar } from "../../assets/rigthCar.svg";
 import { getOneDriver, editDriver } from "../../redux/slices/driver/thunk";
+import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
 import { useDispatch, useSelector } from "react-redux";
 import useBaseImageUrlForDriver from '../../hooks/useBaseImageUrlForDriver'
 import LoadingPage from "../../components/LoadingComponent";
@@ -89,8 +90,6 @@ const AccountStatus = {
     borderColor: "#FECDCA",
   },
 };
-const carTypes = ["Economy", "Flex", "Comfortable", "Premium", "Luxury"];
-
 // Mock trip data since it's not available in the real API response
 const mockTrips = [
   {
@@ -270,6 +269,8 @@ export default function DriverDetailsPage() {
   const apiLoading = driverState.loading;
   // Determine if we have valid driver data
   const hasDriverData = driverData && driverData._id;
+  const { allCarTypes } = useSelector((state) => state.carType);
+
 
   // Format dates for display
   const formatDate = (dateString) => {
@@ -310,51 +311,57 @@ export default function DriverDetailsPage() {
 
   // Get car type name (in a real app, this would come from car types API)
   const getCarType = () => {
-    if (!hasDriverData || !driverData.car) return "Economy";
-    // This is a simplified version - in reality you'd map car_types_id to a name
+    if (!hasDriverData || !driverData.car) return  "";
+  
     const carTypeId = driverData.car.car_types_id;
-    if (carTypeId === "686519b88de6100981d2ed17") return "Economy";
-    if (carTypeId === "686519b88de6100981d2ed18") return "Comfortable";
-    return "Economy";
+  
+    // البحث في car types
+    const carType = allCarTypes?.data?.find((type) => type._id === carTypeId);
+  
+    return carType
+      ? isArabic
+        ? carType.name_ar
+        : carType.name_en
+      : "";
   };
-
   // State for editable fields - initialized with real data if available
   const [editableFields, setEditableFields] = useState({
-    fullName: hasDriverData ? driverData.fullname : "Sophia Bennett",
-    phone: hasDriverData ? driverData.phone_number : "+201112223334",
-    email: hasDriverData ? driverData.email : "sophia@example.com",
+    fullName: hasDriverData ? driverData.fullname : "",
+    phone: hasDriverData ? driverData.phone_number : "",
+    email: hasDriverData ? driverData.email : "",
     password: "",
     status: getDriverStatusDisplay(),
     accountStatus: getAccountStatusDisplay(),
-    verificationCode: hasDriverData ? driverData.verification_code : "125753",
+    verificationCode: hasDriverData ? driverData.verification_code : "",
     verified: hasDriverData ? driverData.is_code_verified : true,
-    nationalId: hasDriverData ? driverData.national_id_number : "ID-123456",
+    nationalId: hasDriverData ? driverData.national_id_number : "",
     nationalIdExpiry: hasDriverData 
       ? formatDate(driverData.national_id_expired_date) 
-      : "2025-12-31",
+      : "",
     driverLicense: hasDriverData 
       ? (driverData.driver_license_images && driverData.driver_license_images.length > 0 
           ? "License Uploaded" 
           : "No License") 
-      : "LIC-789012",
+      : "",
     driverLicenseExpiry: hasDriverData 
       ? formatDate(driverData.driver_license_expired_date) 
-      : "2024-10-15",
-    accountNumber: hasDriverData ? driverData.account_number : "EG123456789",
-    carType: hasDriverData ? getCarType() : "Economy",
-    carModel: hasDriverData && driverData.car ? driverData.car.car_model : "Toyota Camry",
-    carColor: hasDriverData && driverData.car ? driverData.car.car_color : "Gold",
-    carYear: hasDriverData && driverData.car ? driverData.car.car_year.toString() : "2020",
-    plateNumber: hasDriverData && driverData.car ? driverData.car.plate_number : "145 اوص",
+      : "",
+    accountNumber: hasDriverData ? driverData.account_number : "",
+    carType: hasDriverData ? getCarType() : "",
+    carModel: hasDriverData && driverData.car ? driverData.car.car_model : "",
+    carColor: hasDriverData && driverData.car ? driverData.car.car_color : "",
+    carYear: hasDriverData && driverData.car ? driverData.car.car_year.toString() : "",
+    plateNumber: hasDriverData && driverData.car ? driverData.car.plate_number : "",
     carLicense: hasDriverData && driverData.car && driverData.car.car_license_images 
       ? "License Uploaded" 
-      : "CAR-LIC-456",
-    carLicenseExpiry: "2023-12-31", // Not in real data
+      : "",
+    carLicenseExpiry: "", // Not in real data
     isCompanyCar: hasDriverData && driverData.car ? driverData.car.is_company_car : true,
   });
 
   useEffect(() => {
     dispatch(getOneDriver({ id }));
+    dispatch(getAllCarTypesWithoutPaginations({query:''}));
   }, [dispatch, id]);
 
   useEffect(() => {
@@ -656,6 +663,8 @@ export default function DriverDetailsPage() {
         break;
       case "email":
         formData.append('email', editableFields.email);
+      case "password":
+        formData.append('password', editableFields.password);
         break;
       case "status":
         formData.append('driver_is_available', editableFields.status === "Available");
@@ -690,9 +699,14 @@ export default function DriverDetailsPage() {
         break;
       case "carYear":
         formData.append('car[car_year]', parseInt(editableFields.carYear));
+      case "carType":
+        formData.append("car_types_id", editableFields.carType); // لا تحتاج parseInt
         break;
       case "plateNumber":
         formData.append('car[plate_number]', editableFields.plateNumber);
+        break;
+      case "carLicenseExpiry":
+        formData.append('car_license_expiry', editableFields.carLicenseExpiry);
         break;
       case "isCompanyCar":
         formData.append('car[is_company_car]', editableFields.isCompanyCar);
@@ -742,19 +756,20 @@ export default function DriverDetailsPage() {
     if (field === "carType" && editMode[field]) {
       return (
         <Box display="flex" alignItems="center" width="100%">
-          <Select
-            value={editableFields.carType}
-            onChange={(e) => handleFieldChange("carType", e.target.value)}
-            fullWidth
-            size="small"
-            sx={{ flexGrow: 1, mr: 1 }}
-          >
-            {carTypes.map((type) => (
-              <MenuItem key={type} value={type}>
-                {t(type)}
-              </MenuItem>
-            ))}
-          </Select>
+       <Select
+  value={editableFields.carType}
+  onChange={(e) => handleFieldChange("carType", e.target.value)}
+  fullWidth
+  size="small"
+  sx={{ flexGrow: 1, mr: 1 }}
+>
+  {(allCarTypes?.data || []).map((type) => (
+    <MenuItem key={type._id} value={type._id}>
+      {isArabic ? type.name_ar : type.name_en}
+    </MenuItem>
+  ))}
+</Select>
+
           <IconButton
             onClick={() => handleSave(field)}
             disabled={loading[field]}

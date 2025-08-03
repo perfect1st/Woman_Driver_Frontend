@@ -31,7 +31,7 @@ const FilterComponent = ({
   paymentMethod = false,
   isCommission = false,
   isWaitingTime = false,
-  isCommissionCategory = false
+  isCommissionCategory = false,
 }) => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -88,7 +88,7 @@ const FilterComponent = ({
     if (filters.transactionReason)
       queryParams.set("transactionReason", filters.transactionReason);
     if (filters.appVehicle) queryParams.set("appVehicle", filters.appVehicle);
-if (filters.date) queryParams.set("date", filters.date);
+    if (filters.date) queryParams.set("date", filters.date);
     const queryString = queryParams.toString();
 
     // ✅ اطبع الكويري في الكونسل فقط
@@ -112,7 +112,7 @@ if (filters.date) queryParams.set("date", filters.date);
       transactionType: "",
       transactionReason: "",
       appVehicle: "",
-date: "",
+      date: "",
     });
 
     // إزالة الباراميترز من الـ URL
@@ -164,9 +164,11 @@ date: "",
               : isTrip
               ? 4
               : isDriver
-              ? 4 
-              : isCommission ? 4
-              : isCommissionCategory ? 4
+              ? 4
+              : isCommission
+              ? 4
+              : isCommissionCategory
+              ? 4
               : 7
           }
         >
@@ -367,62 +369,65 @@ date: "",
             </CustomTextField>
           </Grid>
         )}
- 
-    {/* App Vehicle Select */}
-   {isCommission &&  <Grid item xs={12} sm={3} md={3}>
-      <CustomTextField
-        select
-        fullWidth
-        size="small"
-        label={t("App Vehicle?")}
-        name="appVehicle"
-        value={filters.appVehicle || ""}
-        onChange={handleChange}
-        variant="outlined"
-        isRtl={isArabic}
-        SelectProps={{
-          IconComponent: (props) => (
-            <ArrowDropDown
-              {...props}
-              sx={{
-                left: "auto",
-                right: 8,
-                position: "absolute",
+
+        {/* App Vehicle Select */}
+        {isCommission && (
+          <Grid item xs={12} sm={3} md={3}>
+            <CustomTextField
+              select
+              fullWidth
+              size="small"
+              label={t("App Vehicle?")}
+              name="appVehicle"
+              value={filters.appVehicle || ""}
+              onChange={handleChange}
+              variant="outlined"
+              isRtl={isArabic}
+              SelectProps={{
+                IconComponent: (props) => (
+                  <ArrowDropDown
+                    {...props}
+                    sx={{
+                      left: "auto",
+                      right: 8,
+                      position: "absolute",
+                    }}
+                  />
+                ),
+                MenuProps: { PaperProps: { style: { maxHeight: 250 } } },
               }}
+              sx={{
+                backgroundColor: theme.palette.secondary.sec,
+                borderRadius: 1,
+              }}
+            >
+              <MenuItem value="">{t("All")}</MenuItem>
+              <MenuItem value="true">{t("Yes")}</MenuItem>
+              <MenuItem value="false">{t("No")}</MenuItem>
+            </CustomTextField>
+          </Grid>
+        )}
+
+        {/* Date Select */}
+        {(isCommission || isWaitingTime) && (
+          <Grid item xs={12} sm={3} md={3}>
+            <CustomTextField
+              type="date"
+              fullWidth
+              size="small"
+              label={t("Date")}
+              name="date"
+              value={filters.date || ""}
+              onChange={handleChange}
+              isRtl={isArabic}
+              sx={{
+                backgroundColor: theme.palette.secondary.sec,
+                borderRadius: 1,
+              }}
+              InputLabelProps={{ shrink: true }}
             />
-          ),
-          MenuProps: { PaperProps: { style: { maxHeight: 250 } } },
-        }}
-        sx={{
-          backgroundColor: theme.palette.secondary.sec,
-          borderRadius: 1,
-        }}
-      >
-        <MenuItem value="">{t("All")}</MenuItem>
-        <MenuItem value="true">{t("Yes")}</MenuItem>
-        <MenuItem value="false">{t("No")}</MenuItem>
-      </CustomTextField>
-    </Grid>}
-
-    {/* Date Select */}
-   {(isCommission ||isWaitingTime)&& <Grid item xs={12} sm={3} md={3}>
-      <CustomTextField
-        type="date"
-        fullWidth
-        size="small"
-        label={t("Date")}
-        name="date"
-        value={filters.date || ""}
-        onChange={handleChange}
-        isRtl={isArabic}
-        sx={{
-          backgroundColor: theme.palette.secondary.sec,
-          borderRadius: 1,
-        }}
-        InputLabelProps={{ shrink: true }}
-      />
-    </Grid>}
-
+          </Grid>
+        )}
 
         {/* City Select */}
         {false && (
@@ -472,7 +477,12 @@ date: "",
         )}
         {/* Car Type Select (for trips and drivers) */}
         {(isCar || isTrip || isDriver || isCommissionCategory) && (
-          <Grid item xs={12} sm={3} md={isCommissionCategory ? 3 :isDriver ? 3 : 2}>
+          <Grid
+            item
+            xs={12}
+            sm={3}
+            md={isCommissionCategory ? 3 : isDriver ? 3 : 2}
+          >
             <CustomTextField
               select
               fullWidth
@@ -502,7 +512,11 @@ date: "",
                   const carType = carTypeOptions.find(
                     (c) => c._id === selected
                   );
-                  return carType ? carType.name : t("All");
+                  return carType
+                    ? isArabic
+                      ? carType.name_ar
+                      : carType.name_en
+                    : t("All");
                 },
               }}
               sx={{
@@ -513,7 +527,7 @@ date: "",
               <MenuItem value="">{t("All")}</MenuItem>
               {carTypeOptions.map((carType) => (
                 <MenuItem key={carType._id} value={carType._id}>
-                  {carType.name}
+                  {carType.name_ar}
                 </MenuItem>
               ))}
             </CustomTextField>
@@ -568,59 +582,60 @@ date: "",
         )}
 
         {/* Status Select */}
-       {!isCommission&&!isWaitingTime && <Grid
-          item
-          xs={12}
-          sm={3}
-          md={isWallet ? 4 : isCarType ? 3 : isCar ? 2 : isTrip ? 2 : 3}
-        >
-          <CustomTextField
-            select
-            fullWidth
-            size="small"
-            label={
-              paymentMethod
-                ? t("Status")
-                : isCarType
-                ? t("Car Type Status")
-                : isCar
-                ? t("Car status")
-                : t("Account Status")
-            }
-            name="status"
-            value={filters.status}
-            onChange={handleChange}
-            variant="outlined"
-            isRtl={isArabic}
-            SelectProps={{
-              IconComponent: (props) => (
-                <ArrowDropDown
-                  {...props}
-                  sx={{
-                    left: "auto",
-                    right: 8,
-                    position: "absolute",
-                  }}
-                />
-              ),
-              MenuProps: {
-                PaperProps: { style: { maxHeight: 250 } },
-              },
-            }}
-            sx={{
-              backgroundColor: theme.palette.secondary.sec,
-              borderRadius: 1,
-            }}
+        {!isCommission && !isWaitingTime && (
+          <Grid
+            item
+            xs={12}
+            sm={3}
+            md={isWallet ? 4 : isCarType ? 3 : isCar ? 2 : isTrip ? 2 : 3}
           >
-            <MenuItem value="">{t("All")}</MenuItem>
-            {statusOptions.map((status) => (
-              <MenuItem key={status} value={status}>
-                {t(status)}
-              </MenuItem>
-            ))}
-          </CustomTextField>
-        </Grid>
-}
+            <CustomTextField
+              select
+              fullWidth
+              size="small"
+              label={
+                paymentMethod
+                  ? t("Status")
+                  : isCarType
+                  ? t("Car Type Status")
+                  : isCar
+                  ? t("Car status")
+                  : t("Account Status")
+              }
+              name="status"
+              value={filters.status}
+              onChange={handleChange}
+              variant="outlined"
+              isRtl={isArabic}
+              SelectProps={{
+                IconComponent: (props) => (
+                  <ArrowDropDown
+                    {...props}
+                    sx={{
+                      left: "auto",
+                      right: 8,
+                      position: "absolute",
+                    }}
+                  />
+                ),
+                MenuProps: {
+                  PaperProps: { style: { maxHeight: 250 } },
+                },
+              }}
+              sx={{
+                backgroundColor: theme.palette.secondary.sec,
+                borderRadius: 1,
+              }}
+            >
+              <MenuItem value="">{t("All")}</MenuItem>
+              {statusOptions.map((status) => (
+                <MenuItem key={status} value={status}>
+                  {t(status)}
+                </MenuItem>
+              ))}
+            </CustomTextField>
+          </Grid>
+        )}
         {/* Search Button */}
         <Grid item xs={12} sm={12} md={1}>
           <Button

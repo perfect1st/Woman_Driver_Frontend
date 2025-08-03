@@ -17,6 +17,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
 
 const DriversPage = () => {
   const theme = useTheme();
@@ -32,9 +33,11 @@ const DriversPage = () => {
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const keyword = searchParams.get("keyword") || "";
   const status = searchParams.get("status") || "";
+  const carType = searchParams.get("carType") || "";
   const currentStatusFilter = status;
 
   const { drivers = {}, loading } = useSelector((state) => state.driver);
+  const { allCarTypes } = useSelector((state) => state.carType);
   const {
     drivers: driverList = [],
     currentPage = 1,
@@ -42,16 +45,19 @@ const DriversPage = () => {
     totalDrivers = 0,
   } = drivers;
 
+  console.log("allCarTypes",allCarTypes)
   // Fetch drivers when parameters change
   useEffect(() => {
     const query =
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
+      (carType ? `&carType=${carType}` : "") +
       (status ? `&status=${status}` : "") 
      ;
         
     dispatch(getAllDrivers({ query }));
-  }, [dispatch, page, limit, status, keyword]);
+
+  }, [dispatch, page, limit, status, keyword,carType]);
 
   // Update URL parameters
   const updateParams = (updates) => {
@@ -117,6 +123,7 @@ const DriversPage = () => {
     const query =
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
+      (carType ? `&carType=${carType}` : "") +
       (currentStatusFilter ? `&status=${currentStatusFilter}` : "");
     dispatch(getAllDrivers({ query }));
   };
@@ -213,8 +220,8 @@ const DriversPage = () => {
     }
   };
 
-  // Prevent horizontal scrolling
   useEffect(() => {
+    dispatch(getAllCarTypesWithoutPaginations({query:''}));
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
     return () => {
@@ -258,6 +265,7 @@ const DriversPage = () => {
           onSearch={handleSearch}
           initialFilters={{ keyword, status }}
           statusOptions={["active", "pending", "panned"]}
+          carTypeOptions={allCarTypes?.data}
           isDriver={true}
         />
       </Box>
