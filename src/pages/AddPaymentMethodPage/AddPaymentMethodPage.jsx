@@ -12,13 +12,16 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useDispatch } from "react-redux";
+import { addPaymentMethod } from "../../redux/slices/paymentMethod/thunk";
+
 
 export default function AddPaymentMethodPage() {
   const theme = useTheme();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-
+  const dispatch = useDispatch();
   const validationSchema = Yup.object({
     nameEn: Yup.string()
       .required(t("Payment Method Name English is required"))
@@ -34,14 +37,24 @@ export default function AddPaymentMethodPage() {
       nameAr: "",
     },
     validationSchema,
-    onSubmit: (values) => {
-      setLoading(true);
-      setTimeout(() => {
-        console.log("Payment Method Submitted:", values);
-        setLoading(false);
-        alert(t("Payment Method added successfully!"));
+    onSubmit:async  (values) => {
+      const data ={
+        name_ar:values?.nameAr,
+        name_en:values?.nameEn,
+        status:true
+      }
+      try {
+        setLoading(true);
+        await dispatch(addPaymentMethod({data}))
         navigate("/PaymentMethods");
-      }, 1500);
+        
+      } catch (error) {
+        console.log("error")
+      }finally{
+        setLoading(false);
+      }
+
+   
     },
   });
 

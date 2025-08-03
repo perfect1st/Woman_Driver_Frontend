@@ -1,101 +1,185 @@
 // CarTypesPage.js
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import Header from "../../components/PageHeader/header";
 import FilterComponent from "../../components/FilterComponent/FilterComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllCarTypes,
+  getAllCarTypesWithoutPaginations,
+} from "../../redux/slices/carType/thunk";
+import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
+import LoadingPage from "../../components/LoadingComponent";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { ControlPoint } from "@mui/icons-material";
 
 const CarTypesPage = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
-  const isArabic = i18n.language == 'ar'
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isArabic = i18n.language == "ar";
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Initial car types data
-  const initialCarTypes = [
-    {
-      id: 1,
-      name: "Economy",
-      status: "Available",
-    },
-    {
-      id: 2,
-      name: "Family",
-      status: "Available",
-    },
-    {
-      id: 3,
-      name: "Truck",
-      status: "Rejected",
-    },
-    {
-      id: 4,
-      name: "Van",
-      status: "Available",
-    },
-    {
-      id: 5,
-      name: "Hatchback",
-      status: "Rejected",
-    },
-  ];
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const keyword = searchParams.get("keyword") || "";
+  const status = searchParams.get("status") || "";
+  const currentStatusFilter = status;
 
-  const statusOptions = ["Available", "Rejected"];
+  const { carTypes = {}, loading } = useSelector((state) => state.carType);
+  const {
+    data = [],
+    total = 0,
+    page: currentPage = 1,
+    totalPages = 1,
+  } = carTypes;
 
-  const [carTypes, setCarTypes] = useState(initialCarTypes);
-  const [filteredCarTypes, setFilteredCarTypes] = useState(initialCarTypes);
+  useEffect(() => {
+    const query =
+      `page=${page}&limit=${limit}` +
+      (keyword ? `&keyword=${keyword}` : "") +
+      (status === "Available"
+        ? `&status=active`
+        : status === "Rejected"
+        ? `&status=banned`
+        : "");
+    dispatch(getAllCarTypes({ query }));
+  }, [dispatch, page, limit, status, keyword]);
 
-  // Table columns configuration
-  const tableColumns = [
-    { key: "id", label: t("Car Type ID") },
+  const updateParams = (updates) => {
+    const params = Object.fromEntries(searchParams);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") params[key] = value;
+      else delete params[key];
+    });
+    setSearchParams(params);
+  };
+
+  const handleSearch = (filters) => updateParams({ ...filters, page: 1 });
+  const handleLimitChange = (e) =>
+    updateParams({ limit: e.target.value, page: 1 });
+  const handlePageChange = (_, value) => updateParams({ page: value });
+
+  const rows = data.map((c, index) => ({
+    id: c._id,
+    typeId: (currentPage - 1) * limit + index + 1,
+    name: i18n.language === "ar" ? c.name_ar : c.name_en,
+    status: c.status === true ? "Available" : "Rejected",
+  }));
+
+  const columns = [
+    { key: "typeId", label: t("Car Type ID") },
     { key: "name", label: t("Car Type Name") },
     { key: "status", label: t("Car Type Status") },
   ];
 
-  // Handle search/filter
-  const handleSearch = (filters) => {
-    const filtered = carTypes.filter(type => {
-      const matchesSearch = !filters.search ||
-        type.id.toString().includes(filters.search.toLowerCase()) ||
-        type.name.toLowerCase().includes(filters.search.toLowerCase());
-      
-      const matchesStatus = !filters.status || type.status === filters.status;
-
-      return matchesSearch && matchesStatus;
-    });
-
-    setFilteredCarTypes(filtered);
-  };
-
-  // Handle status changes
-  const handleStatusChange = (row, newStatus) => {
-    const updatedTypes = carTypes.map(type =>
-      type.id === row.id ? { ...type, status: newStatus } : type
-    );
-
-    setCarTypes(updatedTypes);
-    setFilteredCarTypes(updatedTypes);
-  };
-
-  // Handle view details
-  const handleViewDetails = (row) => {
-    navigate(`/CarTypeDetails/${row.id}`);
-  };
-
-  // Prevent horizontal scrolling
   useEffect(() => {
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
-
     return () => {
       document.documentElement.style.overflowX = "auto";
       document.body.style.overflowX = "auto";
     };
   }, []);
+
+  const fetchAndExport = async (type) => {
+    try {
+      const query =
+        (keyword ? `&keyword=${keyword}` : "") +
+        (status === "Available"
+          ? `&status=active`
+          : status === "Rejected"
+          ? `&status=banned`
+          : "");
+
+      const response = await dispatch(
+        getAllCarTypesWithoutPaginations({ query })
+      ).unwrap();
+      const allCarTypes = response?.data || [];
+
+      console.log("allCarTypes", allCarTypes);
+      const exportData = allCarTypes?.map((c, index) => ({
+        ID: index + 1,
+        "Car Type Name": i18n.language === "ar" ? c.name_ar : c.name_en,
+        Status: c.status === true ? "Available" : "Rejected",
+        "Created At": new Date(c.createdAt).toLocaleDateString(),
+      }));
+
+      if (type === "excel") {
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "CarTypes");
+        const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+        const data = new Blob([excelBuffer], {
+          type: "application/octet-stream",
+        });
+        saveAs(data, `CarTypes_${new Date().toISOString()}.xlsx`);
+      } else if (type === "pdf") {
+        const doc = new jsPDF();
+        doc.text("Car Types Report", 14, 10);
+        autoTable(doc, {
+          startY: 20,
+          head: [Object.keys(exportData[0])],
+          body: exportData.map((row) => Object.values(row)),
+        });
+        doc.save(`CarTypes_${new Date().toISOString()}.pdf`);
+      } else if (type === "print") {
+        const printableWindow = window.open("", "_blank");
+        const htmlContent = `
+          <html>
+            <head>
+              <title>Car Types Report</title>
+              <style>
+                table { width: 100%; border-collapse: collapse; }
+                th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+              </style>
+            </head>
+            <body>
+              <h2>Car Types Report</h2>
+              <table>
+                <thead>
+                  <tr>${Object.keys(exportData[0])
+                    .map((key) => `<th>${key}</th>`)
+                    .join("")}</tr>
+                </thead>
+                <tbody>
+                  ${exportData
+                    .map(
+                      (row) =>
+                        `<tr>${Object.values(row)
+                          .map((value) => `<td>${value}</td>`)
+                          .join("")}</tr>`
+                    )
+                    .join("")}
+                </tbody>
+              </table>
+            </body>
+          </html>
+        `;
+        printableWindow.document.write(htmlContent);
+        printableWindow.document.close();
+        printableWindow.print();
+      }
+    } catch (err) {
+      console.error("Export error:", err);
+    }
+  };
+
+  const onStatusChange = (row, newStatus) => {
+    // Optional: API call to update status
+    console.log("Car Type ID:", row.id, "New Status:", newStatus);
+  };
+
+  if (loading) return <LoadingPage />;
 
   const addCarTypeSubmit = () => {
     navigate("/CarTypes/AddCarType");
@@ -105,81 +189,57 @@ const CarTypesPage = () => {
     <Box
       component="main"
       sx={{
-        p: isSmallScreen ? 2 : 3,
+        p: isSmall ? 2 : 3,
         width: "100%",
         maxWidth: "100vw",
-        overflowX: "hidden",
-        boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
       }}
     >
-      {/* Header Section */}
-      <Box sx={{ width: "100%", flexShrink: 0 }}>
-        <Header
-          title={t("Car Types")}
-          subtitle={t("Car Types Details")}
-          haveBtn={true}
-          i18n={i18n}
-          btn={t("Add Car Type")}
-          btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
-          onSubmit={addCarTypeSubmit}
-          isExcel={true}
-          isPdf={true}
-          isPrinter={true}
-        />
-      </Box>
+      <Header
+        title={t("Car Types")}
+        subtitle={t("Car Types Details")}
+        haveBtn={true}
+        i18n={i18n}
+        btn={t("Add Car Type")}
+        btnIcon={<ControlPoint sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
+        onSubmit={addCarTypeSubmit}
+        isExcel
+        isPdf
+        isPrinter
+        onExcel={() => fetchAndExport("excel")}
+        onPdf={() => fetchAndExport("pdf")}
+        onPrinter={() => fetchAndExport("print")}
+      />
 
-      {/* Filter Section */}
-      <Box sx={{ width: "100%", flexShrink: 0, my: 2 }}>
+      <Box sx={{ my: 2 }}>
         <FilterComponent
           onSearch={handleSearch}
-          statusOptions={statusOptions}
-          isCarType={true}
+          initialFilters={{ keyword, status }}
+          statusOptions={["Available", "Rejected"]}
         />
       </Box>
 
-      {/* Table Section */}
-      <Box
-        sx={{
-          flex: 1,
-          width: "100%",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          minHeight: 0,
-        }}
-      >
-        <Box
-          sx={{
-            flex: 1,
-            minHeight: 0,
-            width: "100%",
-            overflow: "auto",
-            borderRadius: 1,
-            boxShadow: 1,
-            "&::-webkit-scrollbar": {
-              height: "6px",
-              width: "6px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: theme.palette.grey[400],
-              borderRadius: "4px",
-            },
-          }}
-        >
-          <TableComponent
-            columns={tableColumns}
-            data={filteredCarTypes}
-            onStatusChange={handleStatusChange}
-            onViewDetails={handleViewDetails}
-            statusKey="status"
-            showStatusChange={true}
-            isCarType={true}
-          />
-        </Box>
-      </Box>
+      <TableComponent
+        columns={columns}
+        data={rows}
+        onViewDetails={(r) => navigate(`/CarTypeDetails/${r.id}`)}
+        loading={loading}
+        sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
+        onStatusChange={onStatusChange}
+        isCarType
+        showStatusChange
+        statusKey="status"
+      />
+
+      <PaginationFooter
+        currentPage={currentPage}
+        totalPages={totalPages}
+        limit={limit}
+        onPageChange={handlePageChange}
+        onLimitChange={handleLimitChange}
+      />
     </Box>
   );
 };
