@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -12,35 +12,51 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  editPaymentMethod,
+  getOnePaymentMethod,
+} from "../../redux/slices/paymentMethod/thunk";
 
 const PaymentMethodsDetailsPage = () => {
   const { t, i18n } = useTranslation();
+  const { id } = useParams();
   const isArabic = i18n.language === "ar";
   const theme = useTheme();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getOnePaymentMethod(id));
+  }, []);
 
+  const { paymentMethod } = useSelector((state) => state.paymentMethod);
+  console.log("paymentMethod", paymentMethod);
   // Dummy payment method object
-  const onePaymentMethod = {
-    id: "#1",
-    nameEn: "Credit Card",
-    nameAr: "بطاقة ائتمان",
-  };
 
   const [editableFields, setEditableFields] = useState({
-    nameEn: onePaymentMethod.nameEn,
-    nameAr: onePaymentMethod.nameAr,
+    name_en: paymentMethod?.name_en,
+    name_ar: paymentMethod?.name_ar,
   });
 
   const [editMode, setEditMode] = useState({
-    nameEn: false,
-    nameAr: false,
+    name_en: false,
+    name_ar: false,
   });
 
   const [loading, setLoading] = useState({
-    nameEn: false,
-    nameAr: false,
+    name_en: false,
+    name_ar: false,
   });
+
+  useEffect(() => {
+    if (paymentMethod) {
+      setEditableFields({
+        name_en: paymentMethod.name_en || "",
+        name_ar: paymentMethod.name_ar || "",
+      });
+    }
+  }, [paymentMethod]);
 
   const handleFieldChange = (field, value) => {
     setEditableFields((prev) => ({
@@ -49,15 +65,19 @@ const PaymentMethodsDetailsPage = () => {
     }));
   };
 
-  const handleSave = (field) => {
+  const handleSave = async (field) => {
     setLoading((prev) => ({ ...prev, [field]: true }));
-
-    // Simulate API call
-    setTimeout(() => {
-      setLoading((prev) => ({ ...prev, [field]: false }));
+    const data = {
+      [field]: editableFields[field],
+    };
+    try {
+      await dispatch(editPaymentMethod({ id, data }));
+    } catch (error) {
+      console.error("Error saving field:", error);
+    } finally {
       setEditMode((prev) => ({ ...prev, [field]: false }));
-      console.log(`Saved ${field}:`, editableFields[field]);
-    }, 1000);
+      setLoading((prev) => ({ ...prev, [field]: false }));
+    }
   };
 
   const toggleEditMode = (field) => {
@@ -101,7 +121,10 @@ const PaymentMethodsDetailsPage = () => {
           justifyContent="space-between"
           mt={1}
         >
-          <Typography variant="body1" sx={{ color: theme.palette.text.primary }}>
+          <Typography
+            variant="body1"
+            sx={{ color: theme.palette.text.primary }}
+          >
             {editableFields[field]}
           </Typography>
           <IconButton onClick={() => toggleEditMode(field)}>
@@ -130,20 +153,16 @@ const PaymentMethodsDetailsPage = () => {
           {t("Payment Methods Details")}
         </Typography>
         <Typography mx={1}>{"<"}</Typography>
-        <Typography>{
-          isArabic
-            ? onePaymentMethod.nameAr
-            : onePaymentMethod.nameEn
-        }</Typography>
+        <Typography>
+          {isArabic ? paymentMethod?.name_ar : paymentMethod?.name_en}
+        </Typography>
       </Box>
 
       {/* Title */}
       <Box mb={3}>
         <Typography variant="h5" fontWeight="bold">
-          {isArabic
-            ? onePaymentMethod.nameAr
-            : onePaymentMethod.nameEn}{" "}
-          {onePaymentMethod.id}
+          {isArabic ? paymentMethod?.name_ar : paymentMethod?.name_en}{" "}
+          {paymentMethod?.id}
         </Typography>
       </Box>
 
@@ -151,16 +170,10 @@ const PaymentMethodsDetailsPage = () => {
       <Box maxWidth="sm">
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            {renderEditableCard(
-              "nameEn",
-              "Payment Method Name English"
-            )}
+            {renderEditableCard("name_en", "Payment Method Name English")}
           </Grid>
           <Grid item xs={12}>
-            {renderEditableCard(
-              "nameAr",
-              "Payment Method Name Arabic"
-            )}
+            {renderEditableCard("name_ar", "Payment Method Name Arabic")}
           </Grid>
         </Grid>
       </Box>

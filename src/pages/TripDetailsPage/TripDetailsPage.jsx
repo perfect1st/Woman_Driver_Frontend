@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// src/pages/Trips/TripDetailsPage.js
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -16,97 +17,54 @@ import {
   List,
   ListItem,
   ListItemText,
-  IconButton,
   CircularProgress,
-  Stack,
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import StarIcon from "@mui/icons-material/Star";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import { useNavigate, useParams } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import DomiCar from "../../assets/DomiCar.png";
-import DomiDriverImage from "../../assets/DomiDriverImage.png";
-
-// Icons for status
 import WarningIcon from "@mui/icons-material/Warning";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import RouteMap from "../RouteMap/RouteMap";
+import { useDispatch, useSelector } from "react-redux";
+import { getOneTrip } from "../../redux/slices/trip/thunk";
+import LoadingPage from "../../components/LoadingComponent";
+import useBaseImageUrl from "../../hooks/useBaseImageUrl";
 
-// Trip status styles
 const tripStatusStyles = {
-  Cancelled: {
+  cancelled: {
     textColor: "#912018",
     bgColor: "#FEF3F2",
     borderColor: "#FECDCA",
     icon: <WarningIcon fontSize="small" sx={{ color: "#912018" }} />,
   },
-  Complete: {
-    textColor: "#085D3A",
-    bgColor: "#ECFDF3",
-    borderColor: "#ABEFC6",
-    icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />,
-  },
-  "OnRequest": {
-    textColor: "#93370D",
-    bgColor: "#FFFAEB",
-    borderColor: "#FEDF89",
-    icon: <AccessTimeIcon fontSize="small" sx={{ color: "#93370D" }} />,
-  },
-  "Approved by driver": {
+  accepted: {
     textColor: "#1F2A37",
     bgColor: "#F9FAFB",
     borderColor: "#E5E7EB",
     icon: <CheckCircleIcon fontSize="small" sx={{ color: "#1F2A37" }} />,
   },
-  Start: {
+  requested: {
+    textColor: "#93370D",
+    bgColor: "#FFFAEB",
+    borderColor: "#FEDF89",
+    icon: <AccessTimeIcon fontSize="small" sx={{ color: "#93370D" }} />,
+  },
+  complete: {
+    textColor: "#085D3A",
+    bgColor: "#ECFDF3",
+    borderColor: "#ABEFC6",
+    icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />,
+  },
+  start: {
     textColor: "#1849A9",
     bgColor: "#EFF8FF",
     borderColor: "#B2DDFF",
     icon: <AccessTimeIcon fontSize="small" sx={{ color: "#1849A9" }} />,
   },
-};
-
-// Mock trip data
-const trip = {
-  id: "72641",
-  status: "Complete",
-  rider: {
-    name: "Emma Davis",
-    id: "#4141321",
-    image: DomiDriverImage,
-    rating: 4.89,
-  },
-  driver: {
-    name: "Sophia Carter",
-    id: "#DRV12345",
-    image: DomiDriverImage,
-    rating: 4.8,
-    car: {
-      plate: "اوص 8298",
-      color: "White",
-      brand: "Toyota Camry",
-      image: DomiCar,
-      type: "Standard",
-    },
-  },
-  details: {
-    date: "2023-05-15",
-    time: "03:06 PM - 04:05 PM",
-    distance: "5.2 km",
-    carType: "Standard",
-    fare: "EGP 45.00",
-    waiting: "EGP 5.00",
-    waitingTime: "24 min",
-    payment: "Cash",
-  },
-  timeline: [
-    { type: "Pickup", time: "03:06 PM", address: "123 Main St, Anytown" },
-    { type: "Waiting", time: "03:30 PM", address: "579 Anytown, Main St" },
-    { type: "Dropoff", time: "04:05 PM", address: "456 Oak Ave, Anytown" },
-  ],
 };
 
 export default function TripDetailsPage() {
@@ -115,56 +73,107 @@ export default function TripDetailsPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
-  const { tripId } = useParams();
-  const [activeTab, setActiveTab] = useState(0);
-  const [loading, setLoading] = useState(false);
-  
-  const status = trip.status;
-  const styles = tripStatusStyles[status] || {};
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const baseImageUrl = useBaseImageUrl();
 
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
+  const [activeTab, setActiveTab] = useState(0);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [loadingRider, setLoadingRider] = useState(false);
+  const [loadingDriver, setLoadingDriver] = useState(false);
+
+  // Redux: slice.one holds { trip, loading }
+  const { trip, loading } = useSelector((s) => s.trip);
+
+  console.log("trip",trip)
+  useEffect(() => {
+    dispatch(getOneTrip(id));
+  }, [dispatch, id]);
+
+  if (loading || !trip) {
+    return (
+
+        <LoadingPage />
+    );
+  }
+
+  // Normalize status key to lowercase for our styles map
+  const statusKey = trip.trips_status?.toLowerCase();
+  const styles = tripStatusStyles[statusKey] || {};
+
+  // Build details object
+  const details = {
+    date: new Date(trip.createdAt).toLocaleDateString(),
+    time: `${new Date(trip.createdAt).toLocaleTimeString()} - ${new Date(
+      trip.updatedAt
+    ).toLocaleTimeString()}`,
+    distance: `${trip.kilos_number} km`,
+    carType: trip.car_types_id?.name_en || t("N/A"),
+    fare: `${trip.cost}`,
+    waiting: `${trip.total_waiting_minutes_cost}`,
+    waitingTime: `${trip.waitings?.length} ${t("stops")}`,
+    payment: trip.payment_method_id?.name_en || t("N/A"),
   };
+
+  // Build timeline: first pickup, then any waitings, then dropoff
+  const timeline = [
+    {
+      type: "Pickup",
+      time: new Date(trip.createdAt).toLocaleTimeString(),
+      address: `${trip?.from_lng_lat?.coordinates[1]}, ${trip?.from_lng_lat?.coordinates[0]}`,
+    },
+    ...(trip.waitings || [])?.map((w) => ({
+      type: "Waiting",
+      time: new Date(w.time).toLocaleTimeString(),
+      address: w.address,
+    })),
+    {
+      type: "Dropoff",
+      time: new Date(trip.updatedAt).toLocaleTimeString(),
+      address: `${trip.to_lng_lat?.coordinates[1]}, ${trip.to_lng_lat?.coordinates[0]}`,
+    },
+  ];
+
+  const handleTabChange = (_, v) => setActiveTab(v);
 
   const handleViewProfile = (type) => {
-    setLoading(true);
-    // Simulate loading
-    setTimeout(() => {
-      setLoading(false);
-      if (type === "rider") {
-        navigate(`/riderDetails/${trip.rider.id}`);
-      } else {
-        navigate(`/driverDetails/${trip.driver.id}`);
-      }
-    }, 1000);
-  };
+       if (type === "rider") {
+         setLoadingRider(true);
+         setLoadingRider(false);
+         navigate(`/riderDetails/${trip.user_id._id}`);
+       } else if (type === "driver" && trip.driver_id) {
+         setLoadingDriver(true);
+         setLoadingDriver(false);
+         navigate(`/driverDetails/${trip.driver_id._id}`);
+       
+       }
+     };
 
   return (
-    <Box p={isMobile ? 1 : 2} maxWidth={'md'}>
+    <Box p={isMobile ? 1 : 2} maxWidth="md">
       {/* Breadcrumb */}
-
       <Box display="flex" alignItems="center" flexWrap="wrap" mb={2}>
         <Typography
-          onClick={() => navigate('/Trips')}
+          onClick={() => navigate("/Trips")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Trips")}
         </Typography>
         <Typography mx={1}>{`<`}</Typography>
         <Typography
-          onClick={() => navigate('/Trips')}
+          onClick={() => navigate("/Trips")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Trips Details")}
         </Typography>
         <Typography mx={1}>{`<`}</Typography>
-        <Typography>#{tripId || trip.id}</Typography>
+        <Typography>#{id}</Typography>
       </Box>
 
-      {/* Header with tabs and status */}
-      <Box 
-        display="flex" 
-        flexDirection={isMobile ? "column" : "row"} 
+      {/* Header */}
+      <Box
+        display="flex"
+        flexDirection={isMobile ? "column" : "row"}
         justifyContent="space-between"
         alignItems={isMobile ? "flex-start" : "center"}
         mb={2}
@@ -173,240 +182,236 @@ export default function TripDetailsPage() {
         <Typography variant="h5" fontWeight="bold">
           {t("Trip Details")}
         </Typography>
-        
       </Box>
 
-<Box sx={{ mb: 2, position: "relative" }}>
-  <Box display="flex" alignItems="center" justifyContent="space-between" gap={1}>
-    {/* Tabs */}
-    <Tabs 
-      value={activeTab} 
-      onChange={handleTabChange} 
-      sx={{ 
-        minHeight: "auto",
-        "& .MuiTabs-flexContainer": { gap: 1 }
-      }}
-    >
-      <Tab 
-        label={t("Trip Details")} 
-        sx={{ 
-          minHeight: "auto",
-          minWidth: "auto",
-          p: 1,
-          mb: 1 ,
-          fontWeight: activeTab === 0 ? "bold" : "normal",
-          color: activeTab === 0 ? theme.palette.primary.main : "text.secondary",
-          // borderBottom: activeTab === 0 ? `2px solid ${theme.palette.primary.main}` : "none"
-        }} 
-      />
-      <Tab 
-        label={t("Trip Track")} 
-        sx={{ 
-          minHeight: "auto",
-          minWidth: "auto",
-          p: 1,
-          mb: 1 ,
-          fontWeight: activeTab === 1 ? "bold" : "normal",
-          color: activeTab === 1 ? theme.palette.primary.main : "text.secondary",
-          // borderBottom: activeTab === 1 ? `2px solid ${theme.palette.primary.main}` : "none"
-        }} 
-      />
-    </Tabs>
+      {/* Tabs + Status */}
+      <Box sx={{ mb: 2, position: "relative" }}>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          gap={1}
+        >
+          <Tabs
+            value={activeTab}
+            onChange={handleTabChange}
+            sx={{ "& .MuiTabs-flexContainer": { gap: 1 } }}
+          >
+            <Tab
+              label={t("Trip Details")}
+              sx={{
+                p: 1,
+                fontWeight: activeTab === 0 ? "bold" : "normal",
+                color:
+                  activeTab === 0
+                    ? theme.palette.primary.main
+                    : "text.secondary",
+              }}
+            />
+            <Tab
+              label={t("Trip Track")}
+              sx={{
+                p: 1,
+                fontWeight: activeTab === 1 ? "bold" : "normal",
+                color:
+                  activeTab === 1
+                    ? theme.palette.primary.main
+                    : "text.secondary",
+              }}
+            />
+          </Tabs>
 
-    {/* Status Chip */}
-    <Chip
-      label={t(status)}
-      icon={styles.icon}
-      sx={{
-        color: styles.textColor,
-        backgroundColor: styles.bgColor,
-        border: `1px solid ${styles.borderColor}`,
-        fontWeight: "bold",
-        borderRadius: 1,
-        px: 1.5,
-        py: 0.5,
-        height: "auto",
-      }}
-    />
-  </Box>
+          <Chip
+            label={t(trip.trips_status)}
+            icon={styles.icon}
+            sx={{
+              color: styles.textColor,
+              backgroundColor: styles.bgColor,
+              border: `1px solid ${styles.borderColor}`,
+              fontWeight: "bold",
+              borderRadius: 1,
+              px: 1.5,
+              py: 0.5,
+              height: "auto",
+            }}
+          />
+        </Box>
 
-  {/* Full-width underline */}
-  <Box
-    sx={{
-      position: "absolute",
-      bottom: 0,
-      left: 0,
-      right: 0,
-      height: "2px",
-      backgroundColor: theme.palette.divider,
-      zIndex: 0,
-    }}
-  />
-</Box>
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "2px",
+            backgroundColor: theme.palette.divider,
+          }}
+        />
+      </Box>
 
-
-      {/* Tab Content */}
       {activeTab === 0 ? (
-        // Trip Details Tab
+        // Trip Details
         <Box>
           {/* Rider Card */}
-          <Card sx={{ 
-            background: theme.palette.secondary.sec, 
-            mb: 2,
-            boxShadow: "none"
-          }}>
+          <Card
+            sx={{
+              mb: 2,
+              boxShadow: "none",
+              background: theme.palette.secondary.sec,
+            }}
+          >
             <CardContent>
-              <Typography 
-                variant="subtitle1" 
-                fontWeight="bold" 
+              <Typography
+                variant="subtitle1"
+                fontWeight="bold"
                 mb={1}
                 color="primary"
               >
                 {t("Rider")}
               </Typography>
-              <Divider sx={{ mb: 2}} />
-              
+              <Divider sx={{ mb: 2 }} />
               <Grid container alignItems="center" spacing={2}>
                 <Grid item>
                   <Avatar
-                    sx={{
-                      width: 64,
-                      height: 64,
-                      bgcolor: theme.palette.primary.main,
-                      color: "#fff",
-                      fontSize: 24,
-                    }}
-                    src={trip.rider.image || undefined}
+                    src={`${baseImageUrl}${trip?.user_id?.profile_image}`}
+                    sx={{ width: 64, height: 64 }}
                   >
-                    {!trip.rider.image && trip.rider.name.charAt(0)}
+                    {!trip?.user_id?.profile_image &&
+                      trip?.user_id?.fullname.charAt(0)}
                   </Avatar>
                 </Grid>
-                
                 <Grid item xs>
-                  <Typography fontWeight="bold">{trip.rider.name}</Typography>
+                  <Typography fontWeight="bold">
+                    {trip?.user_id?.fullname}
+                  </Typography>
                   <Box display="flex" alignItems="center">
-                    <Typography variant="body2">{trip.rider.rating}</Typography>
-                    <StarIcon fontSize="small" color="primary" sx={{ ml: 0.5 }} />
+                    <Typography variant="body2">
+                      {trip?.user_id?.status}
+                    </Typography>
+                    <StarIcon
+                      fontSize="small"
+                      color="primary"
+                      sx={{ ml: 0.5 }}
+                    />
                   </Box>
                 </Grid>
-                
                 <Grid item>
                   <Button
                     variant="outlined"
-                    color="primary"
                     onClick={() => handleViewProfile("rider")}
-                    disabled={loading}
-                    sx={{ 
-                      borderWidth: 2,
-                      fontWeight: "bold",
-                      minWidth: 120
-                    }}
+                    disabled={loadingRider}
+                    sx={{ borderWidth: 2, fontWeight: "bold", minWidth: 120 }}
                   >
-                    {loading ? <CircularProgress size={24} /> : t("View Profile")}
+                    {loadingRider ? (
+                      <CircularProgress size={24} />
+                    ) : (
+                      t("View Profile")
+                    )}
                   </Button>
                 </Grid>
               </Grid>
             </CardContent>
           </Card>
 
-          {/* Driver Card */}
-          <Card sx={{ 
-            background: theme.palette.secondary.sec,
-            mb: 3,
-            boxShadow: "none"
-          }}>
-            <CardContent>
-              <Typography 
-                variant="subtitle1" 
-                fontWeight="bold" 
-                mb={1}
-                color="primary"
-              >
-                {t("Driver")}
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              
-              <Grid container alignItems="center" spacing={2}>
-                <Grid item>
-                  <Avatar
-                    sx={{
-                      width: 64,
-                      height: 64,
-                      bgcolor: theme.palette.primary.main,
-                      color: "#fff",
-                      fontSize: 24,
-                    }}
-                    src={trip.driver.image || undefined}
-                  >
-                    {!trip.driver.image && trip.driver.name.charAt(0)}
-                  </Avatar>
-                </Grid>
-                
-                <Grid item xs>
-                  <Typography fontWeight="bold">{trip.driver.name}</Typography>
-                  <Box display="flex" alignItems="center">
-                    <Typography variant="body2">{trip.driver.rating}</Typography>
-                    <StarIcon fontSize="small" color="primary" sx={{ ml: 0.5 }} />
-                  </Box>
-                </Grid>
-                
-                {/* Car Info */}
-                <Grid item xs={12} md={5}>
-                  <Box display="flex" alignItems="center">
-                    <Box
-                      component="img"
-                      src={trip.driver.car.image}
-                      alt={trip.driver.car.brand}
-                      sx={{
-                        width: 64,
-                        height: 64,
-                        objectFit: "contain",
-                      }}
-                    />
-                    <Box ml={2}>
-                      <Typography fontWeight="bold">
-                        {trip.driver.car.plate}
+          {/* Driver Card (if any) */}
+          {trip.driver_id && (
+            <Card
+              sx={{
+                mb: 3,
+                boxShadow: "none",
+                background: theme.palette.secondary.sec,
+              }}
+            >
+              <CardContent>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  mb={1}
+                  color="primary"
+                >
+                  {t("Driver")}
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+                <Grid container alignItems="center" spacing={2}>
+                  <Grid item>
+                    <Avatar
+                      src={`${baseImageUrl}${trip.driver_id.profile_image}`}
+                      sx={{ width: 64, height: 64 }}
+                    >
+                      {!trip.driver_id.profile_image &&
+                        trip.driver_id.fullname.charAt(0)}
+                    </Avatar>
+                  </Grid>
+                  <Grid item xs>
+                    <Typography fontWeight="bold">
+                      {trip.driver_id.fullname}
+                    </Typography>
+                    <Box display="flex" alignItems="center">
+                      <Typography variant="body2">
+                        {trip.driver_id.status}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {trip.driver.car.brand} • {trip.driver.car.color}
-                      </Typography>
+                      <StarIcon
+                        fontSize="small"
+                        color="primary"
+                        sx={{ ml: 0.5 }}
+                      />
                     </Box>
-                  </Box>
+                  </Grid>
+
+                  {/* Car Info if provided */}
+                  {trip.car_snapshot && (
+                    <Grid item xs={12} md={5}>
+                      <Box display="flex" alignItems="center">
+                        <Box
+                          component="img"
+                          src={`${baseImageUrl}${trip.car_snapshot.car_image}`}
+                          alt={trip.car_snapshot.car_model}
+                          sx={{ width: 64, height: 64, objectFit: "contain" }}
+                        />
+                        <Box ml={2}>
+                          <Typography fontWeight="bold">
+                            {trip.car_snapshot.plate_number}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {trip.car_snapshot.car_model} •{" "}
+                            {trip.car_snapshot.car_color}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                  )}
+
+                  <Grid item xs={12} md="auto" sx={{ ml: "auto" }}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => handleViewProfile("driver")}
+                      disabled={loadingDriver}
+                      sx={{
+                        borderWidth: 2,
+                        fontWeight: "bold",
+                        minWidth: 120,
+                        mt: isMobile ? 2 : 0,
+                      }}
+                    >
+                      {loadingDriver ? (
+                        <CircularProgress size={24} />
+                      ) : (
+                        t("View Profile")
+                      )}
+                    </Button>
+                  </Grid>
                 </Grid>
-                
-                {/* View Profile Button at the end */}
-                <Grid item xs={12} md="auto" sx={{ ml: "auto" }}>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => handleViewProfile("driver")}
-                    disabled={loading}
-                    sx={{ 
-                      borderWidth: 2,
-                      fontWeight: "bold",
-                      minWidth: 120,
-                      mt: isMobile ? 2 : 0
-                    }}
-                  >
-                    {loading ? <CircularProgress size={24} /> : t("View Profile")}
-                  </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Other Details */}
-          <Typography 
-            variant="h6" 
-            mb={2}
-            color="primary"
-          >
+          <Typography variant="h6" mb={2} color="primary">
             {t("Other Details")}
           </Typography>
           <Divider sx={{ mb: 2 }} />
-          
           <List disablePadding sx={{ borderRadius: 2, overflow: "hidden" }}>
-            {Object.entries(trip.details).map(([key, value], index) => (
+            {Object.entries(details).map(([key, value], index) => (
               <ListItem
                 key={key}
                 sx={{
@@ -434,38 +439,25 @@ export default function TripDetailsPage() {
       ) : (
         // Trip Track Tab
         <Box>
-          {/* Map */}
-          <Box
-            sx={{
-              // height: "300px",
-              bgcolor: "grey.200",
-              mb: 3,
-              borderRadius: 2,
-              overflow: "hidden",
-            }}
-          >
-           <RouteMap
-                fromLat={30.0444}
-                fromLng={31.2357}
-                toLat={30.072}
-                toLng={31.346}
-              />
+          <Box sx={{ mb: 3, borderRadius: 2, overflow: "hidden" }}>
+            <RouteMap
+              fromLat={trip.from_lng_lat?.coordinates[1]}
+              fromLng={trip.from_lng_lat?.coordinates[0]}
+              toLat={trip.to_lng_lat?.coordinates[1]}
+              toLng={trip.to_lng_lat?.coordinates[0]}
+            />
           </Box>
-
-          {/* Timeline */}
           <Typography variant="h6" mb={2} color="primary">
             {t("Trip Timeline")}
           </Typography>
-          
-          <Box 
-            sx={{ 
-              position: "relative", 
+          <Box
+            sx={{
+              position: "relative",
               pl: isArabic ? 0 : 4,
               pr: isArabic ? 4 : 0,
-              mb: 3 
+              mb: 3,
             }}
           >
-            {/* Vertical Line */}
             <Box
               sx={{
                 position: "absolute",
@@ -477,46 +469,36 @@ export default function TripDetailsPage() {
                 zIndex: 1,
               }}
             />
-
-            {trip.timeline.map((step, idx, arr) => {
+            {timeline?.map((step, idx, arr) => {
               const isFirst = idx === 0;
               const isLast = idx === arr.length - 1;
-              
               return (
-                <Box
-                  key={idx}
-                  sx={{
-                    position: "relative",
-                    mb: 4,
-                    zIndex: 2,
-                  }}
-                >
-                  {/* Circle */}
+                <Box key={idx} sx={{ position: "relative", mb: 4, zIndex: 2 }}>
                   <FiberManualRecordIcon
                     fontSize="small"
                     sx={{
                       color: theme.palette.primary.main,
                       position: "absolute",
-                      [isArabic ? "right" : "left"]: isArabic ? "-33px" : "-33px",
+                      [isArabic ? "right" : "left"]: -33,
                       top: isFirst ? 0 : isLast ? "calc(100% - 12px)" : "50%",
-                      transform: isFirst || isLast ? "none" : "translateY(-50%)",
+                      transform:
+                        isFirst || isLast ? "none" : "translateY(-50%)",
                     }}
                   />
-
-                  <Box 
-                    sx={{ 
+                  <Box
+                    sx={{
                       ml: isArabic ? 0 : 4,
                       mr: isArabic ? 4 : 0,
-                      textAlign: isArabic ? "right" : "left"
+                      textAlign: isArabic ? "right" : "left",
                     }}
                   >
                     <Typography fontWeight="bold">{t(step.type)}</Typography>
                     <Typography variant="body2" color="text.secondary">
                       {step.time}
                     </Typography>
-                    <Box 
-                      display="flex" 
-                      alignItems="center" 
+                    <Box
+                      display="flex"
+                      alignItems="center"
                       mt={0.5}
                       flexDirection={isArabic ? "row-reverse" : "row"}
                     >

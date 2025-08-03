@@ -408,5 +408,7 @@
     "passwordRequired": "Password is required",
     "passwordMin": "Password must be at least 6 characters"
   },
-  "Rows per page":"Rows per page"
+  "Rows per page":"Rows per page",
+  "waitingTime":"Waiting Time",
+  "carType":"Car Type"
 }

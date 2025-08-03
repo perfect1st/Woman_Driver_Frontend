@@ -1,0 +1,102 @@
+import { createSlice } from "@reduxjs/toolkit";
+import {
+  getAllTrips,
+  getAllTripsWithoutPaginations,
+  getOneTrip,
+  editTrip,
+  addTrip,
+} from "./thunk";
+
+const initialState = {
+  allTrips: [],
+  trips: [],
+  trip: null,
+
+  loading: false,
+  error: null,
+};
+
+const tripSlice = createSlice({
+  name: "tripSlice",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    // Get All Trips (without pagination)
+    builder
+      .addCase(getAllTripsWithoutPaginations.pending, (state) => {
+        state.loading = true;
+        state.allTrips = [];
+      })
+      .addCase(getAllTripsWithoutPaginations.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allTrips = action.payload;
+      })
+      .addCase(getAllTripsWithoutPaginations.rejected, (state, action) => {
+        state.loading = false;
+        state.allTrips = [];
+        state.error = action.error.message;
+      });
+
+    // Get All Trips (with pagination)
+    builder
+      .addCase(getAllTrips.pending, (state) => {
+        state.loading = true;
+        state.trips = [];
+      })
+      .addCase(getAllTrips.fulfilled, (state, action) => {
+        state.loading = false;
+        state.trips = action.payload;
+      })
+      .addCase(getAllTrips.rejected, (state, action) => {
+        state.loading = false;
+        state.trips = [];
+        state.error = action.error.message;
+      });
+
+    // Get One Trip
+    builder
+      .addCase(getOneTrip.pending, (state) => {
+        state.loading = true;
+        state.trip = null;
+        state.error = null;
+      })
+      .addCase(getOneTrip.fulfilled, (state, action) => {
+        state.loading = false;
+        state.trip = action.payload;
+        state.error = null;
+      })
+      .addCase(getOneTrip.rejected, (state, action) => {
+        state.loading = false;
+        state.trip = null;
+        state.error = action.error.message;
+      });
+
+    // Edit Trip
+    builder
+      .addCase(editTrip.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(editTrip.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(editTrip.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
+
+    // Add Trip
+    builder
+      .addCase(addTrip.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(addTrip.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(addTrip.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
+  },
+});
+
+export default tripSlice.reducer;
