@@ -18,6 +18,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { saveAs } from "file-saver";
+import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
 
 const statusMap = {
   requested: "OnRequest",
@@ -34,30 +35,30 @@ const TripsPage = () => {
   const { t, i18n } = useTranslation();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [searchParams, setSearchParams] = useSearchParams();
+  const { allCarTypes } = useSelector((state) => state.carType);
 
   // URL params
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const keyword = searchParams.get("keyword") || "";
+  const car_types_id = searchParams.get("carType") || "";
+  const is_scheduled = searchParams.get("tripType") || "";
   const statusFilter = searchParams.get("status") || "";
 
   // redux state
   const { trips = {}, loading } = useSelector((s) => s.trip);
-  const {
-    data = [],
-    total = 0,
-    page: currentPage = 1,
-    totalPages = 1,
-  } = trips;
+  const { data = [], total = 0, page: currentPage = 1, totalPages = 1 } = trips;
 
   // fetch trips whenever params change
   useEffect(() => {
     const q =
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
+      (car_types_id ? `&car_types_id=${car_types_id}` : "") +
+      (is_scheduled ? `&is_scheduled=${is_scheduled == 'Scheduled' ? 'true' : 'false'}` : "") +
       (statusFilter ? `&status=${statusFilter}` : "");
     dispatch(getAllTrips({ query: q }));
-  }, [dispatch, page, limit, keyword, statusFilter]);
+  }, [dispatch, page, limit, keyword, statusFilter, car_types_id, is_scheduled]);
 
   // update URL params helper
   const updateParams = (upd) => {
@@ -80,7 +81,7 @@ const TripsPage = () => {
     tripId: trip._id.slice(-6).toUpperCase(), // or any custom formatting
     riderName: trip.user_id.fullname,
     driverName: trip.driver_id?.fullname || t("Unassigned"),
-    tripType: trip.car_types_id.name_en,
+    tripType: trip.is_scheduled ? t("Scheduled") : t("On Demand"),
     carType: trip.car_types_id.name_en,
     tripStatus: statusMap[trip.trips_status] || trip.trips_status,
   }));
@@ -95,8 +96,15 @@ const TripsPage = () => {
     { key: "tripStatus", label: t("Trip status") },
   ];
 
+  const tripTypeOptions = [
+    { _id: 'Scheduled', name: t("Scheduled") },
+    { _id: 'OnDemand', name: t("On Demand") }
+  ];
+
   // prevent horizontal scroll
   useEffect(() => {
+    dispatch(getAllCarTypesWithoutPaginations({ query: "" }));
+
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
     return () => {
@@ -114,6 +122,7 @@ const TripsPage = () => {
         getAllTripsWithoutPaginations({ query: q })
       ).unwrap();
 
+      console.log("response", response);
       const exportData = response.data.map((trip, idx) => ({
         ID: idx + 1,
         "Trip ID": trip._id.slice(-6).toUpperCase(),
@@ -130,7 +139,10 @@ const TripsPage = () => {
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Trips");
         const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-        saveAs(new Blob([buf], { type: "application/octet-stream" }), `Trips_${Date.now()}.xlsx`);
+        saveAs(
+          new Blob([buf], { type: "application/octet-stream" }),
+          `Trips_${Date.now()}.xlsx`
+        );
       } else if (type === "pdf") {
         const doc = new jsPDF();
         doc.text("Trips Report", 14, 10);
@@ -149,7 +161,9 @@ const TripsPage = () => {
             <h2>Trips Report</h2>
             <table>
               <thead>
-                <tr>${Object.keys(exportData[0]).map((k) => `<th>${k}</th>`).join("")}</tr>
+                <tr>${Object.keys(exportData[0])
+                  .map((k) => `<th>${k}</th>`)
+                  .join("")}</tr>
               </thead>
               <tbody>
                 ${exportData
@@ -203,9 +217,9 @@ const TripsPage = () => {
           onSearch={handleSearch}
           initialFilters={{ keyword, status: statusFilter }}
           statusOptions={Object.values(statusMap)}
-          tripTypeOptions={[]} // if you want server‐side, fetch distinct types
-          carTypeOptions={[]}
+          tripTypeOptions={tripTypeOptions} // if you want server‐side, fetch distinct types
           isTrip
+          carTypeOptions={allCarTypes?.data}
         />
       </Box>
 

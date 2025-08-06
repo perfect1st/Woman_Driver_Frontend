@@ -1,78 +1,86 @@
-import React, { useState, useEffect } from "react";
+// src/pages/Cars/CarsPage.js
+import React, { useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import Header from "../../components/PageHeader/header";
 import FilterComponent from "../../components/FilterComponent/FilterComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
+import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
+import LoadingPage from "../../components/LoadingComponent";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllCars,
+  getAllCarsWithoutPaginations,
+} from "../../redux/slices/car/thunk";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { saveAs } from "file-saver";
+import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
+
 const CarsPage = () => {
   const theme = useTheme();
-  const { t, i18n } = useTranslation();
-  const isArabic = i18n.language == 'ar'
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isArabic = i18n.language === "ar";
 
-  // Initial car data
-  const initialCars = [
-    {
-      id: 1,
-      model: "Toyota Corolla",
-      carType: "Sedan",
-      companyCar: "Company Car",
-      licenseExpiry: "2025-10-01",
-      status: "Available",
-    },
-    {
-      id: 2,
-      model: "Hyundai Elantra",
-      carType: "Sedan",
-      companyCar: "User Car",
-      licenseExpiry: "2024-11-15",
-      status: "Rejected",
-    },
-    {
-      id: 3,
-      model: "Kia Sportage",
-      carType: "SUV",
-      companyCar: "Company Car",
-      licenseExpiry: "2026-03-20",
-      status: "Available",
-    },
-    {
-      id: 4,
-      model: "Honda Civic",
-      carType: "Sedan",
-      companyCar: "User Car",
-      licenseExpiry: "2025-07-01",
-      status: "Available",
-    },
-    {
-      id: 5,
-      model: "Nissan Sunny",
-      carType: "Sedan",
-      companyCar: "Company Car",
-      licenseExpiry: "2024-12-05",
-      status: "Rejected",
-    },
-  ];
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Options for filters
-  const carTypeOptions = [
-    { _id: "1", name: "Sedan" },
-    { _id: "2", name: "SUV" },
-    { _id: "3", name: "Truck" },
-    { _id: "4", name: "Van" },
-  ];
-  
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const keyword = searchParams.get("keyword") || "";
+  const car_types_id = searchParams.get("carType") || "";
+
+  const { allCarTypes } = useSelector((state) => state.carType);
+
+  const { cars = {}, loading } = useSelector((state) => state.car);
+  const { data = [], total = 0, page: currentPage = 1, totalPages = 1 } = cars;
+
+  useEffect(() => {
+    const q =
+      `page=${page}&limit=${limit}` +
+      (keyword ? `&keyword=${keyword}` : "") +
+      (car_types_id ? `&car_types_id=${car_types_id}` : "");
+    dispatch(getAllCars({ query: q }));
+  }, [dispatch, page, limit, keyword, car_types_id]);
+
+  const updateParams = (upd) => {
+    const next = Object.fromEntries(searchParams);
+    Object.entries(upd).forEach(([k, v]) => {
+      if (v !== undefined && v !== "") next[k] = v;
+      else delete next[k];
+    });
+    setSearchParams(next);
+  };
+
+  const handleSearch = (f) => updateParams({ ...f, page: 1 });
+  const handleLimitChange = (e) =>
+    updateParams({ limit: e.target.value, page: 1 });
+  const handlePageChange = (_, v) => updateParams({ page: v });
+
   const companyCarOptions = ["Company Car", "User Car"];
   const statusOptions = ["Available", "Rejected"];
 
-  const [cars, setCars] = useState(initialCars);
-  const [filteredCars, setFilteredCars] = useState(initialCars);
+  const rows = data.map((car, index) => ({
+    mainId:car?._id,
+    id: (currentPage - 1) * limit + index + 1,
+    model: car.car_model,
+    carType: (
+      isArabic
+        ? car?.car_types_id?.name_ar
+        : car?.car_types_id?.name_en
+    ) || '-',
+    companyCar: car.is_company_car ? "Company Car" : "User Car",
+    licenseExpiry: new Date(car.createdAt).toLocaleDateString(),
+    status: "Available", // تحتاج API توفر الحالة الفعلية
 
-  // Table columns configuration
-  const tableColumns = [
+  }));
+
+  const columns = [
     { key: "id", label: t("Car ID") },
     { key: "model", label: t("Car Model") },
     { key: "carType", label: t("Car type") },
@@ -81,136 +89,146 @@ const CarsPage = () => {
     { key: "status", label: t("Car status") },
   ];
 
-  // Handle search/filter
-  const handleSearch = (filters) => {
-    const filtered = cars.filter(car => {
-      const matchesSearch = !filters.search ||
-        car.id.toString().includes(filters.search.toLowerCase()) ||
-        car.model.toLowerCase().includes(filters.search.toLowerCase());
+  const fetchAndExport = async (type) => {
+    try {
+      const q = keyword ? `&keyword=${keyword}` : "";
+      const response = await dispatch(
+        getAllCarsWithoutPaginations({ query: q })
+      ).unwrap();
 
-      const matchesCarType = !filters.carType || car.carType === 
-        carTypeOptions.find(ct => ct._id === filters.carType)?.name;
-      
-      const matchesCompanyCar = !filters.companyCar || car.companyCar === filters.companyCar;
-      const matchesStatus = !filters.status || car.status === filters.status;
+      const exportData = response.data.map((car, i) => ({
+        // ID: i + 1,
+        "Car ID":  i + 1,
+        Model: car.car_model,
+        "Company Car": car.is_company_car ? "Company Car" : "User Car",
+        "Created At": new Date(car.createdAt).toLocaleDateString(),
+      }));
 
-      return matchesSearch && matchesCarType && matchesCompanyCar && matchesStatus;
-    });
-
-    setFilteredCars(filtered);
+      if (type === "excel") {
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Cars");
+        const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+        saveAs(
+          new Blob([buf], { type: "application/octet-stream" }),
+          `Cars_${Date.now()}.xlsx`
+        );
+      } else if (type === "pdf") {
+        const doc = new jsPDF();
+        doc.text("Cars Report", 14, 10);
+        autoTable(doc, {
+          startY: 20,
+          head: [Object.keys(exportData[0])],
+          body: exportData.map((r) => Object.values(r)),
+        });
+        doc.save(`Cars_${Date.now()}.pdf`);
+      } else {
+        const w = window.open("", "_blank");
+        const html = `
+          <html><head><title>Cars</title>
+          <style>table{width:100%;border-collapse:collapse}th,td{border:1px solid #333;padding:4px;text-align:left}th{background:#eee}</style>
+          </head><body>
+            <h2>Cars Report</h2>
+            <table>
+              <thead>
+                <tr>${Object.keys(exportData[0])
+                  .map((k) => `<th>${k}</th>`)
+                  .join("")}</tr>
+              </thead>
+              <tbody>
+                ${exportData
+                  .map(
+                    (r) =>
+                      `<tr>${Object.values(r)
+                        .map((v) => `<td>${v}</td>`)
+                        .join("")}</tr>`
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </body></html>`;
+        w.document.write(html);
+        w.document.close();
+        w.print();
+      }
+    } catch (err) {
+      console.error("Export cars error:", err);
+    }
   };
 
-  // Handle status changes
-  const handleStatusChange = (row, newStatus) => {
-    const updatedCars = cars.map(car =>
-      car.id === row.id ? { ...car, status: newStatus } : car
-    );
-
-    setCars(updatedCars);
-    setFilteredCars(updatedCars);
-    console.log(`Status changed for ${row.model} to ${newStatus}`);
+  const addCarSubmit = () => {
+    navigate("/Cars/AddCar");
   };
 
-  // Handle view details
-  const handleViewDetails = (row) => {
-    navigate(`/CarDetails/${row.id}`);
-  };
-
-  // Prevent horizontal scrolling
   useEffect(() => {
+    dispatch(getAllCarTypesWithoutPaginations({ query: "" }));
+
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
-
     return () => {
       document.documentElement.style.overflowX = "auto";
       document.body.style.overflowX = "auto";
     };
   }, []);
 
-  const addCarSubmit = () => {
-    navigate("/Cars/AddCar");
-  };
+  if (loading) return <LoadingPage />;
+
   return (
     <Box
       component="main"
       sx={{
-        p: isSmallScreen ? 2 : 3,
+        p: isSmall ? 2 : 3,
         width: "100%",
         maxWidth: "100vw",
-        overflowX: "hidden",
-        boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
       }}
     >
-      {/* Header Section */}
-      <Box sx={{ width: "100%", flexShrink: 0 }}>
-        <Header
-          title={t("Cars")}
-          subtitle={t("Cars Details")}
-          i18n={i18n}
-          haveBtn={true}
-          btn={t("Add Car")}
-          btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
-          onSubmit={addCarSubmit}
-          isExcel={true}
-          isPdf={true}
-          isPrinter={true}
-        />
-      </Box>
+      <Header
+        title={t("Cars")}
+        subtitle={t("Cars Details")}
+        i18n={i18n}
+        haveBtn
+        btn={t("Add Car")}
+        btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
+        onSubmit={addCarSubmit}
+        isExcel
+        isPdf
+        isPrinter
+        onExcel={() => fetchAndExport("excel")}
+        onPdf={() => fetchAndExport("pdf")}
+        onPrinter={() => fetchAndExport("print")}
+      />
 
-      {/* Filter Section */}
-      <Box sx={{ width: "100%", flexShrink: 0, my: 2 }}>
+      <Box sx={{ my: 2 }}>
         <FilterComponent
           onSearch={handleSearch}
-          carTypeOptions={carTypeOptions}
+          initialFilters={{ keyword }}
+          carTypeOptions={allCarTypes?.data}
           companyCarOptions={companyCarOptions}
           statusOptions={statusOptions}
-          isCar={true}
+          isCar
         />
       </Box>
 
-      {/* Table Section */}
-      <Box
-        sx={{
-          flex: 1,
-          width: "100%",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          minHeight: 0,
-        }}
-      >
-        <Box
-          sx={{
-            flex: 1,
-            minHeight: 0,
-            width: "100%",
-            overflow: "auto",
-            borderRadius: 1,
-            boxShadow: 1,
-            "&::-webkit-scrollbar": {
-              height: "6px",
-              width: "6px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: theme.palette.grey[400],
-              borderRadius: "4px",
-            },
-          }}
-        >
-          <TableComponent
-            columns={tableColumns}
-            data={filteredCars}
-            onStatusChange={handleStatusChange}
-            onViewDetails={handleViewDetails}
-            statusKey="status"
-            showStatusChange={true}
-            isCar={true}
-          />
-        </Box>
-      </Box>
+      <TableComponent
+        columns={columns}
+        data={rows}
+        onViewDetails={(r) => navigate(`/CarDetails/${r.mainId}`)}
+        statusKey="status"
+        showStatusChange={true}
+        isCar
+        sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
+      />
+
+      <PaginationFooter
+        currentPage={currentPage}
+        totalPages={totalPages}
+        limit={limit}
+        onPageChange={handlePageChange}
+        onLimitChange={handleLimitChange}
+      />
     </Box>
   );
 };

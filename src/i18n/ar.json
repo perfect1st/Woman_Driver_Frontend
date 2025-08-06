@@ -421,5 +421,10 @@
   },
   "Rows per page":"عدد الصفوف في الصفحة",
   "waitingTime":"وقت الانتظار",
-  "carType":"نوع السيارة"
+  "carType":"نوع السيارة",
+  "Approved":"موافق",
+  "panned":"مرفوض",
+  "Scheduled": "مجدول",
+  "On Demand": "عند الطلب",
+  "Unassigned": "غير معين"
 }

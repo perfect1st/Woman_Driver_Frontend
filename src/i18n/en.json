@@ -410,5 +410,10 @@
   },
   "Rows per page":"Rows per page",
   "waitingTime":"Waiting Time",
-  "carType":"Car Type"
+  "carType":"Car Type",
+  "Approved":"Approved",
+  "panned":"Rejected",
+  "Scheduled": "Scheduled",
+  "On Demand": "On Demand",
+  "Unassigned": "Unassigned"
 }
