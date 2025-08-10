@@ -39,6 +39,21 @@ export const getAllTrips = createAsyncThunk(
     }
   }
 );
+export const getAllDriverTrips = createAsyncThunk(
+  "/tripSlice/getAllDriverTrips",
+  async ({ id,query = '' }) => {
+    try {
+      const response = await useGetDataToken(`/trips?driver_id=${id}&${query}`);
+      return response;
+    } catch (error) {
+      if (error.message === "Network Error") {
+        return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري", "error");
+      } else {
+        return notify(error.response?.data, "error");
+      }
+    }
+  }
+);
 
 // Get one trip
 export const getOneTrip = createAsyncThunk(

@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   getAllTrips,
   getAllTripsWithoutPaginations,
+  getAllDriverTrips,
   getOneTrip,
   editTrip,
   addTrip,
@@ -10,6 +11,7 @@ import {
 const initialState = {
   allTrips: [],
   trips: [],
+  allDriverTrips: [],
   trip: null,
 
   loading: false,
@@ -50,6 +52,21 @@ const tripSlice = createSlice({
       .addCase(getAllTrips.rejected, (state, action) => {
         state.loading = false;
         state.trips = [];
+        state.error = action.error.message;
+      });
+    // Get All Trips (with pagination)
+    builder
+      .addCase(getAllDriverTrips.pending, (state) => {
+        state.loading = true;
+        state.allDriverTrips = [];
+      })
+      .addCase(getAllDriverTrips.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allDriverTrips = action.payload;
+      })
+      .addCase(getAllDriverTrips.rejected, (state, action) => {
+        state.loading = false;
+        state.allDriverTrips = [];
         state.error = action.error.message;
       });
 

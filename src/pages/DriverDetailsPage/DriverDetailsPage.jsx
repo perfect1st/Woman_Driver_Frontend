@@ -56,10 +56,11 @@ import { ReactComponent as LeftCar } from "../../assets/leftCar.svg";
 import { ReactComponent as RigthCar } from "../../assets/rigthCar.svg";
 import { getOneDriver, editDriver } from "../../redux/slices/driver/thunk";
 import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
+import { getAllDriverTrips } from "../../redux/slices/trip/thunk";
 import { useDispatch, useSelector } from "react-redux";
-import useBaseImageUrlForDriver from '../../hooks/useBaseImageUrlForDriver'
+import useBaseImageUrlForDriver from "../../hooks/useBaseImageUrlForDriver";
 import LoadingPage from "../../components/LoadingComponent";
-
+import PaginationFooter from "../../components/PaginationFooter/PaginationFooter"
 // Mock assets for trips and transactions since real data doesn't include them
 const statusStyles = {
   Available: {
@@ -257,12 +258,15 @@ export default function DriverDetailsPage() {
   const [newImages, setNewImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [uploadError, setUploadError] = useState("");
+  const [imageField, setImageField] = useState("");
+  const [imageTitle, setImageTitle] = useState("");
+  const [imageUploadLoading, setImageUploadLoading] = useState(false);
   const fileInputRef = useRef(null);
   const defaultTab = tabOptions[0]; // first tab by default
   const currentTab =
     tabParam && tabOptions.includes(tabParam) ? tabParam : defaultTab;
   const baseImageUrl = useBaseImageUrlForDriver();
-
+const {allDriverTrips} = useSelector((state) => state.trip);
   // Get the actual driver data from Redux store
   const driverState = useSelector((state) => state.driver);
   const driverData = driverState.driver;
@@ -270,7 +274,6 @@ export default function DriverDetailsPage() {
   // Determine if we have valid driver data
   const hasDriverData = driverData && driverData._id;
   const { allCarTypes } = useSelector((state) => state.carType);
-
 
   // Format dates for display
   const formatDate = (dateString) => {
@@ -306,23 +309,23 @@ export default function DriverDetailsPage() {
 
   // Get full image URL
   const getImageUrl = (path) => {
+    if (!path) return "";
     return `${baseImageUrl}${path}`;
   };
-
+  const getNestedImages = (imagesObj) => {
+    if (!imagesObj) return [];
+    return Object.values(imagesObj).map((img) => getImageUrl(img));
+  };
   // Get car type name (in a real app, this would come from car types API)
   const getCarType = () => {
-    if (!hasDriverData || !driverData.car) return  "";
-  
+    if (!hasDriverData || !driverData.car) return "";
+
     const carTypeId = driverData.car.car_types_id;
-  
+
     // البحث في car types
     const carType = allCarTypes?.data?.find((type) => type._id === carTypeId);
-  
-    return carType
-      ? isArabic
-        ? carType.name_ar
-        : carType.name_en
-      : "";
+
+    return carType ? (isArabic ? carType.name_ar : carType.name_en) : "";
   };
   // State for editable fields - initialized with real data if available
   const [editableFields, setEditableFields] = useState({
@@ -335,33 +338,38 @@ export default function DriverDetailsPage() {
     verificationCode: hasDriverData ? driverData.verification_code : "",
     verified: hasDriverData ? driverData.is_code_verified : true,
     nationalId: hasDriverData ? driverData.national_id_number : "",
-    nationalIdExpiry: hasDriverData 
-      ? formatDate(driverData.national_id_expired_date) 
+    nationalIdExpiry: hasDriverData
+      ? formatDate(driverData.national_id_expired_date)
       : "",
-    driverLicense: hasDriverData 
-      ? (driverData.driver_license_images && driverData.driver_license_images.length > 0 
-          ? "License Uploaded" 
-          : "No License") 
+    driverLicense: hasDriverData
+      ? driverData.driver_license_images &&
+        driverData.driver_license_images.length > 0
+        ? "License Uploaded"
+        : "No License"
       : "",
-    driverLicenseExpiry: hasDriverData 
-      ? formatDate(driverData.driver_license_expired_date) 
+    driverLicenseExpiry: hasDriverData
+      ? formatDate(driverData.driver_license_expired_date)
       : "",
     accountNumber: hasDriverData ? driverData.account_number : "",
     carType: hasDriverData ? getCarType() : "",
     carModel: hasDriverData && driverData.car ? driverData.car.car_model : "",
     carColor: hasDriverData && driverData.car ? driverData.car.car_color : "",
-    carYear: hasDriverData && driverData.car ? driverData.car.car_year.toString() : "",
-    plateNumber: hasDriverData && driverData.car ? driverData.car.plate_number : "",
-    carLicense: hasDriverData && driverData.car && driverData.car.car_license_images 
-      ? "License Uploaded" 
-      : "",
+    carYear:
+      hasDriverData && driverData.car ? driverData.car.car_year.toString() : "",
+    plateNumber:
+      hasDriverData && driverData.car ? driverData.car.plate_number : "",
+    carLicense:
+      hasDriverData && driverData.car && driverData.car.car_license_images
+        ? "License Uploaded"
+        : "",
     carLicenseExpiry: "", // Not in real data
-    isCompanyCar: hasDriverData && driverData.car ? driverData.car.is_company_car : true,
+    isCompanyCar:
+      hasDriverData && driverData.car ? driverData.car.is_company_car : true,
   });
 
   useEffect(() => {
     dispatch(getOneDriver({ id }));
-    dispatch(getAllCarTypesWithoutPaginations({query:''}));
+    dispatch(getAllCarTypesWithoutPaginations({ query: "" }));
   }, [dispatch, id]);
 
   useEffect(() => {
@@ -378,9 +386,11 @@ export default function DriverDetailsPage() {
         verified: driverData.is_code_verified,
         nationalId: driverData.national_id_number,
         nationalIdExpiry: formatDate(driverData.national_id_expired_date),
-        driverLicense: driverData.driver_license_images && driverData.driver_license_images.length > 0 
-          ? "License Uploaded" 
-          : "No License",
+        driverLicense:
+          driverData.driver_license_images &&
+          driverData.driver_license_images.length > 0
+            ? "License Uploaded"
+            : "No License",
         driverLicenseExpiry: formatDate(driverData.driver_license_expired_date),
         accountNumber: driverData.account_number,
         carType: getCarType(),
@@ -388,9 +398,10 @@ export default function DriverDetailsPage() {
         carColor: driverData.car ? driverData.car.car_color : "",
         carYear: driverData.car ? driverData.car.car_year.toString() : "",
         plateNumber: driverData.car ? driverData.car.plate_number : "",
-        carLicense: driverData.car && driverData.car.car_license_images 
-          ? "License Uploaded" 
-          : "No License",
+        carLicense:
+          driverData.car && driverData.car.car_license_images
+            ? "License Uploaded"
+            : "No License",
         carLicenseExpiry: "N/A", // Not available in API
         isCompanyCar: driverData.car ? driverData.car.is_company_car : false,
       });
@@ -466,11 +477,23 @@ export default function DriverDetailsPage() {
     setSelectedTrip(null);
   };
 
-  const handleOpenImageModal = (images, type) => {
-    // If images is a string (single image), convert to array
-    const imageArray = Array.isArray(images) ? images : [images];
+  const handleOpenImageModal = (images, fieldName, title) => {
+    let imageArray = [];
+
+    // Handle different types of image structures
+    if (Array.isArray(images)) {
+      imageArray = images;
+    } else if (typeof images === "object" && images !== null) {
+      imageArray = Object.values(images).map((img) => getImageUrl(img));
+    } else if (typeof images === "string") {
+      imageArray = [getImageUrl(images)];
+    } else {
+      imageArray = [DomiCar]; // Fallback to mock image
+    }
+
     setSelectedImage(imageArray);
-    setImageType(type);
+    setImageField(fieldName);
+    setImageTitle(title);
     setImageModalOpen(true);
     setEditingImage(false);
     setNewImages([]);
@@ -513,7 +536,7 @@ export default function DriverDetailsPage() {
           const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
           resolve({
             file: dataURLtoFile(compressedDataUrl, file.name),
-            preview: compressedDataUrl
+            preview: compressedDataUrl,
           });
         };
       };
@@ -523,7 +546,7 @@ export default function DriverDetailsPage() {
 
   // Convert data URL to File object
   const dataURLtoFile = (dataurl, filename) => {
-    const arr = dataurl.split(',');
+    const arr = dataurl.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];
     const bstr = atob(arr[1]);
     let n = bstr.length;
@@ -537,25 +560,26 @@ export default function DriverDetailsPage() {
   const handleImageChange = async (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const files = Array.from(e.target.files);
-      const maxFiles = imageType === "nationalId" || imageType === "driverLicense" ? 2 : 1;
-      
+      const maxFiles =
+        imageType === "nationalId" || imageType === "driverLicense" ? 2 : 1;
+
       if (files.length > maxFiles) {
         setUploadError(t(`You can only upload up to ${maxFiles} images`));
         return;
       }
 
       setUploadError("");
-      
+
       try {
         const processedImages = await Promise.all(
-          files.map(file => compressImage(file))
+          files.map((file) => compressImage(file))
         );
-        
-        const newFiles = processedImages.map(item => item.file);
-        const newPreviews = processedImages.map(item => item.preview);
-        
-        setNewImages(prev => [...prev, ...newFiles]);
-        setImagePreviews(prev => [...prev, ...newPreviews]);
+
+        const newFiles = processedImages.map((item) => item.file);
+        const newPreviews = processedImages.map((item) => item.preview);
+
+        setNewImages((prev) => [...prev, ...newFiles]);
+        setImagePreviews((prev) => [...prev, ...newPreviews]);
       } catch (error) {
         setUploadError(t("Error processing images. Please try again."));
       }
@@ -568,38 +592,19 @@ export default function DriverDetailsPage() {
       return;
     }
 
-    // Create FormData and append all images
+    setImageUploadLoading(true);
+
     const formData = new FormData();
-    
-    // Append the driver ID
-    
-    // Append all images based on imageType
-    newImages.forEach((image, index) => {
-      formData.append(`${imageType}`, image);
+    formData.append("user_type", driverData?.user_type || "");
+
+    // Use imageField to determine the field name
+    newImages.forEach((image) => {
+      formData.append(imageField, image);
     });
-    formData.append('user_type', driverData?.user_type || ''); // <-- Add this line here
 
-    
-    // Dispatch the editDriver action with the formData
-    setLoading((prev) => ({ ...prev, [imageType]: true }));
-    
     try {
-      await dispatch(editDriver({ id, data:formData }));
-      // Update local state with new images
-      if (imageType === "nationalId") {
-        setEditableFields(prev => ({
-          ...prev,
-          nationalId: "License Uploaded"
-        }));
-      } else if (imageType === "driverLicense") {
-        setEditableFields(prev => ({
-          ...prev,
-          driverLicense: "License Uploaded"
-        }));
-      }
-
-       await dispatch(getOneDriver({ id}));
-      // Close editing mode
+      await dispatch(editDriver({ id, data: formData }));
+      await dispatch(getOneDriver({ id }));
       setEditingImage(false);
       setNewImages([]);
       setImagePreviews([]);
@@ -607,7 +612,7 @@ export default function DriverDetailsPage() {
     } catch (error) {
       setUploadError(t("Failed to upload images. Please try again."));
     } finally {
-      setLoading((prev) => ({ ...prev, [imageType]: false }));
+      setImageUploadLoading(false);
     }
   };
 
@@ -628,10 +633,10 @@ export default function DriverDetailsPage() {
       document.body.removeChild(link);
       return;
     }
-    
+
     // If imageSrc is an array, download the first image
     const src = Array.isArray(imageSrc) ? imageSrc[0] : imageSrc;
-    
+
     const link = document.createElement("a");
     link.href = src;
     link.download = fileName || "download";
@@ -649,87 +654,95 @@ export default function DriverDetailsPage() {
 
   const handleSave = async (field) => {
     setLoading((prev) => ({ ...prev, [field]: true }));
-    
+
     // Create FormData object instead of regular object
     const formData = new FormData();
-    
+
     // Prepare data to send to API based on the field being edited
     switch (field) {
       case "fullName":
-        formData.append('fullname', editableFields.fullName);
+        formData.append("fullname", editableFields.fullName);
         break;
       case "phone":
-        formData.append('phone_number', editableFields.phone);
+        formData.append("phone_number", editableFields.phone);
         break;
       case "email":
-        formData.append('email', editableFields.email);
+        formData.append("email", editableFields.email);
       case "password":
-        formData.append('password', editableFields.password);
+        formData.append("password", editableFields.password);
         break;
       case "status":
-        formData.append('driver_is_available', editableFields.status === "Available");
+        formData.append(
+          "driver_is_available",
+          editableFields.status === "Available"
+        );
         break;
       case "accountStatus":
         // Map UI status to API status
         let apiStatus = "pending";
         if (editableFields.accountStatus === "Accepted") apiStatus = "active";
         if (editableFields.accountStatus === "Rejected") apiStatus = "rejected";
-        formData.append('status', apiStatus);
+        formData.append("status", apiStatus);
         break;
       case "verified":
-        formData.append('is_code_verified', editableFields.verified);
+        formData.append("is_code_verified", editableFields.verified);
         break;
       case "nationalId":
-        formData.append('national_id_number', editableFields.nationalId);
+        formData.append("national_id_number", editableFields.nationalId);
         break;
       case "nationalIdExpiry":
-        formData.append('national_id_expired_date', editableFields.nationalIdExpiry);
+        formData.append(
+          "national_id_expired_date",
+          editableFields.nationalIdExpiry
+        );
         break;
       case "driverLicenseExpiry":
-        formData.append('driver_license_expired_date', editableFields.driverLicenseExpiry);
+        formData.append(
+          "driver_license_expired_date",
+          editableFields.driverLicenseExpiry
+        );
         break;
       case "accountNumber":
-        formData.append('account_number', editableFields.accountNumber);
+        formData.append("account_number", editableFields.accountNumber);
         break;
       case "carModel":
-        formData.append('car[car_model]', editableFields.carModel);
+        formData.append("car[car_model]", editableFields.carModel);
         break;
       case "carColor":
-        formData.append('car[car_color]', editableFields.carColor);
+        formData.append("car[car_color]", editableFields.carColor);
         break;
       case "carYear":
-        formData.append('car[car_year]', parseInt(editableFields.carYear));
+        formData.append("car[car_year]", parseInt(editableFields.carYear));
       case "carType":
         formData.append("car_types_id", editableFields.carType); // لا تحتاج parseInt
         break;
       case "plateNumber":
-        formData.append('car[plate_number]', editableFields.plateNumber);
+        formData.append("car[plate_number]", editableFields.plateNumber);
         break;
       case "carLicenseExpiry":
-        formData.append('car_license_expiry', editableFields.carLicenseExpiry);
+        formData.append("car_license_expiry", editableFields.carLicenseExpiry);
         break;
       case "isCompanyCar":
-        formData.append('car[is_company_car]', editableFields.isCompanyCar);
+        formData.append("car[is_company_car]", editableFields.isCompanyCar);
         break;
       default:
         break;
     }
-    formData.append('user_type', driverData?.user_type || ''); // <-- Add this line here
+    formData.append("user_type", driverData?.user_type || ""); // <-- Add this line here
 
     try {
-      
-      if (formData.entries().next().value) { // Check if formData has entries
-        await dispatch(editDriver({ id, data:formData }));
-        await dispatch(getOneDriver({ id}));
+      if (formData.entries().next().value) {
+        // Check if formData has entries
+        await dispatch(editDriver({ id, data: formData }));
+        await dispatch(getOneDriver({ id }));
       }
     } catch (error) {
-      console.log("error")
-    }finally{
+      console.log("error");
+    } finally {
       // Dispatch with formData
-        setLoading((prev) => ({ ...prev, [field]: false }));
-        setEditMode((prev) => ({ ...prev, [field]: false }));
-        console.log(`Saved ${field}:`, editableFields[field]);
-
+      setLoading((prev) => ({ ...prev, [field]: false }));
+      setEditMode((prev) => ({ ...prev, [field]: false }));
+      console.log(`Saved ${field}:`, editableFields[field]);
     }
   };
 
@@ -756,19 +769,19 @@ export default function DriverDetailsPage() {
     if (field === "carType" && editMode[field]) {
       return (
         <Box display="flex" alignItems="center" width="100%">
-       <Select
-  value={editableFields.carType}
-  onChange={(e) => handleFieldChange("carType", e.target.value)}
-  fullWidth
-  size="small"
-  sx={{ flexGrow: 1, mr: 1 }}
->
-  {(allCarTypes?.data || []).map((type) => (
-    <MenuItem key={type._id} value={type._id}>
-      {isArabic ? type.name_ar : type.name_en}
-    </MenuItem>
-  ))}
-</Select>
+          <Select
+            value={editableFields.carType}
+            onChange={(e) => handleFieldChange("carType", e.target.value)}
+            fullWidth
+            size="small"
+            sx={{ flexGrow: 1, mr: 1 }}
+          >
+            {(allCarTypes?.data || []).map((type) => (
+              <MenuItem key={type._id} value={type._id}>
+                {isArabic ? type.name_ar : type.name_en}
+              </MenuItem>
+            ))}
+          </Select>
 
           <IconButton
             onClick={() => handleSave(field)}
@@ -779,7 +792,7 @@ export default function DriverDetailsPage() {
         </Box>
       );
     }
-    
+
     if (field === "status" && editMode[field]) {
       const styles = statusStyles[editableFields.status];
       return (
@@ -806,7 +819,7 @@ export default function DriverDetailsPage() {
         </Box>
       );
     }
-    
+
     if (field === "accountStatus" && editMode[field]) {
       const styles = AccountStatus[editableFields.accountStatus];
       return (
@@ -833,7 +846,7 @@ export default function DriverDetailsPage() {
         </Box>
       );
     }
-    
+
     if (editMode[field]) {
       return (
         <Box display="flex" alignItems="center" width="100%">
@@ -854,7 +867,7 @@ export default function DriverDetailsPage() {
         </Box>
       );
     }
-    
+
     if (field === "accountStatus") {
       const styles = AccountStatus[editableFields.accountStatus];
       return (
@@ -882,7 +895,7 @@ export default function DriverDetailsPage() {
         </Box>
       );
     }
-    
+
     if (field === "status") {
       const styles = statusStyles[editableFields.status];
       return (
@@ -910,7 +923,7 @@ export default function DriverDetailsPage() {
         </Box>
       );
     }
-    
+
     return (
       <Box
         display="flex"
@@ -928,41 +941,25 @@ export default function DriverDetailsPage() {
     );
   };
 
-  const renderDownloadLink = (title, type) => {
-    let imageSrc = "";
-    let fileName = "";
-    
-    // Determine which image to use based on type
-    switch (type) {
-      case "nationalId":
-        imageSrc = hasDriverData && driverData.national_id_images && driverData.national_id_images.length > 0
-          ? driverData.national_id_images.map(img => getImageUrl(img))
-          : [DomiCar];
-        fileName = `national_id_${driverData ? driverData._id : 'mock'}.jpg`;
-        break;
-      case "driverLicense":
-        imageSrc = hasDriverData && driverData.driver_license_images && driverData.driver_license_images.length > 0
-          ? driverData.driver_license_images.map(img => getImageUrl(img))
-          : [DomiCar];
-        fileName = `driver_license_${driverData ? driverData._id : 'mock'}.jpg`;
-        break;
-      case "carLicense":
-        imageSrc = hasDriverData && driverData.car && driverData.car.car_license_images && driverData.car.car_license_images.length > 0
-          ? [getImageUrl(driverData.car.car_license_images[0])]
-          : [DomiCar];
-        fileName = `car_license_${driverData ? driverData._id : 'mock'}.jpg`;
-        break;
-      case "bankLetter":
-        imageSrc = hasDriverData && driverData.bank_letter_image
-          ? [getImageUrl(driverData.bank_letter_image)]
-          : [DomiCar];
-        fileName = `bank_letter_${driverData ? driverData._id : 'mock'}.jpg`;
-        break;
-      default:
-        imageSrc = [DomiCar];
-        fileName = `${type}_image.jpg`;
+  const renderDownloadLink = (title, fieldName, images) => {
+    // 1) حوّل الصور إلى مصفوفة من URL
+    let imageSrc = [];
+    if (Array.isArray(images)) {
+      imageSrc = images.map(getImageUrl);
+    } else if (typeof images === "object" && images !== null) {
+      imageSrc = Object.values(images).filter(Boolean).map(getImageUrl);
+    } else if (typeof images === "string") {
+      imageSrc = [getImageUrl(images)];
+    } else {
+      imageSrc = [DomiCar];
     }
-    
+  
+    // 2) اسم الملف
+    const fileName = `${fieldName}_${driverData?._id || "mock"}.jpg`;
+  
+    // 3) ديباغ للطباعة
+    console.log("renderDownloadLink:", { title, fieldName, fileName, imageSrc, images });
+  
     return (
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography
@@ -976,59 +973,45 @@ export default function DriverDetailsPage() {
         >
           {t("Click Here To Download")}
         </Typography>
-        <IconButton onClick={() => handleOpenImageModal(imageSrc, type)}>
+        <IconButton onClick={() => handleOpenImageModal(imageSrc, fieldName, title)}>
           <VisibilityIcon sx={{ color: theme.palette.primary.main }} />
         </IconButton>
       </Box>
     );
   };
+  
 
-  const renderCarImageCard = (title, type) => {
-    // Determine which car image to show based on type
+  const renderCarImageCard = (title, angle, fieldName) => {
     let imageSrc = DomiCar;
-    let index = 0;
-    
-    if (hasDriverData && driverData.car && driverData.car.car_images && driverData.car.car_images.length > 0) {
-      switch (type) {
-        case "carFront":
-          index = 0;
-          break;
-        case "carBack":
-          index = 1;
-          break;
-        case "carRight":
-          index = 2;
-          break;
-        case "carLeft":
-          index = 3;
-          break;
-        default:
-          index = 0;
-      }
-      if (index < driverData.car.car_images.length) {
-        imageSrc = getImageUrl(driverData.car.car_images[index]);
-        // Test if the image actually loads
-        const testImage = new Image();
-        testImage.src = imageSrc;
-        testImage.onerror = () => {
-          console.error(`Failed to load image: ${imageSrc}`);
-          // You could set a fallback here if needed
-        };
-      }
+
+    if (
+      hasDriverData &&
+      driverData.car &&
+      driverData.car.car_images &&
+      driverData.car.car_images[angle]
+    ) {
+      imageSrc = getImageUrl(driverData.car.car_images[angle]);
     }
-    
+
     return (
-      <Card sx={{ background: theme.palette.secondary.sec, height: "100%", display: "flex", flexDirection: "column" }}>
+      <Card
+        sx={{
+          background: theme.palette.secondary.sec,
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <CardContent>
           <Box display="flex" alignItems="center" mb={1}>
             <IconButton>
-              {type === "carFront" ? (
+              {angle === "front" ? (
                 <FrontCar />
-              ) : type === "carBack" ? (
+              ) : angle === "back" ? (
                 <BackCar />
-              ) : type === "carRight" ? (
+              ) : angle === "right" ? (
                 <RigthCar />
-              ) : type === "carLeft" ? (
+              ) : angle === "left" ? (
                 <LeftCar />
               ) : (
                 <DirectionsCarIcon fontSize="small" />
@@ -1038,7 +1021,13 @@ export default function DriverDetailsPage() {
               {t(title)}
             </Typography>
           </Box>
-          {renderDownloadLink(title, type)}
+          {renderDownloadLink(
+            title,
+            `car_${angle}`,
+            hasDriverData && driverData.car && driverData.car.car_images
+              ? { [angle]: driverData.car.car_images[angle] }
+              : null
+          )}
         </CardContent>
       </Card>
     );
@@ -1086,9 +1075,8 @@ export default function DriverDetailsPage() {
     </Card>
   );
 
-
-  if(apiLoading){
-    return <LoadingPage />
+  if (apiLoading) {
+    return <LoadingPage />;
   }
   return (
     <Box p={2}>
@@ -1108,19 +1096,23 @@ export default function DriverDetailsPage() {
           {t("Driver Details")}
         </Typography>
         <Typography mx={1}>{`<`}</Typography>
-        <Typography>{hasDriverData ? driverData.fullname : "Driver"}</Typography>
+        <Typography>
+          {hasDriverData ? driverData.fullname : "Driver"}
+        </Typography>
       </Box>
-      
+
       {/* Name & ID */}
       <Box mb={2}>
         <Typography variant="h5" fontWeight="bold">
           {hasDriverData ? driverData.fullname : "Sophia Bennett"}
         </Typography>
-       {false && <Typography variant="subtitle1" color="text.secondary">
-          {hasDriverData ? `#DRV-${driverData._id.slice(-5)}` : "#DRV-12345"}
-        </Typography>}
+        {false && (
+          <Typography variant="subtitle1" color="text.secondary">
+            {hasDriverData ? `#DRV-${driverData._id.slice(-5)}` : "#DRV-12345"}
+          </Typography>
+        )}
       </Box>
-      
+
       {/* Driver Profile with Status Toggle */}
       <Box
         maxWidth="md"
@@ -1138,12 +1130,15 @@ export default function DriverDetailsPage() {
               color: "#fff",
               fontSize: 40,
             }}
-            src={hasDriverData && driverData.profile_image 
-              ? getImageUrl(driverData.profile_image) 
-              : DomiDriverImage}
+            src={
+              hasDriverData && driverData.profile_image
+                ? getImageUrl(driverData.profile_image)
+                : DomiDriverImage
+            }
           >
-            {!hasDriverData || !driverData.profile_image && 
-              (hasDriverData ? driverData.fullname.charAt(0) : "S")}
+            {!hasDriverData ||
+              (!driverData.profile_image &&
+                (hasDriverData ? driverData.fullname.charAt(0) : "S"))}
           </Avatar>
           <Box
             sx={{
@@ -1161,29 +1156,29 @@ export default function DriverDetailsPage() {
             }}
           />
         </Box>
-        
+
         {/* Status Toggle */}
         <Box display="flex" alignItems="center" mt={1}>
           <Typography>{t(editableFields.status)}</Typography>
           <IOSSwitch
-          disabled
+            disabled
             checked={editableFields.status === "Available"}
             onChange={toggleAvailability}
             color="primary"
             sx={{ mx: 1 }}
           />
         </Box>
-        
+
         <Typography mt={1}>
           {t("Total Trip")}: {hasDriverData ? "2" : "2"}
         </Typography>
-        
+
         <Box display="flex" alignItems="center" mt={0.5}>
           <Typography>{hasDriverData ? "4.89" : "4.89"}</Typography>
           <StarIcon fontSize="small" color="primary" sx={{ ml: 0.5 }} />
         </Box>
       </Box>
-      
+
       {/* Tabs */}
       <Tabs
         value={tabOptions.indexOf(currentTab)}
@@ -1196,7 +1191,7 @@ export default function DriverDetailsPage() {
         <Tab label={t("Payment Details")} />
         <Tab label={t("Trips")} />
       </Tabs>
-      
+
       {/* Tab Content */}
       <Box maxWidth="md">
         {/* Driver Details Tab */}
@@ -1225,7 +1220,7 @@ export default function DriverDetailsPage() {
                 </CardContent>
               </Card>
             </Grid>
-            
+
             {/* Row 2 */}
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
@@ -1245,12 +1240,14 @@ export default function DriverDetailsPage() {
                 </CardContent>
               </Card>
             </Grid>
-            
+
             {/* Row 3 */}
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
                 <CardContent>
-                  <Typography variant="subtitle2">{t("Account Status")}</Typography>
+                  <Typography variant="subtitle2">
+                    {t("Account Status")}
+                  </Typography>
                   <Box mt={1}>
                     {renderEditableField("accountStatus", t("Account Status"))}
                   </Box>
@@ -1286,19 +1283,42 @@ export default function DriverDetailsPage() {
                 </CardContent>
               </Card>
             </Grid>
-            
+
             {/* National ID Row */}
-            <Grid item xs={12} sx={{ display: "flex" }}>
+            <Grid item xs={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
                 <CardContent>
                   <Typography variant="subtitle2">
-                    {t("National ID")}
+                    {t("Front National ID")}
                   </Typography>
-                  {renderDownloadLink("National ID", "nationalId")}
+                  {renderDownloadLink(
+                    "Front National ID",
+                    "national_id_front",
+                    hasDriverData && driverData.national_id_images
+                      ? { front: driverData.national_id_images.front }
+                      : null
+                  )}{" "}
                 </CardContent>
               </Card>
             </Grid>
-            
+            {/* National ID Row */}
+            <Grid item xs={6} sx={{ display: "flex" }}>
+              <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
+                <CardContent>
+                  <Typography variant="subtitle2">
+                    {t("Back National ID")}
+                  </Typography>
+                  {renderDownloadLink(
+                    "Back National ID",
+                    "national_id_back",
+                    hasDriverData && driverData.national_id_images
+                      ? { back: driverData.national_id_images.back }
+                      : null
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+
             {/* National ID Details Row */}
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
@@ -1328,15 +1348,37 @@ export default function DriverDetailsPage() {
                 </CardContent>
               </Card>
             </Grid>
-            
+
             {/* Driver License Row */}
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
                 <CardContent>
                   <Typography variant="subtitle2">
-                    {t("Driver License")}
+                    {t("Driver License Front")}
                   </Typography>
-                  {renderDownloadLink("Driver License", "driverLicense")}
+                  {renderDownloadLink(
+                    "Driver License Front",
+                    "driver_license_front",
+                    hasDriverData && driverData.driver_license_images
+                      ? driverData?.driver_license_images?.front
+                      : null
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ display: "flex" }}>
+              <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
+                <CardContent>
+                  <Typography variant="subtitle2">
+                    {t("Driver License Back")}
+                  </Typography>
+                  {renderDownloadLink(
+                    "Driver License Back",
+                    "driver_license_back",
+                    hasDriverData && driverData.driver_license_images
+                      ? driverData?.driver_license_images?.back
+                      : null
+                  )}
                 </CardContent>
               </Card>
             </Grid>
@@ -1358,7 +1400,7 @@ export default function DriverDetailsPage() {
             </Grid>
           </Grid>
         )}
-        
+
         {/* Car Documents Tab */}
         {tabParam === "car-documents" && (
           <Grid container spacing={2}>
@@ -1390,21 +1432,29 @@ export default function DriverDetailsPage() {
               </Box>
               <Divider sx={{ my: 2 }} />
             </Grid>
-            
+
             {/* Car Pictures - Fixed Size */}
             <Grid item xs={12} md={6}>
-              {renderCarImageCard("Car's Picture Front", "carFront")}
+              {renderCarImageCard("Car's Picture Front", "front", "car_front")}
             </Grid>
             <Grid item xs={12} md={6}>
-              {renderCarImageCard("Car's Picture Back", "carBack")}
+              {renderCarImageCard("Car's Picture Back", "back", "car_back")}
             </Grid>
             <Grid item xs={12} md={6}>
-              {renderCarImageCard("Car's Picture Right side", "carRight")}
+              {renderCarImageCard(
+                "Car's Picture Right side",
+                "right",
+                "car_right"
+              )}
             </Grid>
             <Grid item xs={12} md={6}>
-              {renderCarImageCard("Car's Picture Left Side", "carLeft")}
+              {renderCarImageCard(
+                "Car's Picture Left Side",
+                "left",
+                "car_left"
+              )}
             </Grid>
-            
+
             {/* Car License */}
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card
@@ -1418,7 +1468,35 @@ export default function DriverDetailsPage() {
                   <Typography variant="subtitle2">
                     {t("Car License")}
                   </Typography>
-                  {renderDownloadLink("Car License", "carLicense")}
+                  {renderDownloadLink(
+                    "Car License Front",
+                    "car_license_front",
+                    hasDriverData && driverData.car?.car_license_images
+                      ? driverData.car.car_license_images
+                      : null
+                  )}{" "}
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ display: "flex" }}>
+              <Card
+                sx={{
+                  background: theme.palette.secondary.sec,
+                  height: "100%",
+                  flex: 1,
+                }}
+              >
+                <CardContent>
+                  <Typography variant="subtitle2">
+                    {t("Car License")}
+                  </Typography>
+                  {renderDownloadLink(
+                    "Car License Back",
+                    "car_license_back",
+                    hasDriverData && driverData.car?.car_license_images
+                      ? driverData.car.car_license_images
+                      : null
+                  )}{" "}
                 </CardContent>
               </Card>
             </Grid>
@@ -1444,7 +1522,7 @@ export default function DriverDetailsPage() {
                 </CardContent>
               </Card>
             </Grid>
-            
+
             {/* Plate Number & Model */}
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
@@ -1457,14 +1535,21 @@ export default function DriverDetailsPage() {
                     <IconButton
                       onClick={() =>
                         handleOpenImageModal(
-                          hasDriverData && driverData.car && driverData.car.car_images && driverData.car.car_images.length > 0
-                            ? driverData.car.car_images.map(img => getImageUrl(img))
+                          hasDriverData &&
+                            driverData.car &&
+                            driverData.car.car_images &&
+                            driverData.car.car_images.length > 0
+                            ? driverData.car.car_images.map((img) =>
+                                getImageUrl(img)
+                              )
                             : [DomiCar],
                           "plateNumber"
                         )
                       }
                     >
-                      <VisibilityIcon sx={{ color: theme.palette.primary.main }} />
+                      <VisibilityIcon
+                        sx={{ color: theme.palette.primary.main }}
+                      />
                     </IconButton>
                   </Box>
                 </CardContent>
@@ -1480,7 +1565,7 @@ export default function DriverDetailsPage() {
                 </CardContent>
               </Card>
             </Grid>
-            
+
             {/* Color & Year */}
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
@@ -1502,7 +1587,7 @@ export default function DriverDetailsPage() {
                 </CardContent>
               </Card>
             </Grid>
-            
+
             {/* Car Type */}
             <Grid item xs={12} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
@@ -1516,7 +1601,7 @@ export default function DriverDetailsPage() {
             </Grid>
           </Grid>
         )}
-        
+
         {/* Payment Details Tab */}
         {tabParam === "payment-details" && (
           <Grid container spacing={2}>
@@ -1561,7 +1646,13 @@ export default function DriverDetailsPage() {
                   <Typography variant="subtitle2">
                     {t("Bank letter")}
                   </Typography>
-                  {renderDownloadLink("Bank Letter", "bankLetter")}
+                  {renderDownloadLink(
+                    "Bank Letter",
+                    "bank_letter",
+                    hasDriverData && driverData?.bank_letter_image
+                      ? driverData?.bank_letter_image
+                      : null
+                  )}{" "}
                 </CardContent>
               </Card>
             </Grid>
@@ -1576,7 +1667,7 @@ export default function DriverDetailsPage() {
             </Grid>
           </Grid>
         )}
-        
+
         {/* Trips Tab */}
         {tabParam === "trips" && (
           <Grid container spacing={2}>
@@ -1610,7 +1701,8 @@ export default function DriverDetailsPage() {
                             {trip.from} to {trip.to}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            {trip.time} · {trip?.driver?.name} · {trip.car.plate}
+                            {trip.time} · {trip?.driver?.name} ·{" "}
+                            {trip.car.plate}
                           </Typography>
                         </Box>
                         <Button
@@ -1654,7 +1746,8 @@ export default function DriverDetailsPage() {
                             {trip?.from} to {trip?.to}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            {trip?.time} · {trip?.driver?.name} · {trip?.car?.plate}
+                            {trip?.time} · {trip?.driver?.name} ·{" "}
+                            {trip?.car?.plate}
                           </Typography>
                         </Box>
                         <Button
@@ -1673,7 +1766,7 @@ export default function DriverDetailsPage() {
           </Grid>
         )}
       </Box>
-      
+
       {/* Trip Details Drawer */}
       <Drawer
         anchor={isArabic ? "left" : "right"}
@@ -1709,7 +1802,7 @@ export default function DriverDetailsPage() {
                 <CloseIcon />
               </IconButton>
             </Box>
-            
+
             {/* Map iframe placeholder */}
             <Box
               sx={{
@@ -1726,7 +1819,7 @@ export default function DriverDetailsPage() {
                 toLng={31.346}
               />
             </Box>
-            
+
             {/* Driver & Car Info */}
             <Box sx={{ width: "100%", mb: 2 }}>
               <Card
@@ -1763,7 +1856,7 @@ export default function DriverDetailsPage() {
                       </Box>
                     </Box>
                   </Grid>
-                  
+
                   {/* Car Info */}
                   <Grid item xs={12} md={5}>
                     <Box display="flex" alignItems="center">
@@ -1785,12 +1878,13 @@ export default function DriverDetailsPage() {
                           {selectedTrip.car.plate}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          {selectedTrip.car.color} &bull; {selectedTrip.car.brand}
+                          {selectedTrip.car.color} &bull;{" "}
+                          {selectedTrip.car.brand}
                         </Typography>
                       </Box>
                     </Box>
                   </Grid>
-                  
+
                   {/* Open Chat Button on same line */}
                   <Grid item xs={12} md={3}>
                     <Box
@@ -1805,7 +1899,7 @@ export default function DriverDetailsPage() {
                 </Grid>
               </Card>
             </Box>
-            
+
             {/* Timeline */}
             {isArabic ? (
               <Box sx={{ position: "relative", pr: 4, mb: 3 }}>
@@ -1932,7 +2026,7 @@ export default function DriverDetailsPage() {
                 })}
               </Box>
             )}
-            
+
             {/* Trip Details */}
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="subtitle1" fontWeight="bold" mb={1}>
@@ -1960,7 +2054,7 @@ export default function DriverDetailsPage() {
                 ))}
               </List>
             </Box>
-            
+
             {/* Divider and Done Button */}
             <Box sx={{ mt: "auto", pt: 2, mb: 2 }}>
               <Divider sx={{ mb: 2 }} />
@@ -1977,7 +2071,7 @@ export default function DriverDetailsPage() {
           </Box>
         )}
       </Drawer>
-      
+
       {/* Image Modal */}
       <Dialog
         open={imageModalOpen}
@@ -2016,13 +2110,13 @@ export default function DriverDetailsPage() {
               >
                 {t("Select New Images")}
               </Button>
-              
+
               <Collapse in={!!uploadError}>
                 <Alert severity="error" sx={{ mb: 2 }}>
                   {uploadError}
                 </Alert>
               </Collapse>
-              
+
               {imagePreviews.length > 0 && (
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="subtitle2" sx={{ mb: 1 }}>
@@ -2100,9 +2194,13 @@ export default function DriverDetailsPage() {
                 variant="contained"
                 color="primary"
                 onClick={handleSaveImage}
-                disabled={newImages.length === 0}
+                disabled={newImages.length === 0 || imageUploadLoading}
               >
-                {t("Save")}
+                {imageUploadLoading ? (
+                  <CircularProgress size={24} />
+                ) : (
+                  t("Save")
+                )}
               </Button>
             </>
           ) : (
