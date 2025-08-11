@@ -778,24 +778,24 @@ const formatTime = (dateString) => {
         formData.append("account_number", editableFields.accountNumber);
         break;
       case "carModel":
-        formData.append("car_model", editableFields.carModel);
+        formData.append("car[car_model]", editableFields.carModel);
         break;
       case "carColor":
-        formData.append("car_color", editableFields.carColor);
+        formData.append("car[car_color]", editableFields.carColor);
         break;
       case "carYear":
-        formData.append("car_year", parseInt(editableFields.carYear));
+        formData.append("car[car_year]", parseInt(editableFields.carYear));
       case "carType":
-        formData.append("car_types_id", editableFields.carType); // لا تحتاج parseInt
+        formData.append("car[car_types_id]", editableFields.carType); // لا تحتاج parseInt
         break;
       case "plateNumber":
-        formData.append("plate_number", editableFields.plateNumber);
+        formData.append("car[plate_number]", editableFields.plateNumber);
         break;
       case "carLicenseExpiry":
-        formData.append("car_license_expired_date", editableFields.carLicenseExpiry);
+        formData.append("car[car_license_expired_date]", editableFields.carLicenseExpiry);
         break;
       case "isCompanyCar":
-        formData.append("is_company_car", !editableFields.isCompanyCar);
+        formData.append("car[is_company_car]", !editableFields.isCompanyCar);
         break;
       default:
         break;
@@ -1594,39 +1594,29 @@ const formatTime = (dateString) => {
                 </CardContent>
               </Card>
             </Grid>
+                        {/* Plate Number & Model */}
 
-            {/* Plate Number & Model */}
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
-              <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
+              <Card
+                sx={{
+                  background: theme.palette.secondary.sec,
+                  height: "100%",
+                  flex: 1,
+                }}
+              >
                 <CardContent>
                   <Typography variant="subtitle2">
-                    {t("Plate Number")}
+                  {t("Plate Number")}
                   </Typography>
-                  <Box mt={1} display="flex" justifyContent="space-between">
-                    <Typography>{editableFields.plateNumber}</Typography>
-                    <IconButton
-                      onClick={() =>
-                        handleOpenImageModal(
-                          hasDriverData &&
-                            driverData.car &&
-                            driverData.car.car_images &&
-                            driverData.car.car_images.length > 0
-                            ? driverData.car.car_images.map((img) =>
-                                getImageUrl(img)
-                              )
-                            : [DomiCar],
-                          "plateNumber"
-                        )
-                      }
-                    >
-                      <VisibilityIcon
-                        sx={{ color: theme.palette.primary.main }}
-                      />
-                    </IconButton>
+                  <Box mt={1}>
+                  {renderEditableField("plateNumber", t("Plate Number"))}
+
                   </Box>
                 </CardContent>
               </Card>
             </Grid>
+
+         
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
                 <CardContent>
