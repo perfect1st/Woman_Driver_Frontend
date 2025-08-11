@@ -415,5 +415,19 @@
   "panned":"Rejected",
   "Scheduled": "Scheduled",
   "On Demand": "On Demand",
-  "Unassigned": "Unassigned"
+  "Unassigned": "Unassigned",
+  "NoDriverTrips":"No trips found for this driver",
+  "MapUnavailable":"Map unavailable",
+  "From":"From",
+  "To":"To",
+  "Front National ID":"The front side of the national Id",
+  "Back National ID":"The back side of the national Id",
+  "Driver License Front": "The front of the driver's license", 
+  "Driver License Back": "The back of the driver's license",
+  "trips_status":"Trip Status",
+  "requested": "Requested",
+  "accepted": "Accepted",
+  "started": "Started",
+  "completed": "Completed",
+  "cancelled": "Cancelled"
 }

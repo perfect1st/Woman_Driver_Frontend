@@ -426,5 +426,19 @@
   "panned":"مرفوض",
   "Scheduled": "مجدول",
   "On Demand": "عند الطلب",
-  "Unassigned": "غير معين"
+  "Unassigned": "غير معين",
+  "NoDriverTrips":"لم يتم العثور على رحلات لهذا السائق",
+  "MapUnavailable":"الخريطة غير متاحة",
+  "From":"من",
+  "To":"الي",
+  "Front National ID":"الوجه الأمامي للهوية الوطنية",
+  "Back National ID":"الوجه الخلفي للهوية الوطنية",
+  "Driver License Front":"الوجه الأمامي لرخصه قياده السائق",
+  "Driver License Back":"الوجه الخلفي لرخصه قياده السائق",
+  "trips_status":"حالة الرحلة",
+  "requested": "تم الطلب",
+  "accepted": "تم القبول",
+  "started": "بدأت الرحلة",
+  "completed": "اكتملت الرحلة",
+  "cancelled": "تم الإلغاء"
 }

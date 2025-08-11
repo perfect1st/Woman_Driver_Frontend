@@ -61,6 +61,7 @@ import { useDispatch, useSelector } from "react-redux";
 import useBaseImageUrlForDriver from "../../hooks/useBaseImageUrlForDriver";
 import LoadingPage from "../../components/LoadingComponent";
 import PaginationFooter from "../../components/PaginationFooter/PaginationFooter"
+import DriverTrips from "./DriverTrips";
 // Mock assets for trips and transactions since real data doesn't include them
 const statusStyles = {
   Available: {
@@ -119,10 +120,10 @@ const mockTrips = [
       time: "03:06 PM - 04:05 PM",
       distance: "5.2 km",
       type: "Standard",
-      fare: "EGP 45.00",
-      waiting: "EGP 5.00",
+      fare: "SAR 45.00",
+      waiting: "SAR 5.00",
       payment: "Cash",
-      cashback: "EGP 0.00",
+      cashback: "SAR 0.00",
     },
     status: "current",
   },
@@ -156,10 +157,10 @@ const mockTrips = [
       time: "03:30 PM - 04:25 PM",
       distance: "12.5 km",
       type: "Premium",
-      fare: "EGP 85.00",
-      waiting: "EGP 8.00",
+      fare: "SAR 85.00",
+      waiting: "SAR 8.00",
       payment: "Credit Card",
-      cashback: "EGP 5.00",
+      cashback: "SAR 5.00",
     },
     status: "past",
   },
@@ -188,10 +189,10 @@ const mockTrips = [
       time: "09:15 AM - 09:45 AM",
       distance: "8.3 km",
       type: "Comfortable",
-      fare: "EGP 65.00",
-      waiting: "EGP 0.00",
+      fare: "SAR 65.00",
+      waiting: "SAR 0.00",
       payment: "Wallet",
-      cashback: "EGP 3.00",
+      cashback: "SAR 3.00",
     },
     status: "past",
   },
@@ -274,7 +275,7 @@ const {allDriverTrips} = useSelector((state) => state.trip);
   // Determine if we have valid driver data
   const hasDriverData = driverData && driverData._id;
   const { allCarTypes } = useSelector((state) => state.carType);
-
+console.log("selectedTrip",selectedTrip)
   // Format dates for display
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -402,8 +403,10 @@ const {allDriverTrips} = useSelector((state) => state.trip);
           driverData.car && driverData.car.car_license_images
             ? "License Uploaded"
             : "No License",
-        carLicenseExpiry: "N/A", // Not available in API
-        isCompanyCar: driverData.car ? driverData.car.is_company_car : false,
+            carLicenseExpiry: driverData.car?.car_license_expired_date
+            ? new Date(driverData.car.car_license_expired_date).toISOString().split("T")[0]
+            : "",
+            isCompanyCar: driverData.car ? driverData.car.is_company_car : false,
       });
     }
   }, [hasDriverData, driverData]);
@@ -467,8 +470,77 @@ const {allDriverTrips} = useSelector((state) => state.trip);
     isCompanyCar: false,
   });
 
+  // Format time (HH:MM AM/PM)
+const formatTime = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleTimeString(i18n.language, {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+};
+
+// Format date (Month Day, Year)
+// const formatDate = (dateString) => {
+//   if (!dateString) return "";
+//   const date = new Date(dateString);
+//   return date.toLocaleDateString(i18n.language, {
+//     year: "numeric",
+//     month: "short",
+//     day: "numeric"
+//   });
+// };
+
   const handleOpenDrawer = (trip) => {
-    setSelectedTrip(trip);
+    // Map API data to drawer structure
+    const drawerTrip = {
+      driver: {
+        name: trip.driver_id?.fullname || t("Unknown Driver"),
+        rating: 4.9, // Placeholder since rating doesn't exist in API
+        image: trip.driver_id?.profile_image 
+          ? getImageUrl(trip.driver_id.profile_image) 
+          : DomiDriverImage
+      },
+      car: {
+        plate: trip.car_snapshot?.plate_number || t("Not assigned"),
+        color: trip.car_snapshot?.car_color || t("Not assigned"),
+        brand: trip.car_snapshot?.car_model || t("Not assigned"),
+        image: DomiCar // Placeholder
+      },
+      timeline: [
+        {
+          type: "Pickup",
+          time: formatTime(trip.createdAt),
+          address: trip?.from_name || t("Pickup Location")
+        },
+        {
+          type: "Dropoff",
+          time: formatTime(trip.updatedAt),
+          address: trip?.to_name || t("Dropoff Location")
+        }
+      ],
+      details: {
+        date: formatDate(trip.createdAt),
+        time: `${formatTime(trip.createdAt)} - ${formatTime(trip.updatedAt)}`,
+        distance: `${trip.kilos_number || 0} km`,
+        type: isArabic 
+          ? trip.car_types_id?.name_ar 
+          : trip.car_types_id?.name_en || t("Not assigned"),
+        fare: `SAR ${trip.cost || 0}`,
+        trips_status: `${t(trip.trips_status)}`,
+        waiting: `SAR ${trip.total_waiting_minutes_cost || 0}`,
+        payment: isArabic 
+          ? trip.payment_method_id?.name_ar 
+          : trip.payment_method_id?.name_en || t("Not assigned"),
+        cashback: "SAR 0.00"
+      },
+      coordinates: {
+        from: trip.from_lng_lat?.coordinates || [],
+        to: trip.to_lng_lat?.coordinates || []
+      }
+    };
+    
+    setSelectedTrip(drawerTrip);
     setDrawerOpen(true);
   };
 
@@ -706,24 +778,24 @@ const {allDriverTrips} = useSelector((state) => state.trip);
         formData.append("account_number", editableFields.accountNumber);
         break;
       case "carModel":
-        formData.append("car[car_model]", editableFields.carModel);
+        formData.append("car_model", editableFields.carModel);
         break;
       case "carColor":
-        formData.append("car[car_color]", editableFields.carColor);
+        formData.append("car_color", editableFields.carColor);
         break;
       case "carYear":
-        formData.append("car[car_year]", parseInt(editableFields.carYear));
+        formData.append("car_year", parseInt(editableFields.carYear));
       case "carType":
         formData.append("car_types_id", editableFields.carType); // لا تحتاج parseInt
         break;
       case "plateNumber":
-        formData.append("car[plate_number]", editableFields.plateNumber);
+        formData.append("plate_number", editableFields.plateNumber);
         break;
       case "carLicenseExpiry":
-        formData.append("car_license_expiry", editableFields.carLicenseExpiry);
+        formData.append("car_license_expired_date", editableFields.carLicenseExpiry);
         break;
       case "isCompanyCar":
-        formData.append("car[is_company_car]", editableFields.isCompanyCar);
+        formData.append("is_company_car", !editableFields.isCompanyCar);
         break;
       default:
         break;
@@ -1615,12 +1687,12 @@ const {allDriverTrips} = useSelector((state) => state.trip);
                   alignItems="center"
                 >
                   <Typography variant="h6">
-                    {t("Wallet")}: {hasDriverData ? "EGP 0.00" : "EGP 98.50"}
+                    {t("Wallet")}: {hasDriverData ? "SAR 0.00" : "SAR 98.50"}
                   </Typography>
                   <CreditCardIcon color="primary" />
                 </Box>
                 <Typography variant="body1" mt={1}>
-                  {t("Your Cash")}: {hasDriverData ? "EGP 0.00" : "EGP 98.50"}
+                  {t("Your Cash")}: {hasDriverData ? "SAR 0.00" : "SAR 98.50"}
                 </Typography>
               </Paper>
               <Typography variant="h6" color="primary" mb={1}>
@@ -1670,101 +1742,8 @@ const {allDriverTrips} = useSelector((state) => state.trip);
 
         {/* Trips Tab */}
         {tabParam === "trips" && (
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography variant="h6" color="primary" mb={1}>
-                {t("Current Trips")}
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              {mockTrips
-                .filter((trip) => trip.status === "current")
-                .map((trip, i) => (
-                  <Card
-                    key={`current-${i}`}
-                    sx={{ background: theme.palette.secondary.sec, mb: 2 }}
-                  >
-                    <CardContent>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <IconButton
-                          sx={{
-                            borderRadius: 1,
-                            backgroundColor: theme.palette.background.paper,
-                            p: 1,
-                          }}
-                        >
-                          <CalendarMonthIcon
-                            sx={{ color: theme.palette.primary.main }}
-                          />
-                        </IconButton>
-                        <Box flexGrow={1}>
-                          <Typography variant="subtitle2">
-                            {trip.from} to {trip.to}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {trip.time} · {trip?.driver?.name} ·{" "}
-                            {trip.car.plate}
-                          </Typography>
-                        </Box>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          sx={{ fontSize: "16px", fontWeight: 700 }}
-                          onClick={() => handleOpenDrawer(trip)}
-                        >
-                          {t("Details")}
-                        </Button>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                ))}
-              <Typography variant="h6" color="primary" mt={4} mb={1}>
-                {t("Past Trips")}
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              {mockTrips
-                .filter((trip) => trip.status === "past")
-                .map((trip, i) => (
-                  <Card
-                    key={`past-${i}`}
-                    sx={{ background: theme.palette.secondary.sec, mb: 2 }}
-                  >
-                    <CardContent>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <IconButton
-                          sx={{
-                            borderRadius: 1,
-                            backgroundColor: theme.palette.background.paper,
-                            p: 1,
-                          }}
-                        >
-                          <CalendarMonthIcon
-                            sx={{ color: theme.palette.primary.main }}
-                          />
-                        </IconButton>
-                        <Box flexGrow={1}>
-                          <Typography variant="subtitle2">
-                            {trip?.from} to {trip?.to}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {trip?.time} · {trip?.driver?.name} ·{" "}
-                            {trip?.car?.plate}
-                          </Typography>
-                        </Box>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          sx={{ fontSize: "16px", fontWeight: 700 }}
-                          onClick={() => handleOpenDrawer(trip)}
-                        >
-                          {t("Details")}
-                        </Button>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                ))}
-            </Grid>
-          </Grid>
-        )}
+  <DriverTrips driverId={id} onTripClick={handleOpenDrawer}/>
+)}
       </Box>
 
       {/* Trip Details Drawer */}
@@ -1812,12 +1791,12 @@ const {allDriverTrips} = useSelector((state) => state.trip);
                 borderRadius: 1,
               }}
             >
-              <RouteMap
-                fromLat={30.0444}
-                fromLng={31.2357}
-                toLat={30.072}
-                toLng={31.346}
-              />
+             <RouteMap
+  fromLat={selectedTrip.coordinates.from[1] || 30.0444}
+  fromLng={selectedTrip.coordinates.from[0] || 31.2357}
+  toLat={selectedTrip.coordinates.to[1] || 30.072}
+  toLng={selectedTrip.coordinates.to[0] || 31.346}
+/>
             </Box>
 
             {/* Driver & Car Info */}
@@ -1841,49 +1820,46 @@ const {allDriverTrips} = useSelector((state) => state.trip);
                       />
                       <Box>
                         <Typography variant="subtitle1" fontWeight="bold">
-                          {selectedTrip?.driver?.name}
+                        {selectedTrip.driver?.name || t("Driver not assigned")}
                         </Typography>
-                        <Box display="flex" alignItems="center" mt={0.25}>
-                          <StarIcon
-                            fontSize="small"
-                            color="primary"
-                            sx={{ mr: 0.5 }}
-                          />
-                          <Typography variant="body2">
-                            {selectedTrip?.driver?.rating}
-                          </Typography>
-                        </Box>
+                        {selectedTrip.driver?.rating ? (
+        <Box display="flex" alignItems="center" mt={0.25}>
+          <StarIcon fontSize="small" color="primary" sx={{ mr: 0.5 }} />
+          <Typography variant="body2">
+            {selectedTrip.driver.rating}
+          </Typography>
+        </Box>
+      ) : null}
+
                       </Box>
                     </Box>
                   </Grid>
 
                   {/* Car Info */}
                   <Grid item xs={12} md={5}>
-                    <Box display="flex" alignItems="center">
-                      <Box
-                        component="img"
-                        src={selectedTrip.car.image}
-                        alt={selectedTrip.car.brand}
-                        sx={{
-                          width: 64,
-                          height: 64,
-                          objectFit: "contain",
-                          backgroundColor: theme.palette.background.paper,
-                          borderRadius: 1,
-                          p: 0.5,
-                        }}
-                      />
-                      <Box ml={2}>
-                        <Typography variant="subtitle1" fontWeight="bold">
-                          {selectedTrip.car.plate}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {selectedTrip.car.color} &bull;{" "}
-                          {selectedTrip.car.brand}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
+  {selectedTrip.car ? (
+    <Box display="flex" alignItems="center">
+      <Box
+        component="img"
+        src={selectedTrip.car.image}
+        alt={selectedTrip.car.brand}
+        sx={{ width: 64, height: 64, objectFit: "contain" }}
+      />
+      <Box ml={2}>
+        <Typography variant="subtitle1" fontWeight="bold">
+          {selectedTrip.car.plate || t("Not assigned")}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {selectedTrip.car.color} &bull; {selectedTrip.car.brand}
+        </Typography>
+      </Box>
+    </Box>
+  ) : (
+    <Typography variant="body2">
+      {t("No car information available")}
+    </Typography>
+  )}
+</Grid>
 
                   {/* Open Chat Button on same line */}
                   <Grid item xs={12} md={3}>
