@@ -31,7 +31,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import StarIcon from "@mui/icons-material/Star";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DomiCar from "../../assets/DomiCar.png";
 import DomiDriverImage from "../../assets/DomiDriverImage.png";
@@ -43,6 +43,9 @@ import {
 } from "../../redux/slices/passenger/thunk";
 import LoadingPage from "../../components/LoadingComponent";
 import useBaseImageUrl from "../../hooks/useBaseImageUrl";
+import { getAllPassengerTrips } from "../../redux/slices/trip/thunk";
+import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
+import { format } from "date-fns";
 
 const statusStyles = {
   active: {
@@ -57,7 +60,6 @@ const statusStyles = {
     borderColor: "#FECDCA",
   },
 };
-// dispatch(editPassenger({id, data}))
 
 export default function RiderDetailsPage() {
   const { t, i18n } = useTranslation();
@@ -68,6 +70,14 @@ export default function RiderDetailsPage() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { passenger, loading } = useSelector((s) => s.passenger);
+  const { allPassengerTrips, loading: tripsLoading } = useSelector(
+    (state) => state.trip
+  );
+
+  // Search params for pagination
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
 
   // EDITABLE STATE HOOKS
   const [editable, setEditable] = useState({
@@ -90,6 +100,12 @@ export default function RiderDetailsPage() {
     dispatch(getOnePassenger(id));
   }, [dispatch, id]);
 
+  // Fetch trips when page/limit changes
+  useEffect(() => {
+    const query = `page=${page}&limit=${limit}`;
+    dispatch(getAllPassengerTrips({ id, query }));
+  }, [dispatch, id, page, limit]);
+
   // SEED editable WHEN passenger LOADS
   useEffect(() => {
     if (passenger) {
@@ -107,127 +123,108 @@ export default function RiderDetailsPage() {
     }
   }, [passenger]);
 
-  // MOCKED TRIPS (exactly your array)
-  const trips = useMemo(
-    () =>
-      passenger
-        ? [
-            {
-              id: 1,
-              time: "12:00 PM",
-              from: "123 Main St",
-              to: "456 Oak Ave",
-              driver: {
-                name: "John Smith",
-                rating: 4.9,
-                image: DomiDriverImage,
+  // Transform API trip data to component format
+  const transformTrips = (trips) => {
+    return trips?.data?.map((trip) => ({
+      id: trip._id,
+      time: format(new Date(trip.createdAt), "hh:mm a"),
+      from: trip.from_name,
+      to: trip.to_name,
+      driver: {
+        name: trip.driver_id?.fullname || t("Unknown"),
+        rating: 5.0, // Default rating if not available
+        image: trip.driver_id?.profile_image
+          ? `${baseImageUrl}${trip.driver_id.profile_image}`
+          : DomiDriverImage,
+      },
+      car: {
+        plate: trip.car_snapshot?.plate_number || "",
+        color: trip.car_snapshot?.car_color || "",
+        brand: trip.car_snapshot?.car_model || "",
+        image: DomiCar,
+      },
+      timeline: [
+        {
+          type: "Requested",
+          time: format(new Date(trip.createdAt), "hh:mm a"),
+          address: trip.from_name,
+        },
+        ...(trip.trip_start_time
+          ? [
+              {
+                type: "Started",
+                time: format(new Date(trip.trip_start_time), "hh:mm a"),
+                address: trip.from_name,
               },
-              car: {
-                plate: "ABC-123",
-                color: "Black",
-                brand: "Toyota Camry",
-                image: DomiCar,
+            ]
+          : []),
+        ...(trip.trips_status === "completed"
+          ? [
+              {
+                type: "Completed",
+                time: format(new Date(trip.updatedAt), "hh:mm a"),
+                address: trip.to_name,
               },
-              timeline: [
-                {
-                  type: "Pickup",
-                  time: "03:06 PM",
-                  address: "123 Main St, Anytown",
-                },
-                {
-                  type: "Waiting",
-                  time: "03:30 PM",
-                  address: "579 Anytown, Main St",
-                },
-                {
-                  type: "Dropoff",
-                  time: "04:05 PM",
-                  address: "456 Oak Ave, Anytown",
-                },
-              ],
-              details: {
-                date: "2023-05-15",
-                time: "03:06 PM - 04:05 PM",
-                distance: "5.2 km",
-                type: "Standard",
-                fare: "EGP 45.00",
-                waiting: "EGP 5.00",
-                payment: "Cash",
-                cashback: "EGP 0.00",
-              },
-            },
-            {
-              id: 2,
-              time: "3:30 PM",
-              from: "City Mall",
-              to: "Airport",
-              driver: {
-                name: "Michael Johnson",
-                rating: 4.7,
-                image: DomiDriverImage,
-              },
-              car: {
-                plate: "XYZ-789",
-                color: "White",
-                brand: "Honda Accord",
-                image: DomiCar,
-              },
-              timeline: [
-                {
-                  type: "Pickup",
-                  time: "03:30 PM",
-                  address: "City Mall, Main Entrance",
-                },
-                {
-                  type: "Waiting",
-                  time: "03:50 PM",
-                  address: "Airport Parking Lot",
-                },
-                {
-                  type: "Dropoff",
-                  time: "04:25 PM",
-                  address: "Airport Terminal B",
-                },
-              ],
-              details: {
-                date: "2023-05-15",
-                time: "03:30 PM - 04:25 PM",
-                distance: "12.5 km",
-                type: "Premium",
-                fare: "EGP 85.00",
-                waiting: "EGP 8.00",
-                payment: "Credit Card",
-                cashback: "EGP 5.00",
-              },
-            },
-          ]
-        : [],
-    [passenger]
-  );
+            ]
+          : []),
+      ],
+      details: {
+        date: format(new Date(trip.createdAt), "yyyy-MM-dd"),
+        time: `${format(new Date(trip.createdAt), "hh:mm a")} - ${
+          trip.trip_start_time
+            ? format(new Date(trip.trip_start_time), "hh:mm a")
+            : "-"
+        }`,
+        distance: `${trip.kilos_number} km`,
+        type: trip.car_types_id?.name_en || "",
+        fare: `SAR ${trip.cost}`,
+        waiting: `SAR ${trip.total_waiting_minutes_cost}`,
+        payment: trip.payment_method_id?.name_en || "",
+        cashback: "SAR 0.00", // Not in API
+      },
+      coordinates: {
+        from: trip.from_lng_lat?.coordinates || [],
+        to: trip.to_lng_lat?.coordinates || [],
+      },
+    }));
+  };
+
+  const transformedTrips = useMemo(() => {
+    return allPassengerTrips ? transformTrips(allPassengerTrips) : [];
+  }, [allPassengerTrips]);
 
   const baseImageUrl = useBaseImageUrl();
 
-  // BUILD rider OBJECT (identical keys)
+  // BUILD rider OBJECT
   const rider = useMemo(
     () => ({
       name: passenger?.fullname,
       id: passenger?._id ? `#${passenger._id.slice(-6)}` : "",
       image: `${baseImageUrl}${passenger?.profile_image}`,
       referredBy: passenger?.fullname,
-      totalTrips: trips.length,
+      totalTrips: transformedTrips?.length,
       rating: passenger?.rating || 0,
       fullname: editable.fullname,
       phone_number: editable.phone_number,
       email: editable.email,
       password: editable.password,
       status: editable.status,
-      wallet: "EGP 98.50",
+      wallet: "SAR 98.50",
       verification_code: editable.verification_code,
       is_code_verified: editable.is_code_verified,
-      trips,
+      trips: transformedTrips,
     }),
-    [passenger, editable, trips]
+    [passenger, editable, transformedTrips]
   );
+
+  // Handle pagination change
+  const handlePageChange = (newPage) => {
+    setSearchParams({ page: String(Number(newPage)), limit: String(limit) });
+  };
+
+  const handleLimitChange = (newLimit) => {
+    setSearchParams({ page: "1", limit: String(Number(newLimit)) });
+  };
 
   // EARLY RETURN SPINNER
   if (loading || !passenger) {
@@ -384,7 +381,7 @@ export default function RiderDetailsPage() {
             {rider.name}
           </Typography>
           <Typography>
-            {t("Total Trip")}: {rider.totalTrips}
+            {t("Total Trip")}: {allPassengerTrips?.total || 0}
           </Typography>
           <Box display="flex" alignItems="center">
             <Typography>{rider.rating}</Typography>
@@ -520,45 +517,64 @@ export default function RiderDetailsPage() {
         {t("Trips")}
       </Typography>
       <Box maxWidth="md">
-        <Grid container spacing={2} direction="column">
-          {rider.trips.map((trip) => (
-            <Grid item xs={12} key={trip.id}>
-              <Card sx={{ background: theme.palette.secondary.sec }}>
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <IconButton
-                      sx={{
-                        borderRadius: 1,
-                        backgroundColor: theme.palette.background.paper,
-                        p: 1,
-                      }}
-                    >
-                      <CalendarMonthIcon
-                        sx={{ color: theme.palette.primary.main }}
-                      />
-                    </IconButton>
-                    <Box>
-                      <Typography variant="subtitle2">{t("Trip")}</Typography>
-                      <Typography variant="body2">
-                        {trip.time} · {trip.from} to {trip.to}
-                      </Typography>
-                    </Box>
-                    <Box flexGrow={1} textAlign="end">
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        sx={{ fontSize: 16, fontWeight: 700 }}
-                        onClick={() => openDrawer(trip)}
-                      >
-                        {t("Details")}
-                      </Button>
-                    </Box>
-                  </Box>
-                </CardContent>
-              </Card>
+        {tripsLoading ? (
+          <Box display="flex" justifyContent="center" py={4}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            <Grid container spacing={2} direction="column">
+              {rider.trips.map((trip) => (
+                <Grid item xs={12} key={trip.id}>
+                  <Card sx={{ background: theme.palette.secondary.sec }}>
+                    <CardContent>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <IconButton
+                          sx={{
+                            borderRadius: 1,
+                            backgroundColor: theme.palette.background.paper,
+                            p: 1,
+                          }}
+                        >
+                          <CalendarMonthIcon
+                            sx={{ color: theme.palette.primary.main }}
+                          />
+                        </IconButton>
+                        <Box>
+                          <Typography variant="subtitle2">
+                            {t("Trip")}
+                          </Typography>
+                          <Typography variant="body2">
+                            {trip.time} · {trip.from} to {trip.to}
+                          </Typography>
+                        </Box>
+                        <Box flexGrow={1} textAlign="end">
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{ fontSize: 16, fontWeight: 700 }}
+                            onClick={() => openDrawer(trip)}
+                          >
+                            {t("Details")}
+                          </Button>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+
+            {/* Pagination */}
+            <PaginationFooter
+              currentPage={page}
+              totalPages={allPassengerTrips?.totalPages || 1}
+              limit={limit}
+              onPageChange={(e, value) => handlePageChange(value)} // <-- تحويل القيمة
+              onLimitChange={(e) => handleLimitChange(Number(e.target.value))} // <-- تحويل القيمة
+            />
+          </>
+        )}
       </Box>
 
       {/* Drawer */}
@@ -590,10 +606,10 @@ export default function RiderDetailsPage() {
             </Box>
             <Box sx={{ bgcolor: "grey.200", mb: 2, borderRadius: 1 }}>
               <RouteMap
-                fromLat={30.0444}
-                fromLng={31.2357}
-                toLat={30.072}
-                toLng={31.346}
+                fromLat={selectedTrip.coordinates.from[1]}
+                fromLng={selectedTrip.coordinates.from[0]}
+                toLat={selectedTrip.coordinates.to[1]}
+                toLng={selectedTrip.coordinates.to[0]}
               />
             </Box>
             <Box sx={{ width: "100%", mb: 2 }}>
@@ -602,7 +618,7 @@ export default function RiderDetailsPage() {
                   <Grid item xs={12} md={4}>
                     <Box display="flex" alignItems="center">
                       <Avatar
-                        src={DomiDriverImage}
+                        src={selectedTrip.driver.image}
                         sx={{ width: 56, height: 56, mr: 2 }}
                       />
                       <Box>

@@ -3,6 +3,7 @@ import {
   getAllTrips,
   getAllTripsWithoutPaginations,
   getAllDriverTrips,
+  getAllPassengerTrips,
   getOneTrip,
   editTrip,
   addTrip,
@@ -12,6 +13,7 @@ const initialState = {
   allTrips: [],
   trips: [],
   allDriverTrips: [],
+  allPassengerTrips:[],
   trip: null,
 
   loading: false,
@@ -54,7 +56,7 @@ const tripSlice = createSlice({
         state.trips = [];
         state.error = action.error.message;
       });
-    // Get All Trips (with pagination)
+    //  Get All Driver Trips (with pagination)
     builder
       .addCase(getAllDriverTrips.pending, (state) => {
         state.loading = true;
@@ -67,6 +69,21 @@ const tripSlice = createSlice({
       .addCase(getAllDriverTrips.rejected, (state, action) => {
         state.loading = false;
         state.allDriverTrips = [];
+        state.error = action.error.message;
+      });
+    //  Get All Passenger Trips (with pagination)
+    builder
+      .addCase(getAllPassengerTrips.pending, (state) => {
+        state.loading = true;
+        state.allPassengerTrips = [];
+      })
+      .addCase(getAllPassengerTrips.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allPassengerTrips = action.payload;
+      })
+      .addCase(getAllPassengerTrips.rejected, (state, action) => {
+        state.loading = false;
+        state.allPassengerTrips = [];
         state.error = action.error.message;
       });
 
