@@ -5,6 +5,7 @@ import carTypeSlice from './slices/carType/carTypeSlice';
 import paymentMethodSlice from './slices/paymentMethod/paymentMethodSlice';
 import tripSlice from './slices/trip/tripSlice';
 import carSlice from './slices/car/carSlice';
+import carAssignmentSlice from './slices/carAssignment/carAssignmentSlice';
 
 
 export const store = configureStore({
@@ -15,7 +16,8 @@ export const store = configureStore({
     carType: carTypeSlice,
     paymentMethod: paymentMethodSlice,
     trip: tripSlice,
-    car: carSlice
+    car: carSlice,
+    carAssignment: carAssignmentSlice
 
   },
 });

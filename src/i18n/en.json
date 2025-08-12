@@ -429,5 +429,12 @@
   "accepted": "Accepted",
   "started": "Started",
   "completed": "Completed",
-  "cancelled": "Cancelled"
+  "cancelled": "Cancelled",
+  "LinkedSuccessfully": "Linked successfully",
+  "notReleased": "Not released",
+  "not-released": "Not released",
+  "released": "Released",
+  "release now": "Release Now"
+
+
 }

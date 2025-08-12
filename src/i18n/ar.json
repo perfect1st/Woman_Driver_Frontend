@@ -440,5 +440,12 @@
   "accepted": "تم القبول",
   "started": "بدأت الرحلة",
   "completed": "اكتملت الرحلة",
-  "cancelled": "تم الإلغاء"
+  "cancelled": "تم الإلغاء",
+  "LinkedSuccessfully": "تم الربط بنجاح",
+  "notReleased": "لم يتم الإفراج" ,
+  "not-released": "لم يتم الإفراج",
+  "released": "تم الإفراج",
+  "release now": "الإفراج الان"
+
+
 }

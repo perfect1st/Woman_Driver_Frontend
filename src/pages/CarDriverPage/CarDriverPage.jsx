@@ -1,126 +1,190 @@
-// CarTypesPage.js
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import Header from "../../components/PageHeader/header";
 import FilterComponent from "../../components/FilterComponent/FilterComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
+import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllCarAssignments, getAllCarAssignmentsWithoutPaginations, editCarAssignment } from "../../redux/slices/carAssignment/thunk";
+import LoadingPage from "../../components/LoadingComponent";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { saveAs } from "file-saver";
+import notify from "../../components/notify";
 
 const CarDriverPage = () => {
   const theme = useTheme();
-  const { t, i18n } = useTranslation();
-  const isArabic = i18n.language == 'ar';
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isArabic = i18n.language === "ar";
 
-  // Initial car Driver data
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const initialCarDrivers = [
-    {
-      id: 1,
-      driverName: "Ahmed Mostafa",
-      carModel: "Toyota Corolla",
-      assignDate: "2025-06-01",
-      releaseDate: "2025-07-01",
-      status: "Linked",
-    },
-    {
-      id: 2,
-      driverName: "Sara Ibrahim",
-      carModel: "Hyundai Elantra",
-      assignDate: "2025-06-15",
-      releaseDate: "2025-07-05",
-      status: "OnRequest",
-    },
-    {
-      id: 3,
-      driverName: "Mohamed Adel",
-      carModel: "Chevrolet Truck",
-      assignDate: "2025-05-10",
-      releaseDate: "2025-06-30",
-      status: "Leaved",
-    },
-    {
-      id: 4,
-      driverName: "Laila Samir",
-      carModel: "Kia Sportage",
-      assignDate: "2025-04-25",
-      releaseDate: "2025-06-25",
-      status: "Rejected",
-    },
-    {
-      id: 5,
-      driverName: "Hassan Ali",
-      carModel: "Honda Civic",
-      assignDate: "2025-07-01",
-      releaseDate: "2025-07-10",
-      status: "Linked",
-    },
-  ];
-  
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const keyword = searchParams.get("keyword") || "";
+  const status = searchParams.get("status") || "";
 
-  const statusOptions = ["OnRequest", "Linked", "Leaved", "Rejected"];
+  const { assignments = {}, loading } = useSelector((state) => state.carAssignment);
+  const { data = [], totalPages = 1, page: currentPage = 1 } = assignments;
 
-  const [carDriver, setCarDriver] = useState(initialCarDrivers);
-  const [filteredCarDriver, setFilteredCarDriver] = useState(initialCarDrivers);
+  useEffect(() => {
+    const q =
+      `page=${page}&limit=${limit}` +
+      (keyword ? `&keyword=${keyword}` : "") +
+      (status ? `&status=${status}` : "");
+    dispatch(getAllCarAssignments({ query: q }));
+  }, [dispatch, page, limit, keyword, status]);
 
-  // Table columns configuration
-  const tableColumns = [
-    { key: "id", label: t("Cars-drivers ID") },
-    { key: "driverName", label: t("Driver Name") },
-    { key: "carModel", label: t("Car Model") },
-    { key: "assignDate", label: t("Assign Date") },
-    { key: "releaseDate", label: t("Release Date") },
-    { key: "status", label: t("Status") },
-  ];
-  
-
-  // Handle search/filter
-  const handleSearch = (filters) => {
-    const filtered = carDriver.filter(type => {
-      const matchesSearch = !filters.search ||
-        type.id.toString().includes(filters.search.toLowerCase()) ||
-        type.name.toLowerCase().includes(filters.search.toLowerCase());
-      
-      const matchesStatus = !filters.status || type.status === filters.status;
-
-      return matchesSearch && matchesStatus;
-    });
-
-    setFilteredCarDriver(filtered);
-  };
-
-  // Handle status changes
-  const handleStatusChange = (row, newStatus) => {
-    const updatedTypes = carDriver.map(type =>
-      type.id === row.id ? { ...type, status: newStatus } : type
-    );
-
-    setCarDriver(updatedTypes);
-    setFilteredCarDriver(updatedTypes);
-  };
-
-  // Handle view details
-  const handleViewDetails = (row) => {
-    navigate(`/CarDriverDetails/${row.id}`);
-  };
-
-  // Prevent horizontal scrolling
   useEffect(() => {
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
-
     return () => {
       document.documentElement.style.overflowX = "auto";
       document.body.style.overflowX = "auto";
     };
   }, []);
 
-  const addCarDriverSubmit = () => {
-    navigate("/CarDriverDetails/AddCarDrive");
+  const updateParams = (upd) => {
+    const next = Object.fromEntries(searchParams);
+    Object.entries(upd).forEach(([k, v]) => {
+      if (v !== undefined && v !== "") next[k] = v;
+      else delete next[k];
+    });
+    setSearchParams(next);
   };
+
+  const handleSearch = (filters) => updateParams({ ...filters, page: 1 });
+  const handleLimitChange = (e) => updateParams({ limit: e.target.value, page: 1 });
+  const handlePageChange = (_, v) => updateParams({ page: v });
+
+  const addCarDriverSubmit = () => navigate("/CarDriverDetails/AddCarDrive");
+
+  const rows = data.map((item, index) => ({
+    mainId: item._id,
+    id: (currentPage - 1) * limit + index + 1,
+    driverName: item?.driver_id?.fullname || "-",
+    carModel: item?.cars_id?.car_model || "-",
+    assignDate: new Date(item?.assign_datetime).toLocaleDateString(),
+    releaseDate: item?.release_date ? new Date(item?.release_date).toLocaleDateString() : t("notReleased"),
+    // status: item?.driver_id?.status || "Unknown",
+  }));
+
+  const columns = [
+    
+    { key: "mainId", label: t("mainId") , isPrivate:true },
+    { key: "id", label: t("Cars-drivers ID") },
+    { key: "driverName", label: t("Driver Name") },
+    { key: "carModel", label: t("Car Model") },
+    { key: "assignDate", label: t("Assign Date") },
+    { key: "releaseDate", label: t("Release Date") },
+    // { key: "status", label: t("Status") },
+  ];
+
+  const fetchAndExport = async (type) => {
+    try {
+      const q =
+        (keyword ? `&keyword=${keyword}` : "") +
+        (status ? `&status=${status}` : "");
+  
+      const response = await dispatch(getAllCarAssignmentsWithoutPaginations({ query: q })).unwrap();
+  
+      const exportData = response.data.map((item, i) => ({
+        [t("Cars-drivers ID")]: i + 1,
+        [t("Driver Name")]: item?.driver_id?.fullname || "-",
+        [t("Car Model")]: item?.cars_id?.car_model || "-",
+        [t("Assign Date")]: new Date(item?.assign_datetime).toLocaleDateString(),
+        [t("Release Date")]: item?.release_date
+          ? new Date(item?.release_date).toLocaleDateString()
+          : t("notReleased"),
+      }));
+  
+      if (type === "excel") {
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Car-Driver");
+        const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+        saveAs(new Blob([buf], { type: "application/octet-stream" }), `Car-Driver_${Date.now()}.xlsx`);
+      } else if (type === "pdf") {
+        const doc = new jsPDF();
+        doc.text(t("Cars-Drivers Report"), 14, 10);
+        autoTable(doc, {
+          startY: 20,
+          head: [Object.keys(exportData[0])],
+          body: exportData.map((r) => Object.values(r)),
+        });
+        doc.save(`Car-Driver_${Date.now()}.pdf`);
+      } else {
+        const w = window.open("", "_blank");
+        const html = `
+          <html><head><title>${t("Cars-Drivers Report")}</title>
+          <style>table{width:100%;border-collapse:collapse}th,td{border:1px solid #333;padding:4px;text-align:left}th{background:#eee}</style>
+          </head><body>
+            <h2>${t("Cars-Drivers Report")}</h2>
+            <table>
+              <thead>
+                <tr>${Object.keys(exportData[0])
+                  .map((k) => `<th>${k}</th>`)
+                  .join("")}</tr>
+              </thead>
+              <tbody>
+                ${exportData
+                  .map(
+                    (r) =>
+                      `<tr>${Object.values(r)
+                        .map((v) => `<td>${v}</td>`)
+                        .join("")}</tr>`
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </body></html>`;
+        w.document.write(html);
+        w.document.close();
+        w.print();
+      }
+    } catch (err) {
+      console.error("Export car-driver error:", err);
+    }
+  };
+
+
+  const handleViewDetails = (row) => {
+    navigate(`/CarDriverDetails/${row.mainId}`);
+  };
+  const releasedClick = async (row) => {
+    try {
+      // تحقق إن كان هناك تاريخ إنهاء مسبق
+      if (row?.releaseDate && row.releaseDate !== t("notReleased")) {
+        notify(t("The driver has already been released from the car"), "warning");
+        return;
+      }
+  
+      await dispatch(
+        editCarAssignment({
+          id: row.mainId,
+          data: { release_date: new Date().toISOString().split("T")[0] },
+        })
+      ).unwrap();
+  
+      notify(t("The driver has been released from the car successfully"), "success");
+  
+      // يمكنك إعادة التحميل أو التحديث إن أردت:
+      dispatch(getAllCarAssignments({ query: `page=${page}&limit=${limit}` }));
+  
+    } catch (error) {
+      console.error("Release driver error:", error);
+      notify(t("An error occurred while releasing the driver from the car"), "error");
+    }
+  };
+  
+  if (loading) return <LoadingPage />;
 
   return (
     <Box
@@ -136,71 +200,64 @@ const CarDriverPage = () => {
         minHeight: "100vh",
       }}
     >
-      {/* Header Section */}
-      <Box sx={{ width: "100%", flexShrink: 0 }}>
-        <Header
-          title={t("Cars-Drivers")}
-          subtitle={t("Cars-Drivers Details")}
-          haveBtn={true}
-          i18n={i18n}
-          btn={t("Link Car-Driver")}
-          btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
-          onSubmit={addCarDriverSubmit}
-          isExcel={true}
-          isPdf={true}
-          isPrinter={true}
-        />
-      </Box>
+      {/* Header */}
+  <Header
+  title={t("Cars-Drivers")}
+  subtitle={t("Cars-Drivers Details")}
+  i18n={i18n}
+  haveBtn
+  btn={t("Link Car-Driver")}
+  btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
+  onSubmit={addCarDriverSubmit}
+  isExcel
+  isPdf
+  isPrinter
+  onExcel={() => fetchAndExport("excel")}
+  onPdf={() => fetchAndExport("pdf")}
+  onPrinter={() => fetchAndExport("print")}
+/>
 
-      {/* Filter Section */}
+
+      {/* Filters */}
       <Box sx={{ width: "100%", flexShrink: 0, my: 2 }}>
         <FilterComponent
           onSearch={handleSearch}
-          statusOptions={statusOptions}
-          isCarDriver={true}
+          initialFilters={{ keyword, status }}
+          statusOptions={["released", "not-released"]}
+          isCarDriver
         />
       </Box>
 
-      {/* Table Section */}
+      {/* Table */}
       <Box
         sx={{
           flex: 1,
           width: "100%",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
+          overflow: "auto",
+          borderRadius: 1,
+          boxShadow: 1,
           minHeight: 0,
         }}
       >
-        <Box
-          sx={{
-            flex: 1,
-            minHeight: 0,
-            width: "100%",
-            overflow: "auto",
-            borderRadius: 1,
-            boxShadow: 1,
-            "&::-webkit-scrollbar": {
-              height: "6px",
-              width: "6px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: theme.palette.grey[400],
-              borderRadius: "4px",
-            },
-          }}
-        >
-          <TableComponent
-            columns={tableColumns}
-            data={filteredCarDriver}
-            onStatusChange={handleStatusChange}
-            onViewDetails={handleViewDetails}
-            statusKey="status"
-            showStatusChange={true}
-            isCarDriver={true}
-          />
-        </Box>
+        <TableComponent
+          columns={columns}
+          data={rows}
+          onViewDetails={handleViewDetails}
+          releasedClick={releasedClick}
+          statusKey="status"
+          showStatusChange={true}
+          isCarDriver
+        />
       </Box>
+
+      {/* Pagination */}
+      <PaginationFooter
+        currentPage={currentPage}
+        totalPages={totalPages}
+        limit={limit}
+        onPageChange={handlePageChange}
+        onLimitChange={handleLimitChange}
+      />
     </Box>
   );
 };
