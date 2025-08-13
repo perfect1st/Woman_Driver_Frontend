@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -10,7 +10,6 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
   FilledInput,
   IconButton,
   useTheme,
@@ -26,18 +25,82 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useDispatch, useSelector } from "react-redux";
+import { addCar } from "../../redux/slices/car/thunk";
+import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
+import notify from "../../components/notify";
+import imageCompression from "browser-image-compression";
 
-const IMAGE_FIELDS = ["Front", "Back", "Right", "Left"];
-const CAR_TYPE_OPTIONS = ["Sedan", "SUV", "Truck", "Hatchback"];
+const LICENSE_FIELDS = ["front", "back"];
+const IMAGE_FIELDS = ["front", "back", "right", "left"];
+
+
+async function compressImage(file, quality = 0.7) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const img = new Image();
+      img.src = reader.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const maxWidth = 1024;
+        const scale = Math.min(1, maxWidth / img.width);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: file.type,
+              });
+              resolve(compressedFile);
+            } else {
+              reject(new Error("Compression failed"));
+            }
+          },
+          file.type,
+          quality
+        );
+      };
+      img.onerror = reject;
+    };
+    reader.onerror = reject;
+  });
+}
+
+function toFieldKey(message) {
+  const stopWords = ["is", "must"];
+  let parts = message.split(" ");
+  let idx = parts.findIndex((w) => stopWords.includes(w));
+  if (idx === -1) idx = parts.length;
+  const fieldWords = parts.slice(0, idx);
+  const key = fieldWords
+    .map((w, i) => (i === 0 ? w.toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()))
+    .join("");
+  return key;
+}
 
 export default function AddCarPage() {
   const theme = useTheme();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const [images, setImages] = useState({});
+  const dispatch = useDispatch();
   const isArabic = i18n.language === "ar";
+  const {  allCarTypes } = useSelector(
+    (state) => state.carType
+  );
+console.log("allCarTypes",allCarTypes)
+  const [licenseImages, setLicenseImages] = useState({});
+  const [images, setImages] = useState({});
 
-  // Form validation schema
+  useEffect(() => {
+    let query = "";
+    dispatch(getAllCarTypesWithoutPaginations({query}));
+  }, [dispatch]);
+
   const validationSchema = Yup.object({
     licenseExpiredDate: Yup.date().required(t("Expired date is required")),
     carModel: Yup.string().required(t("Car model is required")),
@@ -51,7 +114,6 @@ export default function AddCarPage() {
       .required(t("Car year is required")),
   });
 
-  // Formik initialization
   const formik = useFormik({
     initialValues: {
       licenseExpiredDate: "",
@@ -63,27 +125,78 @@ export default function AddCarPage() {
       carYear: "",
     },
     validationSchema,
-    onSubmit: (values) => {
-      // Prepare form data including images
+    onSubmit: async (values) => {
       const formData = new FormData();
-      Object.entries(values).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-
-      Object.entries(images).forEach(([field, file]) => {
-        if (file) formData.append(field, file);
-      });
-
-      // Submit logic here (API call, etc.)
-      console.log("Form submitted:", Object.fromEntries(formData));
-      alert(t("Form submitted successfully!"));
+    
+      // البيانات النصية أو الرقمية
+      formData.append("plate_number", values.plateNumber);
+      formData.append("car_model", values.carModel);
+      formData.append("car_license_expired_date", values.licenseExpiredDate);
+      formData.append("is_company_car", values.ownershipType === "company"); // Boolean
+      formData.append("car_color", values.carColor);
+      formData.append("car_year", values.carYear);
+      formData.append("car_types_id", values.carType);
+    
+      // الملفات: الرخصة
+      if (licenseImages.front)
+        formData.append("car_license_front", licenseImages.front);
+      if (licenseImages.back)
+        formData.append("car_license_back", licenseImages.back);
+    
+      // الصور: السيارة
+      if (images.front)
+        formData.append("car_front", images.front);
+      if (images.back)
+        formData.append("car_back", images.back);
+      if (images.left)
+        formData.append("car_left", images.left);
+      if (images.right)
+        formData.append("car_right", images.right);
+    
+      try {
+        await dispatch(addCar({ data: formData })).unwrap();
+        navigate("/Cars");
+      } catch (errors) {
+        const fieldErrors = {};
+        errors.forEach(({ message }) => {
+          const key = toFieldKey(message);
+          if (formik.values.hasOwnProperty(key)) {
+            fieldErrors[key] = t(message);
+          } else {
+            notify(t(message), "error");
+          }
+        });
+        formik.setErrors(fieldErrors);
+      }
     },
+    
   });
 
-  const handleFileChange = (field) => (e) => {
+
+  const handleLicenseChange = (field) => async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setImages((prev) => ({ ...prev, [field]: file }));
+    try {
+      const compressed = await compressImage(file);
+      setLicenseImages((prev) => ({ ...prev, [field]: compressed }));
+    } catch {
+      setLicenseImages((prev) => ({ ...prev, [field]: file }));
+    }
+  };
+
+  const handleFileChange = (field) => async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const compressed = await compressImage(file);
+      setImages((prev) => ({ ...prev, [field]: compressed }));
+    } catch {
+      setImages((prev) => ({ ...prev, [field]: file }));
+    }
+  };
+
+  const handleRemoveLicense = (field) => () => {
+    setLicenseImages((prev) => ({ ...prev, [field]: null }));
   };
 
   const handleRemoveImage = (field) => () => {
@@ -97,7 +210,6 @@ export default function AddCarPage() {
       component="form"
       onSubmit={formik.handleSubmit}
     >
-      {/* Breadcrumbs */}
       <Box
         sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", mb: 2 }}
       >
@@ -107,18 +219,17 @@ export default function AddCarPage() {
         >
           {t("Cars")}
         </Typography>
-        <Typography sx={{ mx: 1 }}>{"<"}</Typography>
+        <Typography sx={{ mx: 1 }}>&lt;</Typography>
         <Typography
           onClick={() => navigate("/Cars")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Cars Details")}
         </Typography>
-        <Typography sx={{ mx: 1 }}>{"<"}</Typography>
+        <Typography sx={{ mx: 1 }}>&lt;</Typography>
         <Typography>{t("Add Car")}</Typography>
       </Box>
 
-      {/* Car License */}
       <Typography variant="h5" color="primary" gutterBottom>
         {t("Car License")}
       </Typography>
@@ -130,68 +241,112 @@ export default function AddCarPage() {
           borderRadius: 1,
         }}
       />
-      <Typography gutterBottom>{t("Car License Picture")}</Typography>
-      <Card
-        sx={{
-          backgroundColor: theme.palette.secondary.sec,
-          borderRadius: 1,
-          mb: 3,
-        }}
-      >
-        <CardContent
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Typography>{t("maxSizeText")}</Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon sx={{ [isArabic ? "ml" : "mr"]: 1 }} />}
-          >
-            {t("Upload Files")}
-          </Button>
-        </CardContent>
-      </Card>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        {LICENSE_FIELDS.map((field) => (
+          <Grid item xs={12} sm={6} key={field}>
+            <Card sx={{ p: 2, borderRadius: 1 }}>
+              <Box display="flex" alignItems="center" mb={1}>
+                <CarIcon color="primary" />
+                <Typography sx={{ ml: 1 }}>{t(`License ${field}`)}</Typography>
+              </Box>
+              {licenseImages[field] ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    backgroundColor: "#ECFDF3",
+                    border: "1px solid #ABEFC6",
+                    borderRadius: 1,
+                    p: 1,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexGrow: 1,
+                      minWidth: 0,
+                    }}
+                  >
+                    <CheckCircleIcon
+                      sx={{
+                        backgroundColor: "#067647",
+                        color: "white",
+                        borderRadius: "50%",
+                        mx: 1,
+                      }}
+                    />
+                    <Typography noWrap sx={{ flexGrow: 1, minWidth: 0 }}>
+                      {licenseImages[field].name}
+                    </Typography>
+                  </Box>
+                  <IconButton onClick={handleRemoveLicense(field)}>
+                    <CloseIcon />
+                  </IconButton>
+                </Box>
+              ) : (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <Typography>{t("maxSizeText")}</Typography>
+                <Button
+                  component="label"
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                >
+                  {t(`Upload ${field}`)}
+                  <input
+                    type="file"
+                    hidden
+                    onChange={handleLicenseChange(field)}
+                  />
+                </Button>
+                  </Box>
+              )}
+            </Card>
+          </Grid>
+        ))}
 
-      {/* Expired Date */}
-      <Box sx={{ mb: 3 }}>
-        <Typography>
-          {t("Expired Date")}
-          <Typography component="span" sx={{ color: "error.main" }}>
-            *
+        <Grid item xs={12}>
+          <Typography>
+            {t("Expired Date")}
+            <Typography component="span" sx={{ color: "error.main" }}>
+              *
+            </Typography>
           </Typography>
-        </Typography>
-        <TextField
-          fullWidth
-          name="licenseExpiredDate"
-          placeholder={t("Enter the Expired Date")}
-          variant="filled"
-          type="date"
-          InputLabelProps={{ shrink: true }}
-          InputProps={{
-            disableUnderline: true,
-            sx: {
-              backgroundColor: theme.palette.secondary.sec,
-              borderRadius: 1,
-            },
-          }}
-          value={formik.values.licenseExpiredDate}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={
-            formik.touched.licenseExpiredDate &&
-            Boolean(formik.errors.licenseExpiredDate)
-          }
-          helperText={
-            formik.touched.licenseExpiredDate &&
-            formik.errors.licenseExpiredDate
-          }
-        />
-      </Box>
+          <TextField
+            fullWidth
+            name="licenseExpiredDate"
+            variant="filled"
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            InputProps={{
+              disableUnderline: true,
+              sx: {
+                backgroundColor: theme.palette.secondary.sec,
+                borderRadius: 1,
+              },
+            }}
+            value={formik.values.licenseExpiredDate}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.licenseExpiredDate &&
+              Boolean(formik.errors.licenseExpiredDate)
+            }
+            helperText={
+              formik.touched.licenseExpiredDate &&
+              formik.errors.licenseExpiredDate
+            }
+          />
+        </Grid>
+      </Grid>
 
-      {/* Car Details */}
       <Typography variant="h5" color="primary" gutterBottom>
         {t("Car Details")}
       </Typography>
@@ -204,7 +359,6 @@ export default function AddCarPage() {
         }}
       />
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        {/* Model */}
         <Grid item xs={12} md={6}>
           <Typography>
             {t("Car Model")}
@@ -231,8 +385,6 @@ export default function AddCarPage() {
             helperText={formik.touched.carModel && formik.errors.carModel}
           />
         </Grid>
-
-        {/* Company/Personal */}
         <Grid item xs={12} md={6}>
           <Typography>
             {t("Company Car")}
@@ -240,7 +392,6 @@ export default function AddCarPage() {
               *
             </Typography>
           </Typography>
-
           <FormControl
             fullWidth
             variant="filled"
@@ -266,8 +417,6 @@ export default function AddCarPage() {
               }
             >
               <MenuItem value="" disabled>
-                {/* <em>
-                  </em> */}
                 {t("Is Company Car ?")}
               </MenuItem>
               <MenuItem value="company">{t("Company Car")}</MenuItem>
@@ -278,8 +427,6 @@ export default function AddCarPage() {
             )}
           </FormControl>
         </Grid>
-
-        {/* Plate */}
         <Grid item xs={12} md={6}>
           <Typography>
             {t("Plate Number")}
@@ -308,8 +455,6 @@ export default function AddCarPage() {
             helperText={formik.touched.plateNumber && formik.errors.plateNumber}
           />
         </Grid>
-
-        {/* Color */}
         <Grid item xs={12} md={6}>
           <Typography>
             {t("Car Color")}
@@ -336,8 +481,6 @@ export default function AddCarPage() {
             helperText={formik.touched.carColor && formik.errors.carColor}
           />
         </Grid>
-
-        {/* Type */}
         <Grid item xs={12} md={6}>
           <Typography>
             {t("Car Type")}
@@ -345,7 +488,6 @@ export default function AddCarPage() {
               *
             </Typography>
           </Typography>
-
           <FormControl
             fullWidth
             variant="filled"
@@ -368,13 +510,11 @@ export default function AddCarPage() {
               }
             >
               <MenuItem value="" disabled>
-                {/* <em>
-                  </em> */}
                 {t("Select Car Type")}
               </MenuItem>
-              {CAR_TYPE_OPTIONS.map((type) => (
-                <MenuItem key={type} value={type}>
-                  {type}
+              {allCarTypes?.data?.map((type) => (
+                <MenuItem key={type._id} value={type._id}>
+                  {isArabic ? type.name_ar : type.name_en}
                 </MenuItem>
               ))}
             </Select>
@@ -383,8 +523,6 @@ export default function AddCarPage() {
             )}
           </FormControl>
         </Grid>
-
-        {/* Year */}
         <Grid item xs={12} md={6}>
           <Typography>
             {t("Car Year")}
@@ -413,7 +551,6 @@ export default function AddCarPage() {
         </Grid>
       </Grid>
 
-      {/* Car Pictures */}
       <Typography variant="h5" color="primary" gutterBottom>
         {t("Car Picture")}
       </Typography>
@@ -431,7 +568,7 @@ export default function AddCarPage() {
             <Card sx={{ p: 2, borderRadius: 1 }}>
               <Box display="flex" alignItems="center" mb={1}>
                 <CarIcon color="primary" />
-                <Typography sx={{ [isArabic ? "mr" : "ml"]: 1 }}>
+                <Typography sx={{ ml: 1 }}>
                   {t(`Car’s Picture ${field}`)}
                 </Typography>
               </Box>
@@ -455,7 +592,6 @@ export default function AddCarPage() {
                       minWidth: 0,
                     }}
                   >
-                    {/* Icon */}
                     <CheckCircleIcon
                       sx={{
                         backgroundColor: "#067647",
@@ -464,18 +600,10 @@ export default function AddCarPage() {
                         mx: 1,
                       }}
                     />
-                    {/* Truncated filename */}
-                    <Typography
-                      noWrap
-                      sx={{
-                        flexGrow: 1, // so the typography takes all remaining space
-                        minWidth: 0, // important for overflow inside flex
-                      }}
-                    >
+                    <Typography noWrap sx={{ flexGrow: 1, minWidth: 0 }}>
                       {images[field].name}
                     </Typography>
                   </Box>
-
                   <IconButton onClick={handleRemoveImage(field)}>
                     <CloseIcon />
                   </IconButton>
@@ -492,7 +620,7 @@ export default function AddCarPage() {
                   <Button
                     component="label"
                     variant="contained"
-                    startIcon={<AddIcon sx={{ [isArabic ? "ml" : "mr"]: 1 }} />}
+                    startIcon={<AddIcon sx={{ ml: 1 }} />}
                   >
                     {t("Upload Files")}
                     <input
@@ -509,14 +637,7 @@ export default function AddCarPage() {
       </Grid>
 
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-        <Button
-          type="submit"
-          variant="contained"
-          // fullWidth
-          sx={{
-            px: 6, // increases left & right padding, makes button wider
-          }}
-        >
+        <Button type="submit" variant="contained" sx={{ px: 6 }}>
           {t("Save")}
         </Button>
       </Box>

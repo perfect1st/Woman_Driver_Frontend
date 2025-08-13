@@ -76,17 +76,23 @@ export const editCar = createAsyncThunk(
 
 // add Car
 export const addCar = createAsyncThunk(
-  "/carSlice/addCar",
-  async ({ data }) => {
+  "car/addCar",
+  // note: receive the raw FormData directly
+  async ({data}, { rejectWithValue }) => {
     try {
-      const response = await useInsertData(`/cars`, data);
+      const response = await useInsertData("/cars", data);
       return response;
     } catch (error) {
+      // network-level
       if (error.message === "Network Error") {
-        return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري ", "error");
-      } else {
-        return notify(error.response.data, "error");
+        return rejectWithValue([{ message: "حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري" }]);
       }
+      // validation errors
+      if (error.response?.data?.errors) {
+        return rejectWithValue(error.response.data.errors);
+      }
+      // any other
+      return rejectWithValue([{ message: error.response?.data || error.message }]);
     }
   }
 );
