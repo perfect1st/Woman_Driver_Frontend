@@ -442,10 +442,29 @@
   "completed": "اكتملت الرحلة",
   "cancelled": "تم الإلغاء",
   "LinkedSuccessfully": "تم الربط بنجاح",
-  "notReleased": "لم يتم الإفراج" ,
-  "not-released": "لم يتم الإفراج",
-  "released": "تم الإفراج",
-  "release now": "الإفراج الان"
+  "notReleased": "لم يتم تسليم السيارة",
+  "not-released": "لم يتم تسليم السيارة",
+  "released": "تم تسليم السيارة",
+  "release now": "سلم السيارة الآن",
+  "invalidImageFormat": "تنسيق الصورة غير صالح",
+  "imageTooLarge": "حجم الصورة كبير جدًا (أقصى 2 ميغابايت)",
+  "noImageSelected": "لم يتم اختيار صورة",
+  "invalidImageType": "نوع الصورة غير صالح",
+  "imageUpdatedSuccess": "تم تحديث الصورة بنجاح",
+  "imageUpdateFailed": "فشل تحديث الصورة",
+  "noImageAvailable": "لا توجد صورة متاحة للتحميل",
+  "downloadFailed": "فشل التحميل",
+  "fieldUpdatedSuccess": "تم تحديث الحقل بنجاح",
+  "updateFailed": "فشل التحديث",
+
+
+  "Car's Picture Left side": "صورة السيارة من الجهة اليسرى",
+
+  "Car License Front": "رخصة السيارة من الأمام",
+  "Car License Back": "رخصة السيارة من الخلف",
+
+  "Select New Image": "اختر صورة جديدة",
+  "No image selected": "لم يتم اختيار صورة"
 
 
 }

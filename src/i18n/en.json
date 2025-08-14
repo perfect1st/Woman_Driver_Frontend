@@ -434,7 +434,21 @@
   "notReleased": "Not released",
   "not-released": "Not released",
   "released": "Released",
-  "release now": "Release Now"
-
+  "release now": "Release Now",
+  "invalidImageFormat": "Invalid image format",
+  "imageTooLarge": "Image is too large (max 2 MB)",
+  "noImageSelected": "No image selected",
+  "invalidImageType": "Invalid image type",
+  "imageUpdatedSuccess": "Image updated successfully",
+  "imageUpdateFailed": "Image update failed",
+  "noImageAvailable": "No image available to download",
+  "downloadFailed": "Download failed",
+  "fieldUpdatedSuccess": "Field updated successfully",
+  "updateFailed": "Update failed",
+  "Car's Picture Left side": "Car's Picture Left side",
+  "Car License Front": "Car License Front",
+  "Car License Back": "Car License Back",
+  "Select New Image": "Select New Image",
+  "No image selected": "No image selected"
 
 }
