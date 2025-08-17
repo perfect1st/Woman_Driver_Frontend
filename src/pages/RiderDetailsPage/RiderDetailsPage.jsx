@@ -123,6 +123,16 @@ export default function RiderDetailsPage() {
     }
   }, [passenger]);
 
+  const formatTime = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleTimeString(i18n.language, {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  };
+  
+
   // Transform API trip data to component format
   const transformTrips = (trips) => {
     return trips?.data?.map((trip) => ({
@@ -145,28 +155,15 @@ export default function RiderDetailsPage() {
       },
       timeline: [
         {
-          type: "Requested",
-          time: format(new Date(trip.createdAt), "hh:mm a"),
-          address: trip.from_name,
+          type: "Pickup",
+          time: formatTime(trip.createdAt),
+          address: trip?.from_name || t("Pickup Location")
         },
-        ...(trip.trip_start_time
-          ? [
-              {
-                type: "Started",
-                time: format(new Date(trip.trip_start_time), "hh:mm a"),
-                address: trip.from_name,
-              },
-            ]
-          : []),
-        ...(trip.trips_status === "completed"
-          ? [
-              {
-                type: "Completed",
-                time: format(new Date(trip.updatedAt), "hh:mm a"),
-                address: trip.to_name,
-              },
-            ]
-          : []),
+        {
+          type: "Dropoff",
+          time: formatTime(trip.updatedAt),
+          address: trip?.to_name || t("Dropoff Location")
+        }
       ],
       details: {
         date: format(new Date(trip.createdAt), "yyyy-MM-dd"),
@@ -676,68 +673,132 @@ export default function RiderDetailsPage() {
                 </Grid>
               </Card>
             </Box>
-            <Box
-              sx={{
-                position: "relative",
-                pl: isArabic ? 0 : 4,
-                pr: isArabic ? 4 : 0,
-                mb: 3,
-              }}
-            >
-              <Box
-                sx={{
-                  position: "absolute",
-                  left: isArabic ? "auto" : 8,
-                  right: isArabic ? 8 : "auto",
-                  top: 4,
-                  bottom: 0,
-                  width: 2,
-                  bgcolor: theme.palette.primary.main,
-                  zIndex: 1,
-                }}
-              />
-              {selectedTrip.timeline.map((step, i, arr) => {
-                const isFirst = i === 0,
-                  isLast = i === arr.length - 1;
-                return (
-                  <Box
-                    key={i}
-                    sx={{ position: "relative", mb: isLast ? 0 : 4, zIndex: 2 }}
-                  >
-                    {(isFirst || isLast) && (
-                      <FiberManualRecordIcon
-                        fontSize="small"
-                        sx={{
-                          color: theme.palette.primary.main,
-                          position: "absolute",
-                          left: isArabic ? "auto" : -33,
-                          right: isArabic ? -33 : "auto",
-                          top: isFirst
-                            ? 0
-                            : isLast
-                            ? "calc(100% - 12px)"
-                            : "50%",
-                          transform:
-                            isFirst || isLast ? "none" : "translateY(-50%)",
-                        }}
-                      />
-                    )}
-                    <Typography fontWeight="bold">{t(step.type)}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {step.time}
-                    </Typography>
-                    <Box display="flex" alignItems="center" mt={0.5}>
-                      <LocationOnIcon
-                        fontSize="small"
-                        color="primary"
-                        sx={{ mr: 1 }}
-                      />
-                      <Typography variant="body2">{step.address}</Typography>
+            {isArabic ? (
+              <Box sx={{ position: "relative", pr: 4, mb: 3 }}>
+                {/* Vertical Line */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    right: 8,
+                    top: 4,
+                    bottom: 0,
+                    width: 2,
+                    bgcolor: theme.palette.primary.main,
+                    zIndex: 1,
+                  }}
+                />
+                {selectedTrip.timeline.map((step, idx, arr) => {
+                  const isFirst = idx === 0;
+                  const isLast = idx === arr.length - 1;
+                  return (
+                    <Box
+                      key={idx}
+                      sx={{
+                        position: "relative",
+                        mb: 4,
+                        "&:last-child": { mb: 0 },
+                        zIndex: 2,
+                      }}
+                    >
+                      {/* Circle */}
+                      {(isFirst || isLast) && (
+                        <FiberManualRecordIcon
+                          fontSize="small"
+                          sx={{
+                            color: theme.palette.primary.main,
+                            position: "absolute",
+                            right: "-33px",
+                            top: isFirst
+                              ? 0
+                              : isLast
+                              ? "calc(100% - 12px)"
+                              : "50%",
+                            transform:
+                              isFirst || isLast ? "none" : "translateY(-50%)",
+                          }}
+                        />
+                      )}
+                      {/* Lines */}
+                      <Typography fontWeight="bold">{t(step.type)}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {step.time}
+                      </Typography>
+                      <Box display="flex" alignItems="center" mt={0.5}>
+                        <LocationOnIcon
+                          fontSize="small"
+                          color="primary"
+                          sx={{ mr: 1 }}
+                        />
+                        <Typography variant="body2">{step.address}</Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                );
-              })}
-            </Box>
+                  );
+                })}
+              </Box>
+            ) : (
+              <Box sx={{ position: "relative", pl: 4, mb: 3 }}>
+                {/* Vertical Line */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    left: 8,
+                    top: 4,
+                    bottom: 0,
+                    width: 2,
+                    bgcolor: theme.palette.primary.main,
+                    zIndex: 1,
+                  }}
+                />
+                {selectedTrip.timeline.map((step, idx, arr) => {
+                  const isFirst = idx === 0;
+                  const isLast = idx === arr.length - 1;
+                  return (
+                    <Box
+                      key={idx}
+                      sx={{
+                        position: "relative",
+                        mb: 4,
+                        "&:last-child": { mb: 0 },
+                        zIndex: 2,
+                      }}
+                    >
+                      {/* Circle */}
+                      {(isFirst || isLast) && (
+                        <FiberManualRecordIcon
+                          fontSize="small"
+                          sx={{
+                            color: theme.palette.primary.main,
+                            position: "absolute",
+                            left: "-33px",
+                            top: isFirst
+                              ? 0
+                              : isLast
+                              ? "calc(100% - 12px)"
+                              : "50%",
+                            transform:
+                              isFirst || isLast ? "none" : "translateY(-50%)",
+                          }}
+                        />
+                      )}
+                      {/* Lines */}
+                      <Typography fontWeight="bold">{t(step.type)}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {step.time}
+                      </Typography>
+                      <Box display="flex" alignItems="center" mt={0.5}>
+                        <LocationOnIcon
+                          fontSize="small"
+                          color="primary"
+                          sx={{ mr: 1 }}
+                        />
+                        <Typography variant="body2">{step.address}</Typography>
+                      </Box>
+                    </Box>
+                  );
+                })}
+              </Box>
+            )}
+
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="subtitle1" fontWeight="bold" mb={1}>
                 {t("Trip Information")}
