@@ -444,6 +444,7 @@
   "LinkedSuccessfully": "تم الربط بنجاح",
   "notReleased": "لم يتم تسليم السيارة",
   "not-released": "لم يتم تسليم السيارة",
+  "not_released": "لم يتم تسليم السيارة",
   "released": "تم تسليم السيارة",
   "release now": "سلم السيارة الآن",
   "invalidImageFormat": "تنسيق الصورة غير صالح",

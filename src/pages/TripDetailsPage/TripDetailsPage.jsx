@@ -32,7 +32,7 @@ import RouteMap from "../RouteMap/RouteMap";
 import { useDispatch, useSelector } from "react-redux";
 import { getOneTrip } from "../../redux/slices/trip/thunk";
 import LoadingPage from "../../components/LoadingComponent";
-import useBaseImageUrl from "../../hooks/useBaseImageUrl";
+import useBaseImageUrl from "../../hooks/useBaseImageUrlForDriver";
 
 const tripStatusStyles = {
   cancelled: {

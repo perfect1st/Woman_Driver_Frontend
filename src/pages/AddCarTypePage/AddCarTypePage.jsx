@@ -19,16 +19,20 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import imageCompression from "browser-image-compression";
+import { useDispatch } from "react-redux";
+import { addCarType } from "../../redux/slices/carType/thunk";
+import notify from "../../components/notify";
 
 export default function AddCarTypePage() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const [carTypeImage, setCarTypeImage] = useState(null);
   const isArabic = i18n.language === "ar";
   const [loading, setLoading] = useState(false);
 
-  // Form validation schema
   const validationSchema = Yup.object({
     nameEn: Yup.string()
       .required(t("Car Type Name English is required"))
@@ -44,7 +48,6 @@ export default function AddCarTypePage() {
       .positive(t("Price must be positive")),
   });
 
-  // Formik initialization
   const formik = useFormik({
     initialValues: {
       nameEn: "",
@@ -53,34 +56,54 @@ export default function AddCarTypePage() {
       kiloPrice: "",
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setLoading(true);
 
-      // Prepare form data including image
       const formData = new FormData();
-      formData.append("nameEn", values.nameEn);
-      formData.append("nameAr", values.nameAr);
-      formData.append("waitingPrice", values.waitingPrice);
-      formData.append("kiloPrice", values.kiloPrice);
+      formData.append("name_en", values.nameEn);
+      formData.append("name_ar", values.nameAr);
+      formData.append("waiting_price_per_minute", values.waitingPrice);
+      formData.append("kilo_price", values.kiloPrice);
 
       if (carTypeImage) {
         formData.append("image", carTypeImage);
       }
 
-      // Simulate API call
-      setTimeout(() => {
-        setLoading(false);
-        console.log("Form submitted:", Object.fromEntries(formData));
-        alert(t("Car type added successfully!"));
+      try {
+        const response = await dispatch(addCarType({ data: formData })).unwrap();
+        // alert(t("Car type added successfully!"));
         navigate("/CarTypes");
-      }, 1500);
+      } catch (err) {
+        console.error("Error adding car type:", err);
+        if (err?.response?.data?.errors && Array.isArray(err?.response?.data?.errors)) {
+          err?.response?.data?.errors?.forEach((error) => {
+            notify(error.message, "error");
+          });
+        } else {
+          notify("حدث خطأ غير متوقع", "error");
+        }
+      } finally {
+        setLoading(false);
+      }
     },
   });
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setCarTypeImage(file);
+
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 800,
+      useWebWorker: true,
+    };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      setCarTypeImage(compressedFile);
+    } catch (error) {
+      console.error("Image compression error:", error);
+    }
   };
 
   const handleRemoveImage = () => {
@@ -94,7 +117,7 @@ export default function AddCarTypePage() {
       component="form"
       onSubmit={formik.handleSubmit}
     >
-      {/* Breadcrumbs */}
+      {/* Breadcrumb */}
       <Box
         sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", mb: 2 }}
       >
@@ -103,13 +126,6 @@ export default function AddCarTypePage() {
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Car Types")}
-        </Typography>
-        <Typography sx={{ mx: 1 }}>{"<"}</Typography>
-        <Typography
-          onClick={() => navigate("/CarTypes")}
-          sx={{ cursor: "pointer", color: theme.palette.primary.main }}
-        >
-          {t("Car Types Details")}
         </Typography>
         <Typography sx={{ mx: 1 }}>{"<"}</Typography>
         <Typography>{t("Add Car Type")}</Typography>
@@ -138,7 +154,6 @@ export default function AddCarTypePage() {
           sx={{
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-between",
             alignItems: "flex-end",
           }}
         >
@@ -185,7 +200,7 @@ export default function AddCarTypePage() {
         </CardContent>
       </Card>
 
-      {/* Car Type Name English */}
+      {/* Name English */}
       <Typography variant="h6" gutterBottom>
         {t("Car Type Name English")}
         <Typography component="span" sx={{ color: "error.main", mx: 1 }}>
@@ -204,9 +219,6 @@ export default function AddCarTypePage() {
             border: "none",
             borderRadius: 1,
             padding: "10px 12px",
-            "& input": {
-              // color: theme.palette.text.blue
-            },
           },
         }}
         value={formik.values.nameEn}
@@ -217,7 +229,7 @@ export default function AddCarTypePage() {
         sx={{ mb: 3 }}
       />
 
-      {/* Car Type Name Arabic */}
+      {/* Name Arabic */}
       <Typography variant="h6" gutterBottom>
         {t("Car Type Name Arabic")}
         <Typography component="span" sx={{ color: "error.main" }}>
@@ -236,9 +248,6 @@ export default function AddCarTypePage() {
             border: "none",
             borderRadius: 1,
             padding: "10px 12px",
-            "& input": {
-              // color: theme.palette.text.blue
-            },
           },
         }}
         value={formik.values.nameAr}
@@ -249,7 +258,7 @@ export default function AddCarTypePage() {
         sx={{ mb: 3 }}
       />
 
-      {/* Waiting Price per minute */}
+      {/* Waiting Price */}
       <Typography variant="h6" gutterBottom>
         {t("Waiting Price per minute")}
         <Typography component="span" sx={{ color: "error.main" }}>
@@ -261,7 +270,7 @@ export default function AddCarTypePage() {
         name="waitingPrice"
         placeholder={t("Enter Waiting Price per minute")}
         variant="standard"
-        type="text" // text, not number
+        type="text"
         InputProps={{
           disableUnderline: true,
           endAdornment: <Typography>SAR</Typography>,
@@ -270,15 +279,11 @@ export default function AddCarTypePage() {
             border: "none",
             borderRadius: 1,
             padding: "10px 12px",
-            "& input": {
-              // color: theme.palette.text.blue
-            },
           },
         }}
         value={formik.values.waitingPrice}
         onChange={(e) => {
           const value = e.target.value;
-          // Accept only digits and optional dot (for decimal values)
           if (/^\d*\.?\d*$/.test(value)) {
             formik.setFieldValue("waitingPrice", value);
           }
@@ -303,7 +308,7 @@ export default function AddCarTypePage() {
         name="kiloPrice"
         placeholder={t("Enter Kilo Price")}
         variant="standard"
-        type="text" // Use text instead of number
+        type="text"
         InputProps={{
           disableUnderline: true,
           endAdornment: <Typography>SAR</Typography>,
@@ -312,15 +317,11 @@ export default function AddCarTypePage() {
             borderRadius: 1,
             border: "none",
             padding: "10px 12px",
-            "& input": {
-              // Optional: style input text
-            },
           },
         }}
         value={formik.values.kiloPrice}
         onChange={(e) => {
           const value = e.target.value;
-          // Allow only digits and one optional decimal point
           if (/^\d*\.?\d*$/.test(value)) {
             formik.setFieldValue("kiloPrice", value);
           }
@@ -333,17 +334,13 @@ export default function AddCarTypePage() {
 
       <Divider sx={{ my: 3 }} />
 
-      {/* Submit Button */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-
+      {/* Submit */}
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
         <Button
           type="submit"
           variant="contained"
-          // fullWidth
-          sx={{
-            px: 6 // increases left & right padding, makes button wider
-          }}
-                    disabled={loading}
+          sx={{ px: 6 }}
+          disabled={loading}
           startIcon={loading ? <CircularProgress size={20} /> : null}
         >
           {loading ? t("Saving...") : t("Save")}

@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getAllCarTypes,
   getAllCarTypesWithoutPaginations,
+  editCarType,
 } from "../../redux/slices/carType/thunk";
 import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
 import LoadingPage from "../../components/LoadingComponent";
@@ -174,9 +175,22 @@ const CarTypesPage = () => {
     }
   };
 
-  const onStatusChange = (row, newStatus) => {
+  const onStatusChange = async (row, newStatus) => {
     // Optional: API call to update status
     console.log("Car Type ID:", row.id, "New Status:", newStatus);
+    const data ={
+      status: newStatus == "active" ? true : false
+    }
+   await dispatch(editCarType({id:row.id,data}));
+    const query =
+    `page=${page}&limit=${limit}` +
+    (keyword ? `&keyword=${keyword}` : "") +
+    (status === "Available"
+      ? `&status=active`
+      : status === "Rejected"
+      ? `&status=banned`
+      : "");
+  await dispatch(getAllCarTypes({ query }));
   };
 
   if (loading) return <LoadingPage />;

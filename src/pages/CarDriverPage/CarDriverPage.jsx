@@ -223,7 +223,7 @@ const CarDriverPage = () => {
         <FilterComponent
           onSearch={handleSearch}
           initialFilters={{ keyword, status }}
-          statusOptions={["released", "not-released"]}
+          statusOptions={["released", "not_released"]}
           isCarDriver
         />
       </Box>

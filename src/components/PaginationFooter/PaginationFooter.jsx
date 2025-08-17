@@ -1,10 +1,28 @@
 import React from 'react';
-import { Box, useTheme, useMediaQuery, Pagination, PaginationItem, Select, MenuItem } from '@mui/material';
+import {
+  Box,
+  useTheme,
+  useMediaQuery,
+  Pagination,
+  PaginationItem,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const PaginationFooter = ({ currentPage, totalPages, limit, onPageChange, onLimitChange }) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const handlePageChange = (event, value) => {
+    onPageChange(event, value);
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // ✅ Scroll to top
+  };
+
+  const handleLimitChange = (event) => {
+    onLimitChange(event);
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // ✅ Scroll to top
+  };
 
   return (
     <Box
@@ -19,7 +37,7 @@ const PaginationFooter = ({ currentPage, totalPages, limit, onPageChange, onLimi
       <Pagination
         count={totalPages}
         page={currentPage}
-        onChange={onPageChange}
+        onChange={handlePageChange}
         siblingCount={1}
         boundaryCount={1}
         variant="text"
@@ -42,7 +60,9 @@ const PaginationFooter = ({ currentPage, totalPages, limit, onPageChange, onLimi
             {...item}
             components={{
               previous: ArrowBackIcon,
-              next: (props) => <ArrowBackIcon {...props} sx={{ transform: 'rotate(180deg)' }} />,
+              next: (props) => (
+                <ArrowBackIcon {...props} sx={{ transform: 'rotate(180deg)' }} />
+              ),
             }}
           />
         )}
@@ -52,7 +72,7 @@ const PaginationFooter = ({ currentPage, totalPages, limit, onPageChange, onLimi
         <Select
           size="small"
           value={limit}
-          onChange={onLimitChange}
+          onChange={handleLimitChange}
           variant="standard"
           disableUnderline
           sx={{

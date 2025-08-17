@@ -60,32 +60,33 @@ export const getOneCarType = createAsyncThunk(
 // edit Car Type
 export const editCarType = createAsyncThunk(
   "/carTypeSlice/editCarType",
-  async ({ id = '', data }) => {
+  async ({ id = '', data }, { rejectWithValue }) => {
     try {
       const response = await useUpdateData(`/carTypes/${id}`, data);
       return response;
     } catch (error) {
       if (error.message === "Network Error") {
-        return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري ", "error");
+        return notify("حدث خطأ أثناء الاتصال بالإنترنت. حاول مرة أخرى.", "error");
       } else {
-        return notify(error.response.data, "error");
+        return rejectWithValue(error);
       }
     }
   }
 );
 // add Car Type
 export const addCarType = createAsyncThunk(
-  "/carTypeSlice/editCarType",
-  async ({ id = '', data }) => {
+  "carType/addCarType",
+  async ({ id = '', data }, { rejectWithValue }) => {
     try {
       const response = await useInsertData(`/carTypes`, data);
       return response;
     } catch (error) {
       if (error.message === "Network Error") {
-        return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري ", "error");
+        return notify("حدث خطأ أثناء الاتصال بالإنترنت. حاول مرة أخرى.", "error");
       } else {
-        return notify(error.response.data, "error");
+        return rejectWithValue(error);
       }
     }
   }
 );
+

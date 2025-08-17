@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+// File: CarTypeDetailsPage.jsx
+import React, { useEffect, useState, useRef } from "react";
 import {
   Box,
   Typography,
   Card,
-  CardContent,
   Grid,
   IconButton,
   TextField,
@@ -14,147 +14,206 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import IOSSwitch from "../../components/IOSSwitch";
-import DomiCar from "../../assets/DomiCar.png";
+import { getOneCarType, editCarType } from "../../redux/slices/carType/thunk";
+import { useDispatch, useSelector } from "react-redux";
+import imageCompression from "browser-image-compression";
+import useBaseImageUrlForDriver from "../../hooks/useBaseImageUrlForDriver";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import notify from "../../components/notify";
 
 const CarTypeDetailsPage = () => {
   const { t, i18n } = useTranslation();
-  const isArabic = i18n.language === "ar";
   const theme = useTheme();
+  const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const baseImageUrl = useBaseImageUrlForDriver();
 
-  // Initial car type data
-  const carTypeData = {
-    id: "#76312",
-    nameEn: "Economy",
-    nameAr: "اقتصادي",
-    waitingPrice: 10,
-    kiloPrice: 30,
-    status: "Available",
-    image: DomiCar,
-  };
-
-  // State for editable fields
-  const [editableFields, setEditableFields] = useState({
-    nameEn: carTypeData.nameEn,
-    nameAr: carTypeData.nameAr,
-    waitingPrice: carTypeData.waitingPrice,
-    kiloPrice: carTypeData.kiloPrice,
-    status: carTypeData.status,
+  const { carType } = useSelector((state) => state.carType);
+  console.log("carType",carType)
+  const [fields, setFields] = useState({
+    nameEn: "",
+    nameAr: "",
+    waitingPrice: 0,
+    kiloPrice: 0,
+    status: true,
+    image: null,
+    previewUrl: "",
   });
+  const [editMode, setEditMode] = useState({});
+  const [loading, setLoading] = useState({});
+  const fileInputRef = useRef();
 
-  // State for edit mode and loading
-  const [editMode, setEditMode] = useState({
-    nameEn: false,
-    nameAr: false,
-    waitingPrice: false,
-    kiloPrice: false,
-  });
-
-  const [loading, setLoading] = useState({
-    nameEn: false,
-    nameAr: false,
-    waitingPrice: false,
-    kiloPrice: false,
-  });
+  useEffect(() => {
+    dispatch(getOneCarType(id))
+  }, [id, dispatch, baseImageUrl]);
+  useEffect(() => {
+    if (carType) {
+      setFields((prev) => ({
+        ...prev,
+        nameEn: carType?.name_en,
+        nameAr: carType?.name_ar,
+        waitingPrice: carType?.waiting_price_per_minute,
+        kiloPrice: carType?.kilo_price,
+        status: carType?.status,
+        image: carType?.image ? baseImageUrl + carType?.image : "",
+        previewUrl: carType?.image ? baseImageUrl + carType?.image : "",
+      }));
+    }
+  }, [carType]);
 
   const handleFieldChange = (field, value) => {
-    setEditableFields((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleSave = (field) => {
-    setLoading((prev) => ({ ...prev, [field]: true }));
-
-    setTimeout(() => {
-      setLoading((prev) => ({ ...prev, [field]: false }));
-      setEditMode((prev) => ({ ...prev, [field]: false }));
-      console.log(`Saved ${field}:`, editableFields[field]);
-    }, 1000);
+    setFields((prev) => ({ ...prev, [field]: value }));
   };
 
   const toggleEditMode = (field) => {
-    setEditMode((prev) => ({
-      ...prev,
-      [field]: !prev[field],
-    }));
+    setEditMode((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
-  const toggleAvailability = (event) => {
-    const newStatus = event.target.checked ? "Available" : "Unavailable";
-    setEditableFields((prev) => ({
-      ...prev,
-      status: newStatus,
-    }));
+  const toggleAvailability = (e) => {
+    const newStatus = e.target.checked;
+    setFields((prev) => ({ ...prev, status: newStatus }));
+  
+    // حفظ القيمة مباشرة
+    handleSave("status", newStatus);
   };
 
-  const renderEditableCard = (field, title, currency = false) => {
-    return (
-      <Card
-        sx={{
-          background: theme.palette.secondary.sec,
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          p: 2,
-        }}
-      >
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="subtitle2">{t(title)}</Typography>
-          
+  const handleSave = async (field, customValue = null) => {
+    setLoading((prev) => ({ ...prev, [field]: true }));
+  
+    const formData = new FormData();
+  
+    switch (field) {
+      case "nameEn":
+        formData.append("name_en", fields.nameEn);
+        break;
+      case "nameAr":
+        formData.append("name_ar", fields.nameAr);
+        break;
+      case "waitingPrice":
+        formData.append("waiting_price_per_minute", fields.waitingPrice);
+        break;
+      case "kiloPrice":
+        formData.append("kilo_price", fields.kiloPrice);
+        break;
+      case "status":
+        formData.append("status", customValue !== null ? customValue : fields.status);
+        break;
+      default:
+        console.warn("Unknown field:", field);
+        return;
+    }
+  
+    try {
+      await dispatch(editCarType({ id, data: formData })).unwrap();
+     
+    } catch (err) {
+      console.error("Error adding car type:", err);
+      if (err?.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+        err.response.data.errors.forEach((error) => {
+          notify(error.message, "error");
+        });
+      } else {
+        notify("حدث خطأ غير متوقع", "error");
+      }
+    } finally {
+      setEditMode((prev) => ({ ...prev, [field]: false }));
+      await dispatch(getOneCarType(id)); // 👈 إعادة جلب البيانات بعد الحفظ
+      setLoading((prev) => ({ ...prev, [field]: false }));
+    }
+  };
+  
+  
+  
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const preview = URL.createObjectURL(file);
+    setFields((prev) => ({ ...prev, image: file, previewUrl: preview }));
+
+    setLoading((prev) => ({ ...prev, image: true }));
+    try {
+      const compressed = await imageCompression(file, {
+        maxSizeMB: 0.5,
+        maxWidthOrHeight: 600,
+        useWebWorker: true,
+      });
+      const formData = new FormData();
+      formData.append("image", compressed);
+      await dispatch(editCarType({ id, data: formData })).unwrap();
+    } catch (err) {
+      console.error("Error adding car type:", err);
+      if (err?.response?.data?.errors && Array.isArray(err?.response?.data?.errors)) {
+        err?.response?.data?.errors?.forEach((error) => {
+          notify(error.message, "error");
+        });
+      } else {
+        notify("حدث خطأ غير متوقع", "error");
+      }
+    } finally {
+      await  dispatch(getOneCarType(id))
+      setLoading((prev) => ({ ...prev, image: false }));
+    }
+  };
+
+  const renderEditableCard = (field, title, currency = false) => (
+    <Card
+    sx={{
+      background: theme.palette.secondary.sec,
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      p: 2,
+    }}
+  >     
+   <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="subtitle2">{t(title)}</Typography>
+      </Box>
+      {editMode[field] ? (
+        <Box display="flex" alignItems="center" mt={2} gap={1}>
+          <TextField
+            value={fields[field]}
+            onChange={(e) => handleFieldChange(field, e.target.value)}
+            fullWidth
+            size="small"
+            type={currency ? "number" : "text"}
+            InputProps={{
+              startAdornment: currency && (
+                <Typography sx={{ mr: 1 }}>SAR</Typography>
+              ),
+            }}
+          />
+          <IconButton
+            onClick={() => handleSave(field)}
+            disabled={loading[field]}
+          >
+            {loading[field] ? <CircularProgress size={24} /> : <SaveIcon />}
+          </IconButton>
         </Box>
+      ) : (
+        <Box display="flex" alignItems="center" justifyContent="space-between" mt={2} gap={1}>
 
-        {editMode[field] ? (
-          <Box display="flex" alignItems="center" mt={2} gap={1}>
-            <TextField
-              value={editableFields[field]}
-              onChange={(e) => handleFieldChange(field, e.target.value)}
-              fullWidth
-              size="small"
-              type={currency ? "number" : "text"}
-              InputProps={{
-                startAdornment: currency && (
-                  <Typography sx={{ mr: 1 }}>SAR</Typography>
-                ),
-              }}
-              sx={{ flexGrow: 1 }}
-            />
-            <IconButton
-              onClick={() => handleSave(field)}
-              disabled={loading[field]}
-            >
-              {loading[field] ? (
-                <CircularProgress size={24} />
-              ) : (
-                <SaveIcon />
-              )}
-            </IconButton>
-          </Box>
-        ) : (
-          <Box display="flex" alignItems="center" justifyContent="space-between" mt={2} gap={1}>
-
-          <Typography
+<Typography
             variant="h6"
             sx={{ mt: 1, color: theme.palette.text.blue }}
-          >
-            {editableFields[field]}
+          >            {fields[field]}
             {currency ? " SAR" : ""}
             {field === "waitingPrice" && " / 1 Min."}
           </Typography>
-          <IconButton
-          onClick={() => toggleEditMode(field)}
-          sx={{ visibility: editMode[field] ? "hidden" : "visible" }}
-        >
-          <EditIcon />
-        </IconButton>
+          <IconButton onClick={() => toggleEditMode(field)}>
+            <EditIcon />
+          </IconButton>
         </Box>
-        )}
-      </Card>
-    );
-  };
+      )}
+    </Card>
+  );
 
   return (
     <Box p={2}>
@@ -166,81 +225,75 @@ const CarTypeDetailsPage = () => {
         >
           {t("Car Types")}
         </Typography>
-        <Typography mx={1}>{`<`}</Typography>
+        <Typography mx={1}>{"<"}</Typography>
         <Typography
           onClick={() => navigate("/CarTypes")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Car Types Details")}
-        </Typography>
-        <Typography mx={1}>{`<`}</Typography>
-        <Typography>{editableFields.nameEn}</Typography>
-      </Box>
+        </Typography>  <Typography mx={1}>{`<`}</Typography>
+        <Typography>{fields.nameEn}</Typography>    </Box>
 
-      {/* Name & ID */}
-      <Box mb={2} textAlign="start">
-        <Typography variant="h5" fontWeight="bold">
-          {editableFields.nameEn} {carTypeData.id}
-        </Typography>
-      </Box>
+      <Typography variant="h5" fontWeight="bold" mb={3}>
+        {fields.nameEn} 
+      </Typography>
 
-      {/* Car Image */}
-      <Box
-        maxWidth="md"
-        mb={3}
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-      >
-        <Box position="relative">
-          <Box
-            component="img"
-            src={carTypeData.image}
-            alt={editableFields.nameEn}
-            sx={{
-              width: 200,
-              height: 150,
-              objectFit: "contain",
-              borderRadius: 2,
-            }}
-          />
+      {/* Image Section */}
+      <Box display="flex" flexDirection="column" alignItems="center" mb={3} maxWidth="md">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          style={{ display: "none" }}
+        />
+        <Box onClick={handleImageClick} sx={{ cursor: "pointer" }}>
+          {fields.previewUrl ? (
+            <Box
+              component="img"
+              src={fields.previewUrl}
+              alt="car"
+              sx={{
+                width: 200,
+                height: 150,
+                objectFit: "contain",
+                borderRadius: 2,
+              }}
+            />
+          ) : (
+            <AccountCircleIcon
+              sx={{ fontSize: 200, color: theme.palette.text.disabled }}
+            />
+          )}
         </Box>
-
-        {/* Status Toggle */}
         <Box display="flex" alignItems="center" mt={2}>
-          <Typography>{t(editableFields.status)}</Typography>
-          <IOSSwitch
-            checked={editableFields.status === "Available"}
-            onChange={toggleAvailability}
-            sx={{ mx: 1 }}
-            color="primary"
-          />
+        <Typography>{fields.status ? t("active") : t("Unavailable")}</Typography>
+                <IOSSwitch
+          checked={fields.status}
+          onChange={toggleAvailability}
+          sx={{ mx: 1 }}
+          color="primary"
+        />
         </Box>
-      </Box>
+        </Box>
 
-      {/* Car Type Details Cards */}
+      {/* Editable Fields */}
       <Box maxWidth="md">
-        <Grid container spacing={2}>
-          {/* English Name */}
-          <Grid item xs={12} md={12}>
-            {renderEditableCard("nameEn", "Car Type Name English")}
-          </Grid>
 
-          {/* Arabic Name */}
-          <Grid item xs={12} md={12}>
-            {renderEditableCard("nameAr", "Car Type Name Arabic")}
-          </Grid>
-
-          {/* Waiting Price */}
-          <Grid item xs={12} md={12}>
-            {renderEditableCard("waitingPrice", "Waiting Price per minute", true)}
-          </Grid>
-
-          {/* Kilo Price */}
-          <Grid item xs={12} md={12}>
-            {renderEditableCard("kiloPrice", "Kilo Price", true)}
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          {renderEditableCard("nameEn", "Car Type Name English")}
         </Grid>
+        <Grid item xs={12}>
+          {renderEditableCard("nameAr", "Car Type Name Arabic")}
+        </Grid>
+        <Grid item xs={12}>
+          {renderEditableCard("waitingPrice", "Waiting Price per minute", true)}
+        </Grid>
+        <Grid item xs={12}>
+          {renderEditableCard("kiloPrice", "Kilo Price", true)}
+        </Grid>
+      </Grid>
       </Box>
     </Box>
   );
