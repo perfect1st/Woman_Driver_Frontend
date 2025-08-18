@@ -48,6 +48,7 @@ import AddCommissionCategory from "./pages/AddCommissionCategory/AddCommissionCa
 import TrackingFrequencyModal from "./components/Modals/TrackingFrequencyModal";
 import NotifyRadiusModal from "./components/Modals/NotifyRadiusModal";
 import LoginPage from "./pages/LoginPage/LoginPage";
+import AddUserPage from "./pages/AddUserPage/AddUserPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -438,6 +439,16 @@ import LoginPage from "./pages/LoginPage/LoginPage";
       // <ProtectedRoute>
         <MainLayout>
           <TrafficTimePage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/AddUser"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <AddUserPage />
         </MainLayout>
       // </ProtectedRoute>
     }

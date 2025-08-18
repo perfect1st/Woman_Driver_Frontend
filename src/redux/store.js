@@ -6,6 +6,8 @@ import paymentMethodSlice from './slices/paymentMethod/paymentMethodSlice';
 import tripSlice from './slices/trip/tripSlice';
 import carSlice from './slices/car/carSlice';
 import carAssignmentSlice from './slices/carAssignment/carAssignmentSlice';
+import userSlice from './slices/user/userSlice';
+import permissionGroupSlice from './slices/permissionGroup/permissionGroupSlice';
 
 
 export const store = configureStore({
@@ -17,7 +19,9 @@ export const store = configureStore({
     paymentMethod: paymentMethodSlice,
     trip: tripSlice,
     car: carSlice,
-    carAssignment: carAssignmentSlice
+    carAssignment: carAssignmentSlice,
+    user: userSlice,
+    permissionGroup: permissionGroupSlice
 
   },
 });

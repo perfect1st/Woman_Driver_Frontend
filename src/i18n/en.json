@@ -450,6 +450,23 @@
   "Car License Front": "Car License Front",
   "Car License Back": "Car License Back",
   "Select New Image": "Select New Image",
-  "No image selected": "No image selected"
+  "No image selected": "No image selected",
+  "Users": "Users",
+  "Users List": "Users List",
+  "Add User": "Add User",
+  "Profile Picture": "Profile Picture",
+  "User Details": "User Details",
+  "Permission Group": "Permission Group",
+  "Select Permission Group": "Select Permission Group",
+  "Administrator": "Administrator",
+  "Has Report Actions": "Has Report Actions",
+  "Create User": "Create User",
+  "Name is required": "Name is required",
+  "Phone number is required": "Phone number is required",
+  "Email is required": "Email is required",
+  "Invalid email format": "Invalid email format",
+  "Password is required": "Password is required",
+  "Password must be at least 8 characters": "Password must be at least 8 characters",
+  "Permission group is required": "Permission group is required"
 
 }

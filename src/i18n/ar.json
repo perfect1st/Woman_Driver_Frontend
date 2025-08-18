@@ -466,7 +466,24 @@
   "Car License Back": "رخصة السيارة من الخلف",
 
   "Select New Image": "اختر صورة جديدة",
-  "No image selected": "لم يتم اختيار صورة"
+  "No image selected": "لم يتم اختيار صورة",
+  "Users": "المستخدمون",
+  "Users List": "قائمة المستخدمين",
+  "Add User": "إضافة مستخدم",
+  "Profile Picture": "الصورة الشخصية",
+  "User Details": "تفاصيل المستخدم",
+  "Permission Group": "مجموعة الصلاحيات",
+  "Select Permission Group": "اختر مجموعة الصلاحيات",
+  "Administrator": "مسؤول",
+  "Has Report Actions": "يمتلك صلاحيات التقارير",
+  "Create User": "إنشاء مستخدم",
+  "Name is required": "الاسم مطلوب",
+  "Phone number is required": "رقم الهاتف مطلوب",
+  "Email is required": "البريد الإلكتروني مطلوب",
+  "Invalid email format": "صيغة البريد الإلكتروني غير صحيحة",
+  "Password is required": "كلمة المرور مطلوبة",
+  "Password must be at least 8 characters": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+  "Permission group is required": "مجموعة الصلاحيات مطلوبة"
 
 
 }
