@@ -232,12 +232,8 @@ const mockTransactions = [
   },
 ];
 
-const tabOptions = [
-  "driver-details",
-  "car-documents",
-  "payment-details",
-  "trips",
-];
+
+
 
 export default function DriverDetailsPage() {
   const { t, i18n } = useTranslation();
@@ -263,14 +259,23 @@ export default function DriverDetailsPage() {
   const [imageTitle, setImageTitle] = useState("");
   const [imageUploadLoading, setImageUploadLoading] = useState(false);
   const fileInputRef = useRef(null);
-  const defaultTab = tabOptions[0]; // first tab by default
-  const currentTab =
-    tabParam && tabOptions.includes(tabParam) ? tabParam : defaultTab;
+ 
   const baseImageUrl = useBaseImageUrlForDriver();
 const {allDriverTrips} = useSelector((state) => state.trip);
   // Get the actual driver data from Redux store
   const driverState = useSelector((state) => state.driver);
   const driverData = driverState.driver;
+  const tabOptions = [
+  "driver-details",
+  ...(driverData?.car ? ["car-documents"] : []),
+  "payment-details",
+  "trips",
+];
+ const defaultTab = tabOptions[0]; // first tab by default
+  const currentTab =
+    tabParam && tabOptions.includes(tabParam) ? tabParam : defaultTab;
+    
+  console.log("driverData",driverData)
   const apiLoading = driverState.loading;
   // Determine if we have valid driver data
   const hasDriverData = driverData && driverData._id;
@@ -1259,7 +1264,7 @@ const formatTime = (dateString) => {
         scrollButtons="auto"
       >
         <Tab label={t("Driver Details")} />
-        <Tab label={t("Car Documents")} />
+        {driverData?.car && <Tab label={t("Car Documents")} />}
         <Tab label={t("Payment Details")} />
         <Tab label={t("Trips")} />
       </Tabs>
@@ -1496,8 +1501,9 @@ const formatTime = (dateString) => {
                   </Typography>
                   <IOSSwitch
                     checked={editableFields.isCompanyCar}
-                    onChange={toggleCompanyCar}
+                    // onChange={toggleCompanyCar}
                     color="primary"
+                    disabled
                     sx={{ mx: 1 }}
                   />
                 </Box>

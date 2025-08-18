@@ -33,6 +33,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getOneTrip } from "../../redux/slices/trip/thunk";
 import LoadingPage from "../../components/LoadingComponent";
 import useBaseImageUrl from "../../hooks/useBaseImageUrlForDriver";
+import usePassengerBaseImageUrl from "../../hooks/useBaseImageUrl";
 
 const tripStatusStyles = {
   cancelled: {
@@ -76,6 +77,7 @@ export default function TripDetailsPage() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const baseImageUrl = useBaseImageUrl();
+  const passengerBaseImageUrl = usePassengerBaseImageUrl();
 
   const [activeTab, setActiveTab] = useState(0);
   const [loadingProfile, setLoadingProfile] = useState(false);
@@ -112,6 +114,7 @@ export default function TripDetailsPage() {
     fare: `${trip.cost}`,
     waiting: `${trip.total_waiting_minutes_cost}`,
     waitingTime: `${trip.waitings?.length} ${t("stops")}`,
+    tripType: trip.is_scheduled ? t("Scheduled") : t("On Demand"),
     payment: trip.payment_method_id?.name_en || t("N/A"),
   };
 
@@ -120,7 +123,7 @@ export default function TripDetailsPage() {
     {
       type: "Pickup",
       time: new Date(trip.createdAt).toLocaleTimeString(),
-      address: `${trip?.from_lng_lat?.coordinates[1]}, ${trip?.from_lng_lat?.coordinates[0]}`,
+      address: `${trip?.from_name || ""}`,
     },
     ...(trip.waitings || [])?.map((w) => ({
       type: "Waiting",
@@ -130,7 +133,7 @@ export default function TripDetailsPage() {
     {
       type: "Dropoff",
       time: new Date(trip.updatedAt).toLocaleTimeString(),
-      address: `${trip.to_lng_lat?.coordinates[1]}, ${trip.to_lng_lat?.coordinates[0]}`,
+      address: ` ${trip?.to_name || ""}`,
     },
   ];
 
@@ -273,7 +276,7 @@ export default function TripDetailsPage() {
               <Grid container alignItems="center" spacing={2}>
                 <Grid item>
                   <Avatar
-                    src={`${baseImageUrl}${trip?.user_id?.profile_image}`}
+                    src={`${passengerBaseImageUrl}${trip?.user_id?.profile_image}`}
                     sx={{ width: 64, height: 64 }}
                   >
                     {!trip?.user_id?.profile_image &&
@@ -286,7 +289,7 @@ export default function TripDetailsPage() {
                   </Typography>
                   <Box display="flex" alignItems="center">
                     <Typography variant="body2">
-                      {trip?.user_id?.status}
+                      {trip?.user_id?.rate || 5}
                     </Typography>
                     <StarIcon
                       fontSize="small"
@@ -348,7 +351,7 @@ export default function TripDetailsPage() {
                     </Typography>
                     <Box display="flex" alignItems="center">
                       <Typography variant="body2">
-                        {trip.driver_id.status}
+                        {trip.driver_id.rate || 5}
                       </Typography>
                       <StarIcon
                         fontSize="small"

@@ -415,6 +415,7 @@
   "panned":"Rejected",
   "Scheduled": "Scheduled",
   "On Demand": "On Demand",
+  "tripType":"Trip Type",
   "Unassigned": "Unassigned",
   "NoDriverTrips":"No trips found for this driver",
   "MapUnavailable":"Map unavailable",

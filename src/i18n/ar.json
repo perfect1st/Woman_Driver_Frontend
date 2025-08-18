@@ -426,6 +426,7 @@
   "panned":"مرفوض",
   "Scheduled": "مجدول",
   "On Demand": "عند الطلب",
+  "tripType":"نوع الرحله",
   "Unassigned": "غير معين",
   "NoDriverTrips":"لم يتم العثور على رحلات لهذا السائق",
   "MapUnavailable":"الخريطة غير متاحة",
