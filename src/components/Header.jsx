@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
 import { 
   AppBar, 
   Toolbar, 
@@ -40,10 +40,12 @@ import {
 import { ColorModeContext } from '../App';
 import logo from '../assets/Logo.png';
 import routes from "../data/routes";
-import { Link, useLocation } from 'react-router-dom';
+import { Link, matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { ReactComponent as LanguageIcon } from "../assets/language.svg";
 import { ReactComponent as NotificationIcon } from "../assets/natification.svg";
 import { ReactComponent as SettingIcon } from "../assets/setting.svg";
+import useBaseImageUrl from "../hooks/useBaseImageUrl";
+import getAccessibleRoutes from '../hooks/getAccessibleRoutes';
 
 
 const Header = ({ onAction }) => {
@@ -59,6 +61,8 @@ const Header = ({ onAction }) => {
 const [settingAnchor, setSettingAnchor] = useState(null);
 const [settingMenuOpen, setSettingMenuOpen] = useState(false);
 const [settingMenuAnchor, setSettingMenuAnchor] = useState(null);
+const baseImageUrl = useBaseImageUrl();
+const navigate = useNavigate();
 
 const handleSettingMenuOpen = (event) => {
   setSettingMenuAnchor(event.currentTarget);
@@ -70,10 +74,7 @@ const handleSettingMenuClose = () => {
   setSettingMenuOpen(false);
 };
 
-  const [user] = useState(() => {
-    const storedUser = localStorage.getItem('user');
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
+ const user = JSON.parse(localStorage.getItem('user'));
   const currentRoutes = routes.admin;
 
   const [openMenus, setOpenMenus] = useState({});
@@ -107,7 +108,7 @@ const handleSettingMenuClose = () => {
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    window.location.reload();
+    navigate("/login")
   };
 
   const changeLanguage = (lang) => {
@@ -128,7 +129,26 @@ const handleSettingMenuClose = () => {
   };
 // Mobile drawer content
 // Mobile drawer content
+const menuItems = useMemo(() => getAccessibleRoutes("admin"), []);
+  const [openKeys, setOpenKeys] = useState({});
 
+  useEffect(() => {
+    const newOpenKeys = {};
+    menuItems.forEach((item) => {
+      if (item.children) {
+        const isChildActive = item.children.some((child) =>
+          matchPath(child.path, location.pathname)
+        );
+        if (isChildActive) {
+          newOpenKeys[item.key] = true;
+        }
+      }
+    });
+    setOpenKeys((prev) => ({ ...prev, ...newOpenKeys }));
+  }, [location.pathname, menuItems]);
+  const toggleOpen = (key) =>
+    setOpenKeys((prev) => ({ ...prev, [key]: !prev[key] }));
+  console.log("menuItems",menuItems)
 const drawerContent = (
   <Box
     sx={{
@@ -164,7 +184,7 @@ const drawerContent = (
       }}
     >
       <Avatar
-        src={user?.image}
+        src={`${baseImageUrl}${user?.profile_image}`}
         sx={{
           width: 60,
           height: 60,
@@ -187,7 +207,7 @@ const drawerContent = (
 
     {/* Main Routes */}
     <List>
-      {currentRoutes?.map((route) =>
+      {menuItems?.map((route) =>
         route.children ? (
           <React.Fragment key={route.key}>
             <ListItemButton onClick={() => handleToggleMenu(route.key)}>
@@ -203,10 +223,11 @@ const drawerContent = (
                 {route.children.map((child) => (
                   <ListItemButton
                     key={child.key}
-                    component={Link}
-                    to={child.path}
+                    // component={Link}
+                    // to={child.path}
                     onClick={() => {
                       if (child.action && onAction) onAction(child.action);
+                      navigate(child.path);
                       handleDrawerToggle();
                     }}
                     sx={{
@@ -239,10 +260,13 @@ const drawerContent = (
         ) : (
           <ListItemButton
             key={route.key}
-            component={Link}
-            to={route.path}
-            onClick={handleDrawerToggle}
-            sx={{
+            // component={Link}
+            // to={route.path}
+            onClick={() => {
+              navigate(route.path);
+              handleDrawerToggle();
+            }}
+                        sx={{
               backgroundColor: isActiveRoute(route.path)
                 ? theme.palette.primary.main
                 : "transparent",
@@ -632,8 +656,8 @@ const drawerContent = (
             onClick={handleUserMenuOpen}
           >
             <Avatar 
-              src={user?.image} 
-              sx={{ 
+        src={`${baseImageUrl}${user?.profile_image}`}
+        sx={{ 
                 width: { xs: 36, md: 46 }, 
                 height: { xs: 36, md: 46 },
                 border: `2px solid ${theme.palette.primary.main}`

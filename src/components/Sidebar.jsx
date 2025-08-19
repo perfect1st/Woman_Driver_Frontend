@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Box,
   Drawer,
@@ -14,14 +14,14 @@ import {
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, matchPath } from "react-router-dom";
-import routesData from "../data/routes";
+import getAccessibleRoutes from "../hooks/getAccessibleRoutes"; // ✅ الجديد
 
 const Sidebar = ({ userType = "admin", mobileOpen, onClose, onAction }) => {
   const theme = useTheme();
   const { i18n } = useTranslation();
   const location = useLocation();
 
-  const menuItems = routesData[userType] || [];
+  const menuItems = useMemo(() => getAccessibleRoutes("admin"), []);
   const [openKeys, setOpenKeys] = useState({});
 
   useEffect(() => {
@@ -70,22 +70,16 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose, onAction }) => {
               (matchPath("/Cars/AddCar", location.pathname) ||
                 matchPath("/CarDetails/:id", location.pathname))) ||
             (item.key === "CarDriver" &&
-              (matchPath(
-                "/CarDriverDetails/AddCarDrive",
-                location.pathname
-              ) ||
+              (matchPath("/CarDriverDetails/AddCarDrive", location.pathname) ||
                 matchPath("/CarDriverDetails/:id", location.pathname))) ||
             (item.key === "Wallet" &&
               (matchPath("/Wallet/AddTransaction", location.pathname) ||
                 matchPath("/walletDetails/:id", location.pathname))) ||
             (item.key === "PaymentMethods" &&
-              (matchPath(
-                "/PaymentMethod/AddPaymentMethod",
-                location.pathname
-              ) ||
+              (matchPath("/PaymentMethod/AddPaymentMethod", location.pathname) ||
                 matchPath("/paymentMethodDetails/:id", location.pathname))) ||
             (item.key === "PermissionGroups" &&
-              (matchPath("/PermissionGroups/showpermissiongroup/:id", location.pathname))) ||
+              matchPath("/PermissionGroups/showpermissiongroup/:id", location.pathname)) ||
             (item.key === "TrafficTime" &&
               (matchPath("/TrafficTimes/AddTrafficTime", location.pathname) ||
                 matchPath("/TrafficTimeDetails/:id", location.pathname))) ||

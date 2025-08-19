@@ -5,8 +5,9 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { ReactComponent as More } from '../assets/More.svg'
 import { ReactComponent as setting } from '../assets/setting.svg'
+const user = JSON.parse(localStorage.getItem("user"));
 
-
+console.log("user",user)
 const routesData = {
   admin: [
     {
@@ -88,7 +89,7 @@ const routesData = {
       // icon: HomeIcon,
     },
     {
-      key: "PermissionGroups",
+      key: "Permissions",
       label: { en: "Permission Groups", ar: "مجموعات الصلاحيات" },
       path: "/PermissionGroups",
       // icon: HomeIcon,
@@ -99,14 +100,14 @@ const routesData = {
       icon: setting,
       children: [
         {
-          key: "TrackingFrequency",
+          key: "settings",
           label: { en: "Tracking Frequency", ar: "تردد التتبع" },
           action: "openTrackingModal",
           path: "",
           // icon: 
         },
         {
-          key: "NotifyRadius",
+          key: "settings",
           label: { en: "Notify Radius", ar: "نطاق الإشعار" },
           action: "openNotifyRadiusModal",
           path: "",
