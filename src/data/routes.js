@@ -88,6 +88,12 @@ const routesData = {
       // icon: HomeIcon,
     },
     {
+      key: "PermissionGroups",
+      label: { en: "Permission Groups", ar: "مجموعات الصلاحيات" },
+      path: "/PermissionGroups",
+      // icon: HomeIcon,
+    },
+    {
       key: "settings",
       label: { en: "settings", ar: "الاعدادات" },
       icon: setting,

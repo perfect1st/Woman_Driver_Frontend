@@ -84,6 +84,8 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose, onAction }) => {
                 location.pathname
               ) ||
                 matchPath("/paymentMethodDetails/:id", location.pathname))) ||
+            (item.key === "PermissionGroups" &&
+              (matchPath("/PermissionGroups/showpermissiongroup/:id", location.pathname))) ||
             (item.key === "TrafficTime" &&
               (matchPath("/TrafficTimes/AddTrafficTime", location.pathname) ||
                 matchPath("/TrafficTimeDetails/:id", location.pathname))) ||

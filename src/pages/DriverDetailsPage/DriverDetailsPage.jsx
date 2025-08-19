@@ -297,7 +297,7 @@ console.log("selectedTrip",selectedTrip)
     if (!hasDriverData) return "Unavailable";
     return driverData.driver_is_available ? "Available" : "Unavailable";
   };
-
+   
   const getAccountStatusDisplay = () => {
     if (!hasDriverData) return "Pending";
     // Map API status to UI status

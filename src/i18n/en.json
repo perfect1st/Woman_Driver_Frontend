@@ -380,7 +380,11 @@
     "placeholder": "Enter Notification Radius"
   },
   "common": {
-    "done": "Done"
+    "done": "Done",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "create": "Create Group",
+    "saveChanges": "Save Changes"
   },
   "day": "Day",
   "week": "Week",
@@ -467,6 +471,46 @@
   "Invalid email format": "Invalid email format",
   "Password is required": "Password is required",
   "Password must be at least 8 characters": "Password must be at least 8 characters",
-  "Permission group is required": "Permission group is required"
+  "Permission group is required": "Permission group is required",
+  "permissions": {
+    "title": "Permission Groups",
+    "details": "Permission Groups Details",
+    "addGroup": "Add Permission Group",
+    "name": "Group Name",
+    "index": "#",
+    "show": "Show",
+    "edit": "Edit",
+    "delete": "Delete",
+    "actions":"Actions",
+    "createTitle": "Create Permission Group",
+    "editTitle": "Edit Permission Group",
+    "groupName": "Group Name",
+    "confirmDeleteTitle": "Confirm Delete",
+    "confirmDeleteMsg": "Are you sure you want to delete this permission group?",
+    "detailsFor": "Permission Group:",
+    "screen": "Screen",
+    "view": "View",
+    "add": "Add"
+  },
+  "screens": {
+    "Home": "Home",
+    "Users": "Users",
+    "Passengers": "Passengers",
+    "Drivers": "Drivers",
+    "Trips": "Trips",
+    "Cars": "Cars",
+    "CarTypes": "Car Types",
+    "CarDriver": "Car Driver",
+    "TrafficTime": "Traffic Time",
+    "Wallet": "Wallet",
+    "carDriver": "Car Driver",
+    "WaitingTime": "Waiting Time",
+    "PaymentMethods": "Payment Methods",
+    "Commission": "Commission",
+    "CommissionCategory": "Commission Category",
+    "Permissions": "Permissions",
+    "Settings": "Settings"
+  }
+
 
 }

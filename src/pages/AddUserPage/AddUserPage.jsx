@@ -132,13 +132,13 @@ export default function AddUserPage() {
       formData.append("phone_number", values.phone_number);
       formData.append("email", values.email);
       formData.append("password", values.password);
-      formData.append("permission_group", values.permissionGroup);
-      formData.append("is_admin", values.is_admin);
+      formData.append("groups", values.permissionGroup);
+      formData.append("super_admin", values.is_admin);
       formData.append("has_report_actions", values.hasReportActions);
       
       // Avatar image
       if (avatarImage) {
-        formData.append("image", avatarImage);
+        formData.append("profile_image", avatarImage);
       }
 
       try {
@@ -340,7 +340,7 @@ export default function AddUserPage() {
               >
                 <MenuItem value="" disabled>{t("Select Permission Group")}</MenuItem>
                 {allPermissionGroups?.map((group) => (
-                  <MenuItem key={group.id} value={group.id}>
+                  <MenuItem key={group._id} value={group._id}>
                     {group.name}
                   </MenuItem>
                 ))}

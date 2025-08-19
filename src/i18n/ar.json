@@ -391,7 +391,11 @@
     "placeholder": "أدخل نطاق التنبيه"
   },
   "common": {
-    "done": "تم"
+    "done": "تم",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "create": "إنشاء",
+    "saveChanges": "حفظ التعديلات"
   },
   "day": "يوم",
   "week": "أسبوع",
@@ -483,7 +487,45 @@
   "Invalid email format": "صيغة البريد الإلكتروني غير صحيحة",
   "Password is required": "كلمة المرور مطلوبة",
   "Password must be at least 8 characters": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
-  "Permission group is required": "مجموعة الصلاحيات مطلوبة"
-
+  "Permission group is required": "مجموعة الصلاحيات مطلوبة",
+  "permissions": {
+    "title": "مجموعات الصلاحيات",
+    "details": "تفاصيل مجموعات الصلاحيات",
+    "addGroup": "إضافة مجموعة صلاحيات",
+    "name": "اسم المجموعة",
+    "index": "#",
+    "show": "عرض",
+    "edit": "تعديل",
+    "actions": "الاوامر",
+    "delete": "حذف",
+    "createTitle": "إنشاء مجموعة صلاحيات",
+    "editTitle": "تعديل مجموعة الصلاحيات",
+    "groupName": "اسم المجموعة",
+    "confirmDeleteTitle": "تأكيد الحذف",
+    "confirmDeleteMsg": "هل أنت متأكد أنك تريد حذف مجموعة الصلاحيات هذه؟",
+    "detailsFor": "مجموعة الصلاحيات:",
+    "screen": "الشاشة",
+    "view": "عرض",
+    "add": "إضافة"
+  },
+   "screens": {
+    "Home": "الرئيسية",
+    "Users": "المستخدمون",
+    "Passengers": "الركاب",
+    "Drivers": "السائقون",
+    "Trips": "الرحلات",
+    "Cars": "السيارات",
+    "CarTypes": "أنواع السيارات",
+    "CarDriver": "سيارة السائق",
+    "TrafficTime": "أوقات الزحام",
+    "Wallet": "المحفظة",
+    "carDriver": "سيارة السائق", 
+    "WaitingTime": "وقت الانتظار",
+    "PaymentMethods": "طرق الدفع",
+    "Commission": "العمولة",
+    "CommissionCategory": "فئات العمولة",
+    "Permissions": "الصلاحيات",
+    "Settings": "الإعدادات"
+  }
 
 }

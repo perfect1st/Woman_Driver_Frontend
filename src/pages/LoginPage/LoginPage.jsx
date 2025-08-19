@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Grid,
   Box,
@@ -7,16 +7,23 @@ import {
   Button,
   Link,
   useTheme,
+  CircularProgress,
 } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import logo from '../../assets/Logo.png';
+import { useDispatch } from 'react-redux';
+import { login } from '../../redux/slices/user/thunk';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const theme = useTheme();
   const { t , i18n} = useTranslation();
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isArabic = i18n.language === 'ar';
+  const [isLoading, setIsLoading] = useState(false);
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -28,8 +35,28 @@ const LoginPage = () => {
         .min(6, t('validation.passwordMin'))
         .required(t('validation.passwordRequired')),
     }),
-    onSubmit: (values) => {
-      console.log('Logging in:', values);
+    onSubmit: async (values) => {
+      const data = {
+        phone_number: values.username,
+        password: values.password
+      }
+      try {
+        setIsLoading(true);
+        const response = await dispatch(login({ data }));
+      
+        // تحقق من أن الاستجابة تحتوي على البيانات المطلوبة
+        if (response?.payload?.token && response?.payload?.admin) {
+          localStorage.setItem('user', JSON.stringify(response.payload.admin));
+          localStorage.setItem('token', response.payload.token);
+          navigate('/home');
+        } 
+      
+      } catch (error) {
+        console.error('Error logging in:', error);
+      } finally {
+        setIsLoading(false);
+      }
+      
     },
   });
 
@@ -84,11 +111,18 @@ const LoginPage = () => {
         }}
       >
         {/* Language Switch Button */}
-        <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
-          <Button variant="outlined" size="small" onClick={changeLanguage}>
-            {i18n.language === 'en' ? 'AR' : 'EN'}
-          </Button>
-        </Box>
+        <Box
+  sx={{
+    position: 'absolute',
+    top: 16,
+    ...(i18n.language === 'ar' ? { left: 16 } : { right: 16 }),
+  }}
+>
+  <Button variant="outlined" size="small" onClick={changeLanguage}>
+    {i18n.language === 'en' ? 'AR' : 'EN'}
+  </Button>
+</Box>
+
 
         <Box
           component="form"
@@ -141,7 +175,11 @@ const LoginPage = () => {
             fullWidth
             sx={{ mt: 1, mb: 2, py: 1.5 }}
           >
-            {t('form.loginButton')}
+{isLoading ? (
+  <CircularProgress size={26} thickness={8} sx={{ color: "#fff" }} />
+) : (
+  t('form.loginButton')
+)}
           </Button>
 
           {/* Forgot Password */}

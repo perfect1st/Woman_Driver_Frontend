@@ -8,7 +8,7 @@ export const register = createAsyncThunk(
   "/userSlice/register",
   async ({data}) => {
     try {
-      const response = await useInsertData(`/admin/register`,data);
+      const response = await useInsertData(`/admins/register`,data);
       return response;
     } catch (error) {
       if (error.message === "Network Error") {
@@ -23,13 +23,13 @@ export const login = createAsyncThunk(
   "/userSlice/login",
   async ({data}) => {
     try {
-      const response = await useInsertData(`/login`,data);
+      const response = await useInsertData(`/admins/login`,data);
       return response;
     } catch (error) {
       if (error.message === "Network Error") {
         return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري", "error");
       } else {
-        return notify(error.response?.data, "error");
+        return notify(error.response?.data?.message, "error");
       }
     }
   }

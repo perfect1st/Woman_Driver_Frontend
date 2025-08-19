@@ -49,59 +49,14 @@ import TrackingFrequencyModal from "./components/Modals/TrackingFrequencyModal";
 import NotifyRadiusModal from "./components/Modals/NotifyRadiusModal";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import AddUserPage from "./pages/AddUserPage/AddUserPage";
+import PermissionGroupsPage from "./pages/PermissionGroups/PermissionGroups";
+import PermissionGroupDetailsPage from "./pages/PermissionGroups/PermissionGroupDetailsPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
   });
 
-  const RootRedirect = () => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-      // Simulate user fetching from localStorage or API
-      const fetchUser = () => {
-        try {
-          const DomiUser = {
-            name: "Domi User",
-            type: "admin",
-            image: driverImage
-          };
-          
-          // Save to localStorage
-          localStorage.setItem('user', JSON.stringify(DomiUser));
-          
-          const storedUser = localStorage.getItem("user");
-          if (storedUser) {
-            setUser(JSON.parse(storedUser));
-          }
-        } catch (error) {
-          console.error("Error fetching user", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchUser();
-    }, []);
-
-    if (loading) {
-      return <LoadingComponent />;
-    }
-
-    if (!user) {
-      return <Navigate to="/home" replace />;
-    }
-
-    switch (user.type) {
-      case "admin":
-        return <Navigate to="/home" replace />;
-      case "accountant":
-        return <Navigate to="/accountantHome" replace />;
-      default:
-        return <Navigate to="/login" replace />;
-    }
-  };
+  
 
   function App() {
     const [mode, setMode] = useState("light");
@@ -123,17 +78,6 @@ import AddUserPage from "./pages/AddUserPage/AddUserPage";
         document.documentElement.dir = i18n.language === "ar" ? "rtl" : "ltr";
       }
 
-
-      localStorage.setItem('user', JSON.stringify({
-        name: "Admin User",
-        type: "admin",
-        image: driverImage
-      }));
-
-      localStorage.setItem(
-        "token",
-        "3316|n1OopYiD3x17odZB84vwIXeOT7kZqsxQ4F5aWePv7b2b7445"
-      );
     }, [i18n]);
 
     // Listen for language changes to update RTL/LTR
@@ -329,6 +273,7 @@ import AddUserPage from "./pages/AddUserPage/AddUserPage";
       if (action === "openTrackingModal") setOpenTracking(true);
       if (action === "openNotifyRadiusModal") setOpenNotify(true);
     };
+    const user = JSON.parse(localStorage.getItem('user'));
     const hideHeader = location.pathname != '/login';
 
     return (
@@ -349,7 +294,7 @@ import AddUserPage from "./pages/AddUserPage/AddUserPage";
             <main style={{ flex: 1 }}>
             <Routes>
   {/* المسارات العامة */}
-  <Route path="/" element={<RootRedirect />} />
+  <Route path="/" element={user ? <Navigate to="/home" /> : <Navigate to="/login" />} />
   {/* <Route path="/login" element={<LoginScreen />} /> */}
 
   {/* المسارات الخاصة التي تظهر فيها Sidebar */}
@@ -389,6 +334,16 @@ import AddUserPage from "./pages/AddUserPage/AddUserPage";
       // <ProtectedRoute>
         <MainLayout>
           <DriversPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/PermissionGroups/showpermissiongroup/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <PermissionGroupDetailsPage />
         </MainLayout>
       // </ProtectedRoute>
     }
@@ -449,6 +404,16 @@ import AddUserPage from "./pages/AddUserPage/AddUserPage";
       // <ProtectedRoute>
         <MainLayout>
           <AddUserPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/PermissionGroups"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <PermissionGroupsPage />
         </MainLayout>
       // </ProtectedRoute>
     }

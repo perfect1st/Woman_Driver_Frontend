@@ -1,9 +1,16 @@
-// permissionGroupSlice.js
 import { createSlice } from "@reduxjs/toolkit";
-import { getAllPermissionGroups } from "./thunk";
+import {
+  getAllPermissionGroups,
+  createPermissionGroup,
+  updatePermissionGroup,
+  deletePermissionGroup,
+  getOnePermissionGroups,
+  updatePermissionsActions
+} from "./thunk";
 
 const initialState = {
   allPermissionGroups: [],
+  onePermissionGroups: null,
   loading: false,
   error: null,
 };
@@ -14,34 +21,67 @@ const permissionGroupSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Get all
       .addCase(getAllPermissionGroups.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(getAllPermissionGroups.fulfilled, (state, action) => {
         state.loading = false;
-        // Use dummy data if API response is empty
-        state.allPermissionGroups = action.payload?.length 
-          ? action.payload 
-          : [
-              { id: '1', name: 'Administrators' },
-              { id: '2', name: 'Managers' },
-              { id: '3', name: 'Support Staff' },
-              { id: '4', name: 'Field Operators' },
-            ];
+        state.allPermissionGroups = action.payload;
       })
       .addCase(getAllPermissionGroups.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
-        
-        // Fallback to dummy data on error
-        state.allPermissionGroups = [
-          { id: '1', name: 'Administrators' },
-          { id: '2', name: 'Managers' },
-          { id: '3', name: 'Support Staff' },
-          { id: '4', name: 'Field Operators' },
-        ];
+      })
+    builder
+      // Get one
+      .addCase(getOnePermissionGroups.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getOnePermissionGroups.fulfilled, (state, action) => {
+        state.loading = false;
+        state.onePermissionGroups = action.payload;
+      })
+      .addCase(getOnePermissionGroups.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+
+      .addCase(updatePermissionsActions.fulfilled, (state, action) => {
+        const { id, data } = action.payload;
+      
+        // تأكد إن البيانات تخص نفس المجموعة المعروضة حاليًا
+        if (state.onePermissionGroups && state.onePermissionGroups._id === id) {
+          state.onePermissionGroups = data;
+        }
+      
+      })
+
+      // Create
+      .addCase(createPermissionGroup.fulfilled, (state, action) => {
+        state.allPermissionGroups.unshift(action.payload);
+      })
+
+      // Update
+      .addCase(updatePermissionGroup.fulfilled, (state, action) => {
+        const { id, data } = action.payload;
+        const index = state.allPermissionGroups.findIndex((g) => g._id === id);
+        if (index !== -1) {
+          state.allPermissionGroups[index] = data;
+        }
+      })
+
+      // Delete
+      .addCase(deletePermissionGroup.fulfilled, (state, action) => {
+        const { id } = action.payload;
+        state.allPermissionGroups = state.allPermissionGroups.filter(
+          (group) => group._id !== id
+        );
       });
+
+
   },
 });
 
