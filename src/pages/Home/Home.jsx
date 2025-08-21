@@ -25,6 +25,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import TextField from "@mui/material/TextField";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const Home = () => {
   const theme = useTheme();
@@ -42,6 +43,18 @@ const Home = () => {
       : 1
   );
   
+  function hasPermission( permissionType) {
+  const permissions = getPermissionsByScreen("Home");
+  return permissions ? permissions[permissionType] === true : false;
+}
+
+// Example usage:
+console.log(hasPermission("view"));  
+console.log(hasPermission("add"));   
+console.log(hasPermission("edit"));   
+console.log(hasPermission("delete"));   
+
+
   const tripsData = [
     { day: "mon", trips: 400 },
     { day: "tue", trips: 300 },

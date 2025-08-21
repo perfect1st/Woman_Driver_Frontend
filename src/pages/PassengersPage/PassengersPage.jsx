@@ -4,7 +4,7 @@ import Header from "../../components/PageHeader/header";
 import FilterComponent from "../../components/FilterComponent/FilterComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   editPassenger,
@@ -17,6 +17,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable"; // ⬅️ هذا هو الجزء الناقص عندك
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const PassengersPage = () => {
   const theme = useTheme();
@@ -32,6 +33,16 @@ const PassengersPage = () => {
   const status = searchParams.get("status") || "";
   const currentStatusFilter = status;
 
+    function hasPermission( permissionType) {
+  const permissions = getPermissionsByScreen("Passengers");
+  return permissions ? permissions[permissionType] === true : false;
+}
+
+// Example usage:
+console.log(hasPermission("view"));  
+console.log(hasPermission("add"));   
+console.log(hasPermission("edit"));   
+console.log(hasPermission("delete"));   
   const { passengers = {}, loading } = useSelector((state) => state.passenger);
   const {
     users = [],
@@ -111,6 +122,9 @@ const PassengersPage = () => {
   if (loading) {
     return <LoadingPage />;
   }
+
+  if (!hasPermission("view")) return <Navigate to="/home" />;
+
 
   const onStatusChange = async (id, status) => {
     console.log("id", id, "status", status);
