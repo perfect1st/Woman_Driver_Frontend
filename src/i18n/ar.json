@@ -462,13 +462,9 @@
   "downloadFailed": "فشل التحميل",
   "fieldUpdatedSuccess": "تم تحديث الحقل بنجاح",
   "updateFailed": "فشل التحديث",
-
-
   "Car's Picture Left side": "صورة السيارة من الجهة اليسرى",
-
   "Car License Front": "رخصة السيارة من الأمام",
   "Car License Back": "رخصة السيارة من الخلف",
-
   "Select New Image": "اختر صورة جديدة",
   "No image selected": "لم يتم اختيار صورة",
   "Users": "المستخدمون",
@@ -488,6 +484,7 @@
   "Password is required": "كلمة المرور مطلوبة",
   "Password must be at least 8 characters": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
   "Permission group is required": "مجموعة الصلاحيات مطلوبة",
+  "Super Admin":"مدير النظام",
   "permissions": {
     "title": "مجموعات الصلاحيات",
     "details": "تفاصيل مجموعات الصلاحيات",
@@ -526,6 +523,13 @@
     "CommissionCategory": "فئات العمولة",
     "Permissions": "الصلاحيات",
     "Settings": "الإعدادات"
-  }
+  },
+  "Permission Groups": "مجموعات الصلاحيات",
+  "User has administrator privileges": "المستخدم لديه صلاحيات المدير",
+  "User can access report actions": "يمكن للمستخدم الوصول إلى إجراءات التقارير",
+  "Changes saved successfully": "تم حفظ التغييرات بنجاح",
+  "Image updated successfully": "تم تحديث الصورة بنجاح",
+  "Image removed successfully": "تم إزالة الصورة بنجاح"
+
 
 }

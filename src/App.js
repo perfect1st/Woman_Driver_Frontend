@@ -51,6 +51,10 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import AddUserPage from "./pages/AddUserPage/AddUserPage";
 import PermissionGroupsPage from "./pages/PermissionGroups/PermissionGroups";
 import PermissionGroupDetailsPage from "./pages/PermissionGroups/PermissionGroupDetailsPage";
+import UsersPage from "./pages/UsersPage/UsersPage";
+import { getUserCookie } from "./hooks/authCookies";
+import UserDetailsPage from "./pages/UserDetailsPage/UserDetailsPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -273,7 +277,7 @@ import PermissionGroupDetailsPage from "./pages/PermissionGroups/PermissionGroup
       if (action === "openTrackingModal") setOpenTracking(true);
       if (action === "openNotifyRadiusModal") setOpenNotify(true);
     };
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = getUserCookie();
     const hideHeader = location.pathname != '/login';
 
     return (
@@ -329,11 +333,41 @@ import PermissionGroupDetailsPage from "./pages/PermissionGroups/PermissionGroup
     }
   />
   <Route
+    path="/users"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <UsersPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/UserDetails/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <UserDetailsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
     path="/Drivers"
     element={
       // <ProtectedRoute>
         <MainLayout>
           <DriversPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/Profile"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <ProfilePage />
         </MainLayout>
       // </ProtectedRoute>
     }
@@ -399,7 +433,7 @@ import PermissionGroupDetailsPage from "./pages/PermissionGroups/PermissionGroup
     }
   />
   <Route
-    path="/AddUser"
+    path="/users/AddUser"
     element={
       // <ProtectedRoute>
         <MainLayout>

@@ -1,13 +1,16 @@
 import baseURL from "../Api/baseURL";
-const loggedUser=JSON.parse(localStorage.getItem('user')); 
+import { getToken } from "./authCookies";
 
+
+
+const token = getToken();
 
 
 export const useInsertData=async(url,params)=>{
     let configInsert={
         headers: {
-            Authorization: `${localStorage.getItem("token")}`,
-          },
+            Authorization: `Bearer ${token}`,
+        },
     
     };
     const res=await baseURL.post(url,params,configInsert);
@@ -20,7 +23,7 @@ export const useInsertDataWithImage=async(url,params)=>{
     let configInsert={
         headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
     
     };

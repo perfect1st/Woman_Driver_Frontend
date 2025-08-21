@@ -5,7 +5,8 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { ReactComponent as More } from '../assets/More.svg'
 import { ReactComponent as setting } from '../assets/setting.svg'
-const user = JSON.parse(localStorage.getItem("user"));
+import { getUserCookie } from '../hooks/authCookies';
+const user = getUserCookie();
 
 console.log("user",user)
 const routesData = {
@@ -15,6 +16,12 @@ const routesData = {
       label: { en: "Dashboard", ar: "لوحة التحكم" },
       path: "/home",
       // icon: DashboardIcon,
+    },
+    {
+      key: "users",
+      label: { en: "Users", ar: "المستخدمين" },
+      path: "/users",
+      // icon: HomeIcon,
     },
     {
       key: "Passengers",

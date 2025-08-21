@@ -46,6 +46,7 @@ import { ReactComponent as NotificationIcon } from "../assets/natification.svg";
 import { ReactComponent as SettingIcon } from "../assets/setting.svg";
 import useBaseImageUrl from "../hooks/useBaseImageUrl";
 import getAccessibleRoutes from '../hooks/getAccessibleRoutes';
+import { clearAllCookies, getUserCookie } from '../hooks/authCookies';
 
 
 const Header = ({ onAction }) => {
@@ -74,7 +75,7 @@ const handleSettingMenuClose = () => {
   setSettingMenuOpen(false);
 };
 
- const user = JSON.parse(localStorage.getItem('user'));
+ const user = getUserCookie();
   const currentRoutes = routes.admin;
 
   const [openMenus, setOpenMenus] = useState({});
@@ -106,8 +107,7 @@ const handleSettingMenuClose = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    clearAllCookies();
     navigate("/login")
   };
 

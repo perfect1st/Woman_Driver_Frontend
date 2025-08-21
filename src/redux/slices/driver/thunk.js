@@ -9,7 +9,6 @@ export const getAllDriversWithoutPaginations = createAsyncThunk(
   "/driverSlice/getAllDriversWithoutPaginations",
   async ({ query = "" }) => {
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
       const response = await useGetDataToken(`/users/drivers/cars?${query}`);
       return response;
     } catch (error) {
@@ -28,7 +27,6 @@ export const getAllDrivers = createAsyncThunk(
   "/driverSlice/getAllDrivers",
   async ({ query = "" }) => {
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
       const response = await useGetDataToken(`/users/drivers/cars?${query}`);
       return response;
     } catch (error) {
@@ -47,7 +45,6 @@ export const getOneDriver = createAsyncThunk(
   "/driverSlice/getOneDriver",
   async ({ id = "" }) => {
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
       const response = await useGetDataToken(`/users/driver/${id}`);
       return response;
     } catch (error) {

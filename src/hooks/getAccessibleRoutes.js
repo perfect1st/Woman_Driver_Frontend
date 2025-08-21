@@ -1,7 +1,9 @@
 import routesData from "../data/routes";
+import { getUserCookie } from "./authCookies";
 
 const getAccessibleRoutes = (userType = "admin") => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = getUserCookie();
+  console.log("user",user)
   if (!user) return [];
 
   if (user?.super_admin) return routesData[userType] || [];

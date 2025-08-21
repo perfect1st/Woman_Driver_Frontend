@@ -16,6 +16,7 @@ import logo from '../../assets/Logo.png';
 import { useDispatch } from 'react-redux';
 import { login } from '../../redux/slices/user/thunk';
 import { useNavigate } from 'react-router-dom';
+import { setToken, setUserCookie } from '../../hooks/authCookies';
 
 const LoginPage = () => {
   const theme = useTheme();
@@ -46,8 +47,8 @@ const LoginPage = () => {
       
         // تحقق من أن الاستجابة تحتوي على البيانات المطلوبة
         if (response?.payload?.token && response?.payload?.admin) {
-          localStorage.setItem('user', JSON.stringify(response.payload.admin));
-          localStorage.setItem('token', response.payload.token);
+          setUserCookie(response.payload.admin);
+          setToken(response.payload.token);
           navigate('/home');
         } 
       

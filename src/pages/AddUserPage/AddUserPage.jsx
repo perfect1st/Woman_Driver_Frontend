@@ -110,8 +110,8 @@ export default function AddUserPage() {
     password: Yup.string()
       .min(8, t("Password must be at least 8 characters"))
       .required(t("Password is required")),
-    permissionGroup: Yup.string().required(t("Permission group is required")),
-  });
+      permissionGroup: Yup.array().min(1, t("Permission group is required")), // changed to array
+    });
 
   const formik = useFormik({
     initialValues: {
@@ -119,7 +119,7 @@ export default function AddUserPage() {
       phone_number: "",
       email: "",
       password: "",
-      permissionGroup: "",
+      permissionGroup: [], // now array
       is_admin: false,
       hasReportActions: false,
     },
@@ -132,8 +132,8 @@ export default function AddUserPage() {
       formData.append("phone_number", values.phone_number);
       formData.append("email", values.email);
       formData.append("password", values.password);
-      formData.append("groups", values.permissionGroup);
-      formData.append("super_admin", values.is_admin);
+      formData.append("groups", JSON.stringify(values.permissionGroup)); // ✅ Send as a single array
+            formData.append("super_admin", values.is_admin);
       formData.append("has_report_actions", values.hasReportActions);
       
       // Avatar image
@@ -331,20 +331,26 @@ export default function AddUserPage() {
             <FormControl fullWidth variant="filled" error={formik.touched.permissionGroup && Boolean(formik.errors.permissionGroup)}>
               <Typography sx={{ mb: 1 }}>{t("Permission Group")} *</Typography>
               <Select
-                name="permissionGroup"
-                displayEmpty
-                value={formik.values.permissionGroup}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                input={<FilledInput disableUnderline sx={{ backgroundColor: theme.palette.secondary.sec, borderRadius: 1 }} />}
-              >
-                <MenuItem value="" disabled>{t("Select Permission Group")}</MenuItem>
-                {allPermissionGroups?.map((group) => (
-                  <MenuItem key={group._id} value={group._id}>
-                    {group.name}
-                  </MenuItem>
-                ))}
-              </Select>
+    multiple
+    name="permissionGroup"
+    value={formik.values.permissionGroup}
+    onChange={formik.handleChange}
+    onBlur={formik.handleBlur}
+    input={<FilledInput disableUnderline sx={{ backgroundColor: theme.palette.secondary.sec, borderRadius: 1 }} />}
+    renderValue={(selected) => {
+      return allPermissionGroups
+        .filter((group) => selected.includes(group._id))
+        .map((group) => group.name)
+        .join(", ");
+    }}
+  >
+    {allPermissionGroups?.map((group) => (
+      <MenuItem key={group._id} value={group._id}>
+        <Checkbox checked={formik.values.permissionGroup.includes(group._id)} />
+        <Typography>{group.name}</Typography>
+      </MenuItem>
+    ))}
+  </Select>
               {formik.touched.permissionGroup && formik.errors.permissionGroup && (
                 <FormHelperText>{formik.errors.permissionGroup}</FormHelperText>
               )}

@@ -11,7 +11,6 @@ export const getAllPassengersWithoutPaginations = createAsyncThunk(
     "/passengerSlice/getAllPassengersWithoutPaginations",
     async ({query=''}) => {
         try {
-            const user = JSON.parse(localStorage.getItem("user"));
             const response = await useGetDataToken(`/users?user_type=passenger&${query}`);
             return response;
         } catch (error) {
@@ -26,7 +25,6 @@ export const getAllPassengers = createAsyncThunk(
     "/passengerSlice/getAllPassengers",
     async ({query=''}) => {
         try {
-            const user = JSON.parse(localStorage.getItem("user"));
             const response = await useGetDataToken(`/users?user_type=passenger&${query}`);
             return response;
         } catch (error) {
@@ -42,7 +40,6 @@ export const getOnePassenger = createAsyncThunk(
     "/passengerSlice/getOnePassenger",
     async (id='') => {
         try {
-            const user = JSON.parse(localStorage.getItem("user"));
             const response = await useGetDataToken(`/users/${id}`);
             return response;
         } catch (error) {

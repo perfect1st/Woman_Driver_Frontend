@@ -4,6 +4,69 @@ import { useUpdateData } from "../../../hooks/useUpdateData";
 import { useInsertData } from "../../../hooks/useInsertData";
 import notify from "../../../components/notify";
 
+export const getAllUsersWithoutPaginations = createAsyncThunk(
+  "/userSlice/getAllUsersWithoutPaginations",
+  async ({ query = '' }) => {
+    try {
+      let api = `/admins`;
+      if (query) api += `?${query}`;
+      const response = await useGetDataToken(api);
+      return response;
+    } catch (error) {
+      if (error.message === "Network Error") {
+        return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري", "error");
+      } else {
+        return notify(error.response?.data, "error");
+      }
+    }
+  }
+);
+
+export const getAllUsers = createAsyncThunk(
+  "/userSlice/getAllUsers",
+  async ({ query = '' }) => {
+    try {
+      const response = await useGetDataToken(`/admins?${query}`);
+      return response;
+    } catch (error) {
+      if (error.message === "Network Error") {
+        return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري", "error");
+      } else {
+        return notify(error.response?.data, "error");
+      }
+    }
+  });
+  export const getOneUser = createAsyncThunk(
+    "/userSlice/getOneUser",
+    async (id = '') => {
+      try {
+        const response = await useGetDataToken(`/admins/${id}`);
+        return response;
+      } catch (error) {
+        if (error.message === "Network Error") {
+          return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري", "error");
+        } else {
+          return notify(error.response?.data, "error");
+        }
+      }
+    }
+  );
+
+export const editUser = createAsyncThunk(
+  "/userSlice/editUser",
+  async ({ id,data }) => {
+    try {
+      const response = await useUpdateData(`/admins/${id}`,data);
+      return response;
+    } catch (error) {
+      if (error.message === "Network Error") {
+        return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري", "error");
+      } else {
+        return notify(error.response?.data, "error");
+      }
+    }
+  });
+
 export const register = createAsyncThunk(
   "/userSlice/register",
   async ({data}) => {

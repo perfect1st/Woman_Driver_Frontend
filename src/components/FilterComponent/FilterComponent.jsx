@@ -24,6 +24,7 @@ const FilterComponent = ({
   isCar = false,
   isCarType = false,
   isCarDriver = false,
+  isUsers = false,
   companyCarOptions = [],
   isTrafficTime = false,
   isWallet = false,
@@ -153,7 +154,9 @@ const FilterComponent = ({
           xs={12}
           sm={6}
           md={
-            paymentMethod
+            isUsers
+              ? 7
+              : paymentMethod
               ? 7
               : isWallet
               ? 6
@@ -177,7 +180,9 @@ const FilterComponent = ({
             size="small"
             name="search"
             placeholder={
-              paymentMethod
+              isUsers
+                ? t("search by user name and email and phone number")
+                : paymentMethod
                 ? t("Search by Payment Method ID and Payment Methods Name")
                 : isWallet
                 ? t("Search by User name and Wallet ID")

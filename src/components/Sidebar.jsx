@@ -69,6 +69,9 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose, onAction }) => {
             (item.key === "Cars" &&
               (matchPath("/Cars/AddCar", location.pathname) ||
                 matchPath("/CarDetails/:id", location.pathname))) ||
+            (item.key === "users" &&
+              (matchPath("/users/AddUser", location.pathname) ||
+                matchPath("/userDetails/:id", location.pathname))) ||
             (item.key === "CarDriver" &&
               (matchPath("/CarDriverDetails/AddCarDrive", location.pathname) ||
                 matchPath("/CarDriverDetails/:id", location.pathname))) ||

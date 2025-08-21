@@ -1,8 +1,10 @@
 // src/hooks/getPermissionsByScreen.js
 
-function getPermissionsByScreen(screenName) {
-  const user = JSON.parse(localStorage.getItem("user"));
+import { getUserCookie } from "./authCookies";
 
+
+function getPermissionsByScreen(screenName) {
+  const user = getUserCookie();
   if (!user) return null;
 
   // ✅ if user is super_admin → grant full access

@@ -472,6 +472,7 @@
   "Password is required": "Password is required",
   "Password must be at least 8 characters": "Password must be at least 8 characters",
   "Permission group is required": "Permission group is required",
+  "Super Admin":"Super Admin",
   "permissions": {
     "title": "Permission Groups",
     "details": "Permission Groups Details",
@@ -510,7 +511,13 @@
     "CommissionCategory": "Commission Category",
     "Permissions": "Permissions",
     "Settings": "Settings"
-  }
+  },
+  "Permission Groups": "Permission Groups",
+  "User has administrator privileges": "User has administrator privileges",
+  "User can access report actions": "User can access report actions",
+  "Changes saved successfully": "Changes saved successfully",
+  "Image updated successfully": "Image updated successfully",
+  "Image removed successfully": "Image removed successfully"
 
 
 }
