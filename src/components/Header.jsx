@@ -95,6 +95,7 @@ const handleSettingMenuClose = () => {
   };
 
   const handleUserMenuClose = () => {
+    navigate("/profile")
     setUserMenuAnchor(null);
   };
 
@@ -363,7 +364,7 @@ const drawerContent = (
           marginRight: 8,
         }}
       /> */}
-      <ListItemText
+      <ListItemText onClick={handleUserMenuClose}
         primary={
           <Typography fontWeight="bold" sx={{width:150, display:'flex',justifyContent:'flex-start'}}>{t("profile")}</Typography>
         }

@@ -110,12 +110,12 @@ export default function TripDetailsPage() {
       trip.updatedAt
     ).toLocaleTimeString()}`,
     distance: `${trip.kilos_number} km`,
-    carType: trip.car_types_id?.name_en || t("N/A"),
+    carType: isArabic ? trip.car_types_id?.name_ar :trip.car_types_id?.name_en || t("N/A"),
     fare: `${trip.cost}`,
     waiting: `${trip.total_waiting_minutes_cost}`,
     waitingTime: `${trip.waitings?.length} ${t("stops")}`,
     tripType: trip.is_scheduled ? t("Scheduled") : t("On Demand"),
-    payment: trip.payment_method_id?.name_en || t("N/A"),
+    payment: isArabic ? trip.payment_method_id?.name_ar : trip.payment_method_id?.name_en || t("N/A"),
   };
 
   // Build timeline: first pickup, then any waitings, then dropoff
@@ -125,17 +125,28 @@ export default function TripDetailsPage() {
       time: new Date(trip.createdAt).toLocaleTimeString(),
       address: `${trip?.from_name || ""}`,
     },
-    ...(trip.waitings || [])?.map((w) => ({
-      type: "Waiting",
-      time: new Date(w.time).toLocaleTimeString(),
-      address: w.address,
-    })),
+  
+    // كل الانتظارات
+    ...(trip.waitings || []).map((w, index) => {
+      const start = new Date(w.waitings_start);
+      const end = new Date(w.waitings_end);
+      const durationMinutes = Math.round((end - start) / 1000 / 60);
+  
+      return {
+        type: "Waiting",
+        time: `${start.toLocaleTimeString()} - ${end.toLocaleTimeString()} (${durationMinutes} ${t("common.mins")})`,
+        address: `${t("waitingPeriod")} #${index + 1}`,
+      };
+    }),
+  
     {
       type: "Dropoff",
       time: new Date(trip.updatedAt).toLocaleTimeString(),
-      address: ` ${trip?.to_name || ""}`,
+      address: `${trip?.to_name || ""}`,
     },
   ];
+  
+  
 
   const handleTabChange = (_, v) => setActiveTab(v);
 

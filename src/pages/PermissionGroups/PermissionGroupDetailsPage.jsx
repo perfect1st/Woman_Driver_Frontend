@@ -10,6 +10,7 @@ import {
   TableRow,
   Paper,
   Checkbox,
+  Button,
   CircularProgress,
   useTheme,
 } from "@mui/material";
@@ -29,43 +30,58 @@ export default function PermissionGroupDetailsPage() {
   const theme = useTheme();
   const navigate = useNavigate();
   const isArabic = i18n.language === "ar";
-  const [loadingCheckbox, setLoadingCheckbox] = useState({});
+  const [localScreens, setLocalScreens] = useState([]);
+  const [saving, setSaving] = useState(false);
 
   const { onePermissionGroups, loading } = useSelector(
     (state) => state.permissionGroup
   );
 
   useEffect(() => {
-      if (id) {
-       dispatch(getOnePermissionGroups(id));
-      }
+    if (id) {
+      dispatch(getOnePermissionGroups(id));
+    }
   }, [dispatch, id]);
-  
 
-  const handleToggle = async (screenId, permissionKey) => {
-    const key = `${screenId}_${permissionKey}`;
-    setLoadingCheckbox((prev) => ({ ...prev, [key]: true }));
-  
-    const screenToUpdate = onePermissionGroups?.screens?.find(
-      (screen) => screen._id === screenId
+  // Initialize local state when data loads
+  useEffect(() => {
+    if (onePermissionGroups?.screens) {
+      setLocalScreens(onePermissionGroups.screens);
+    }
+  }, [onePermissionGroups]);
+
+  const handleCheckboxChange = (screenId, permissionKey) => {
+    setLocalScreens(prevScreens =>
+      prevScreens.map(screen =>
+        screen._id === screenId
+          ? {
+              ...screen,
+              permissions: {
+                ...screen.permissions,
+                [permissionKey]: !screen.permissions[permissionKey],
+              },
+            }
+          : screen
+      )
     );
-    if (!screenToUpdate) return;
-  
-    const updatedPermissions = {
-      ...screenToUpdate.permissions,
-      [permissionKey]: !screenToUpdate.permissions[permissionKey],
-    };
-  
-    const data = {
-      screen: screenToUpdate.screen,
-      permissions: updatedPermissions,
-    };
-  
-    await dispatch(updatePermissionsActions({ id, data }));
-  
-    setLoadingCheckbox((prev) => ({ ...prev, [key]: false }));
   };
-  
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await dispatch(
+        updatePermissionsActions({
+          id,
+          data: { screens: localScreens },
+        })
+      ).unwrap();
+      // Refetch updated data
+      dispatch(getOnePermissionGroups(id));
+    } catch (error) {
+      console.error("Failed to update permissions:", error);
+    }
+    setSaving(false);
+  };
 
   if (loading) {
     return <LoadingPage />;
@@ -73,7 +89,7 @@ export default function PermissionGroupDetailsPage() {
 
   return (
     <Box p={3}>
-         <Box display="flex" alignItems="center" flexWrap="wrap" mb={2}>
+      <Box display="flex" alignItems="center" flexWrap="wrap" mb={2}>
         <Typography
           onClick={() => navigate("/PermissionGroups")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
@@ -95,7 +111,7 @@ export default function PermissionGroupDetailsPage() {
         {t("permissions.detailsFor")} {onePermissionGroups?.name}
       </Typography>
 
-      <TableContainer component={Paper} sx={{ borderRadius: 1, boxShadow: 2 }}>
+      <TableContainer component={Paper} sx={{ borderRadius: 1, boxShadow: 2, mb: 2 }}>
         <Table>
           <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
             <TableRow>
@@ -109,34 +125,37 @@ export default function PermissionGroupDetailsPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {onePermissionGroups?.screens?.map((screen) => (
+            {localScreens.map((screen) => (
               <TableRow key={screen._id} hover>
                 <TableCell align={isArabic ? "right" : "left"}>
-                {t(`screens.${screen.screen}`)}
+                  {t(`screens.${screen.screen}`)}
                 </TableCell>
-                {["view", "edit", "add", "delete"].map((key) => {
-  const checkboxKey = `${screen._id}_${key}`;
-  const isLoadingCheckbox = loadingCheckbox[checkboxKey];
-
-  return (
-    <TableCell align="center" key={key}>
-      {isLoadingCheckbox ? (
-        <CircularProgress size={20} thickness={8} />
-      ) : (
-        <Checkbox
-          checked={screen.permissions[key]}
-          onChange={() => handleToggle(screen._id, key)}
-          color="primary"
-        />
-      )}
-    </TableCell>
-  );
-})}
+                {["view", "edit", "add", "delete"].map((key) => (
+                  <TableCell align="center" key={key}>
+                    <Checkbox
+                      checked={screen.permissions[key]}
+                      onChange={() => handleCheckboxChange(screen._id, key)}
+                      color="primary"
+                    />
+                  </TableCell>
+                ))}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+<div style={{display:"flex", justifyContent:"flex-end"}}>
+      <Button
+        variant="contained"
+        size="large"
+        onClick={handleSave}
+        disabled={saving}
+        startIcon={saving ? <CircularProgress size={20} /> : null}
+        sx={{display:"flex", justifyContent:"center", width:"100%"}}
+      >
+        {saving ? t("common.saving") : t("common.saveChanges")}
+      </Button>
+</div>
     </Box>
   );
 }

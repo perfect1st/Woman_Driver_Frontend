@@ -42,6 +42,13 @@ const UsersPage = () => {
     return permissions ? permissions[permissionType] === true : false;
   }
 
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
+
+ 
+
   const { users = {}, loading } = useSelector((state) => state.user);
   const {
     admins = [],
@@ -198,7 +205,7 @@ const UsersPage = () => {
         title={t("Users")}
         subtitle={t("Users Details")}
         i18n={i18n}
-        haveBtn
+        haveBtn={hasAddPermission}
         btn={t("Add User")}
         btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
         onSubmit={addUserSubmit}
