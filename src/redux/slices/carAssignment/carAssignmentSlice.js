@@ -104,37 +104,6 @@ const carAssignmentSlice = createSlice({
         state.error = action.error.message;
       });
 
-    // Edit assignment
-    builder
-      .addCase(editCarAssignment.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(editCarAssignment.fulfilled, (state, action) => {
-        state.loading = false;
-        state.assignment = action.payload;
-        state.error = null;
-      })
-      .addCase(editCarAssignment.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      });
-
-    // Add assignment
-    builder
-      .addCase(addCarAssignment.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(addCarAssignment.fulfilled, (state, action) => {
-        state.loading = false;
-        state.assignment = action.payload;
-        state.error = null;
-      })
-      .addCase(addCarAssignment.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      });
   },
 });
 

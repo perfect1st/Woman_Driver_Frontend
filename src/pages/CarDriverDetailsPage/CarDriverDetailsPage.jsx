@@ -41,6 +41,7 @@ import LoadingPage from "../../components/LoadingComponent";
 import useBaseImageUrlForDriver from "../../hooks/useBaseImageUrlForDriver";
 import notify from "../../components/notify";
 import { format, parseISO } from "date-fns";
+import { getUserCookie } from "../../hooks/authCookies";
 
 // Status styles
 const statusStyles = {
@@ -67,7 +68,8 @@ export function CarDriverDetailsPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const imageUrl = useBaseImageUrlForDriver();
-
+  const user = getUserCookie();
+console.log("user",user)
   const { assignment, availableCars, loading, updating } = useSelector(
     (state) => state.carAssignment
   );
@@ -442,6 +444,7 @@ export function CarDriverDetailsPage() {
                   size="small"
                   type="date"
                   value={assignDate}
+                  disabled={!user?.super_admin}
                   onChange={(e) => {
                     setAssignDate(e.target.value);
                     setHasChanges(true);
@@ -467,7 +470,7 @@ export function CarDriverDetailsPage() {
                 </Typography>
               )}
             </Box>
-            <IconButton
+           {user?.super_admin&& <IconButton
               onClick={() => setEditingAssign(!editingAssign)}
               sx={{
                 backgroundColor: theme.palette.action.hover,
@@ -484,7 +487,7 @@ export function CarDriverDetailsPage() {
               ) : (
                 <EditIcon color="primary" />
               )}
-            </IconButton>
+            </IconButton>}
           </CardContent>
         </Card>
         <Card sx={{ borderRadius: 2 }}>
@@ -505,6 +508,7 @@ export function CarDriverDetailsPage() {
                   size="small"
                   type="date"
                   value={releaseDate}
+                  disabled={!user?.super_admin}
                   onChange={(e) => {
                     setReleaseDate(e.target.value);
                     setHasChanges(true);
@@ -530,7 +534,7 @@ export function CarDriverDetailsPage() {
               )}
             </Box>
             <Box>
-              <IconButton
+              {user?.super_admin && <IconButton
                 onClick={() => setEditingRelease(!editingRelease)}
                 sx={{
                   backgroundColor: theme.palette.action.hover,
@@ -548,8 +552,11 @@ export function CarDriverDetailsPage() {
                 ) : (
                   <EditIcon color="primary" />
                 )}
-              </IconButton>
-              <Button
+              </IconButton>}
+            </Box>
+          </CardContent>
+        </Card>
+              {!assignment?.release_date &&<Button
                 variant="outlined"
                 onClick={handleReleaseNow}
                 sx={{
@@ -561,11 +568,8 @@ export function CarDriverDetailsPage() {
                   },
                 }}
               >
-                {t("Release Now")}
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
+                {t("release now")}
+              </Button>}
       </Stack>
 
       {/* Saving Indicator */}
