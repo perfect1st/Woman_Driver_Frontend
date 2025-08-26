@@ -81,7 +81,7 @@ export default function RiderDetailsPage() {
   const limit = parseInt(searchParams.get("limit") || "10", 10);
 
   function hasPermission(permissionType) {
-    const permissions = getPermissionsByScreen("Users");
+    const permissions = getPermissionsByScreen("Passengers");
     return permissions ? permissions[permissionType] === true : false;
   }
 

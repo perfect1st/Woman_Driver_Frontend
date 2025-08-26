@@ -4,7 +4,7 @@ import Header from "../../components/PageHeader/header";
 import FilterComponent from "../../components/FilterComponent/FilterComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAllDrivers,
@@ -18,6 +18,8 @@ import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
+import notify from "../../components/notify";
 
 const DriversPage = () => {
   const theme = useTheme();
@@ -36,6 +38,15 @@ const DriversPage = () => {
   const carType = searchParams.get("carType") || "";
   const currentStatusFilter = status;
 
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Drivers");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
   const { drivers = {}, loading } = useSelector((state) => state.driver);
   const { allCarTypes } = useSelector((state) => state.carType);
   const {
@@ -108,6 +119,9 @@ const DriversPage = () => {
 
   // Handle status change
   const onStatusChange = async (id, newStatus) => {
+    if(!hasEditPermission){
+      return notify("noPermissionToUpdateStatus", "warning");
+    }
     const driverId = id.id;
     console.log("selectedDriver",id)
     const data ={
@@ -231,6 +245,7 @@ const DriversPage = () => {
   }, []);
 
   if (loading) return <LoadingPage />;
+  if (!hasViewPermission) return  <Navigate to="/profile" />;
 
   return (
     <Box

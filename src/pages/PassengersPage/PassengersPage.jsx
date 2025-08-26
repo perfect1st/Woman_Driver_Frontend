@@ -34,7 +34,7 @@ const PassengersPage = () => {
   const status = searchParams.get("status") || "";
   const currentStatusFilter = status;
   function hasPermission(permissionType) {
-    const permissions = getPermissionsByScreen("Users");
+    const permissions = getPermissionsByScreen("Passengers");
     return permissions ? permissions[permissionType] === true : false;
   }
 

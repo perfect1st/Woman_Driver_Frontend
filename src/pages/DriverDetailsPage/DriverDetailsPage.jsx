@@ -44,7 +44,7 @@ import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DomiCar from "../../assets/DomiCar.png";
 import DomiDriverImage from "../../assets/DomiDriverImage.png";
@@ -62,6 +62,7 @@ import useBaseImageUrlForDriver from "../../hooks/useBaseImageUrlForDriver";
 import LoadingPage from "../../components/LoadingComponent";
 import PaginationFooter from "../../components/PaginationFooter/PaginationFooter"
 import DriverTrips from "./DriverTrips";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 // Mock assets for trips and transactions since real data doesn't include them
 const statusStyles = {
   Available: {
@@ -157,6 +158,16 @@ export default function DriverDetailsPage() {
   const fileInputRef = useRef(null);
  
   const baseImageUrl = useBaseImageUrlForDriver();
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Drivers");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
+
 const {allDriverTrips} = useSelector((state) => state.trip);
   // Get the actual driver data from Redux store
   const driverState = useSelector((state) => state.driver);
@@ -862,9 +873,9 @@ const formatTime = (dateString) => {
               py: 0.5,
             }}
           />
-          <IconButton onClick={() => toggleEditMode(field)}>
+        {hasEditPermission &&  <IconButton onClick={() => toggleEditMode(field)}>
             <EditIcon sx={{ color: theme.palette.primary.main }} />
-          </IconButton>
+          </IconButton>}
         </Box>
       );
     }
@@ -890,9 +901,9 @@ const formatTime = (dateString) => {
               py: 0.5,
             }}
           />
-          <IconButton onClick={() => toggleEditMode(field)}>
+          {hasEditPermission && <IconButton onClick={() => toggleEditMode(field)}>
             <EditIcon sx={{ color: theme.palette.primary.main }} />
-          </IconButton>
+          </IconButton>}
         </Box>
       );
     }
@@ -907,9 +918,9 @@ const formatTime = (dateString) => {
         <Typography sx={{ color: theme.palette.text.primary }}>
           {editableFields[field]}
         </Typography>
-        <IconButton onClick={() => toggleEditMode(field)}>
+        {hasEditPermission && <IconButton onClick={() => toggleEditMode(field)}>
           <EditIcon sx={{ color: theme.palette.primary.main }} />
-        </IconButton>
+        </IconButton>}
       </Box>
     );
   };
@@ -1050,6 +1061,10 @@ const formatTime = (dateString) => {
 
   if (apiLoading) {
     return <LoadingPage />;
+  }
+
+  if (!hasViewPermission) {
+    return <Navigate to="/profile" />;
   }
   return (
     <Box p={2}>
@@ -2073,22 +2088,22 @@ const formatTime = (dateString) => {
             </>
           ) : (
             <>
-              <Button
+             {hasDeletePermission && <Button
                 variant="outlined"
                 color="error"
                 onClick={handleDeleteImage}
                 sx={{ mx: 1 }}
               >
                 {t("Delete")}
-              </Button>
-              <Button
+              </Button>}
+              {hasEditPermission &&<Button
                 variant="contained"
                 color="primary"
                 onClick={handleEditImage}
                 sx={{ mx: 1 }}
               >
                 {t("Update")}
-              </Button>
+              </Button>}
             </>
           )}
         </DialogActions>
