@@ -35,6 +35,7 @@ import { getAllPermissionGroups } from "../../redux/slices/permissionGroup/thunk
 import notify from "../../components/notify";
 import imageCompression from "browser-image-compression";
 import CustomTextField from "../../components/RTLTextField";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 async function compressImage(file, quality = 0.7) {
   return new Promise((resolve, reject) => {
@@ -96,7 +97,15 @@ export default function AddUserPage() {
   const [avatarImage, setAvatarImage] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const fileInputRef = useRef(); 
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Users");
+    return permissions ? permissions[permissionType] === true : false;
+  }
 
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
   useEffect(() => {
     dispatch(getAllPermissionGroups());
   }, [dispatch]);
@@ -390,9 +399,9 @@ export default function AddUserPage() {
         {/* <Button variant="outlined" onClick={() => navigate("/Users")}>
           {t("Cancel")}
         </Button> */}
-        <Button type="submit" variant="contained">
+      {hasAddPermission &&  <Button type="submit" variant="contained">
           {t("Create User")}
-        </Button>
+        </Button>}
       </Box>
     </Box>
   );

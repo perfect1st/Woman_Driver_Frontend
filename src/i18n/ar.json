@@ -541,5 +541,24 @@
   "User ID": "رقم المستخدم",
   "Name": "الاسم",
   "search by user name and email and phone number": "البحث بالاسم أو البريد الإلكتروني أو رقم الهاتف",
-  "Release date set to today": "تم تعيين تاريخ التسليم لليوم"
+  "Release date set to today": "تم تعيين تاريخ التسليم لليوم",
+  "Start Date": "تاريخ البداية",
+  "End Date": "تاريخ النهاية",
+  "Total Balance": "الرصيد الإجمالي",
+  "Liquidations": "التصفية",
+  "Liquidation Details": "تفاصيل التصفية",
+  "Liquidation ID": "رقم التصفية",
+  "liquidation_now": "تصفية الآن",
+  "driver_already_liquidated": "تمت تصفية هذا السائق مسبقًا.",
+  "search by driver name and email and phone number":"البحث حسب اسم السائق والبريد الإلكتروني ورقم الهاتف",
+  "confirm_liquidation_title": "تأكيد التصفية",
+  "confirm_liquidation_message": "هل أنت متأكد أنك تريد تصفية {{name}}؟",
+  "confirm": "تأكيد",
+  "cancel": "إلغاء",
+  "liquidation_success": "تمت التصفية بنجاح.",
+  "noPermissionToUpdateStatus": "ليس لديك صلاحية لتحديث الحالة",
+  "inactive":"غير نشط",
+  "deposit":"ايداع"
+
+
 }

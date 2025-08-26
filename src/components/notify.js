@@ -13,7 +13,7 @@ const notify = (msg, type) => {
         return <MdCheckCircle style={{ color: "#4caf50", fontSize: 22 }} />;
       case "error":
         return <MdError style={{ color: "#f44336", fontSize: 22 }} />;
-      case "warn":
+      case "warning":
         return <MdWarning style={{ color: "#ff9800", fontSize: 22 }} />;
       default:
         return null;
@@ -50,7 +50,7 @@ const notify = (msg, type) => {
   };
 
   switch (type) {
-    case "warn":
+    case "warning":
       toast.warn(msg, options);
       break;
     case "success":

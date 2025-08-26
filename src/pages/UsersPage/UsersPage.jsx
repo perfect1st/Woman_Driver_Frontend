@@ -21,6 +21,7 @@ import {
   editUser
 } from "../../redux/slices/user/thunk";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
+import notify from "../../components/notify";
 
 const UsersPage = () => {
   const theme = useTheme();
@@ -97,6 +98,9 @@ const UsersPage = () => {
   ];
 
   const handleStatusUpdate = (id, newStatus) => {
+    if(!hasEditPermission){
+      return notify("noPermissionToUpdateStatus", "warning");
+    }
     dispatch(editUser({ id, data: { status: newStatus } }))
       .unwrap()
       .then(() => {
@@ -114,7 +118,7 @@ const UsersPage = () => {
       status == "Accepted"
         ? "active"
         : status == "Rejected"
-        ? "banned"
+        ? "inactive"
         : status == "Pending" ? "pending" : status;
     await dispatch(
       editUser({ id: userId, data: { status: accountStatus } })
@@ -130,7 +134,7 @@ const UsersPage = () => {
 
   
 
-  if (!hasPermission("view")) return <Navigate to="/home" />;
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
   const fetchAndExport = async (type) => {
     try {
@@ -221,7 +225,7 @@ const UsersPage = () => {
         <FilterComponent
           onSearch={handleSearch}
           initialFilters={{ keyword, status }}
-          statusOptions={["active", "panned"]}
+          statusOptions={["active", "inactive"]}
           isUsers={true}
         />
       </Box>

@@ -39,9 +39,9 @@ import LoadingPage from "./components/LoadingComponent";
 import NotFoundPage from "./components/NotFoundPage";
 import Maintenance from "./components/Maintenance";
 import CommissionPage from "./pages/CommissionPage/CommissionPage";
-import WaitingTimePage from "./pages/WaitingTimesPage/WaitingTimesPage";
+import LiqudationPage from "./pages/LiqudationPage/LiqudationPage";
 import CommissionCategoryPage from "./pages/CommissionCategoryPage/CommissionCategoryPage";
-import WaitingTimesDetailsPage from "./pages/WaitingTimesDetailsPage/WaitingTimesDetailsPage";
+import LiqudationDetailsPage from "./pages/LiqudationDetailsPage/LiqudationDetailsPage";
 import CommissionDetailsPage from "./pages/CommissionDetailsPage/CommissionDetailsPage";
 import CommissionCategoryDetails from "./pages/CommissionCategoryDetails/CommissionCategoryDetails";
 import AddCommissionCategory from "./pages/AddCommissionCategory/AddCommissionCategory";
@@ -463,11 +463,11 @@ import ProfilePage from "./pages/ProfilePage/ProfilePage";
     }
   />
   <Route
-    path="/WaitingTime"
+    path="/liqudation"
     element={
       // <ProtectedRoute>
         <MainLayout>
-          <WaitingTimePage />
+          <LiqudationPage />
         </MainLayout>
       // </ProtectedRoute>
     }
@@ -533,11 +533,11 @@ import ProfilePage from "./pages/ProfilePage/ProfilePage";
     }
   />
   <Route
-    path="/WaitingTimesDetails/:id"
+    path="/LiqudationDetails/:id"
     element={
       // <ProtectedRoute>
         <MainLayout>
-          <WaitingTimesDetailsPage />
+          <LiqudationDetailsPage />
         </MainLayout>
       // </ProtectedRoute>
     }

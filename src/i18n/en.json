@@ -530,5 +530,26 @@
   "User ID": "User ID",
   "Name": "Name",
   "search by user name and email and phone number": "Search by user name, email, and phone number",
-  "Release date set to today":"Release date set to today"
+  "Release date set to today":"Release date set to today",
+  "Start Date": "Start Date",
+  "End Date": "End Date",
+  "Total Balance": "Total Balance",
+  "Liquidations": "Liquidations",
+  "Liquidation Details": "Liquidation Details",
+  "Liquidation ID": "Liquidation ID",
+  "liquidation_now": "Liquidate Now",
+  "driver_already_liquidated": "This driver has already been liquidated.",
+  "search by driver name and email and phone number":"search by driver name and email and phone number",
+  "confirm_liquidation_title": "Confirm Liquidation",
+  "confirm_liquidation_message": "Are you sure you want to liquidate {{name}}?",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+  "liquidation_success": "Liquidation completed successfully.",
+  "noPermissionToUpdateStatus": "You don't have permission to update status",
+  "inactive":"In Active",
+  "deposit":"Deposit"
+
+
+
+
 }

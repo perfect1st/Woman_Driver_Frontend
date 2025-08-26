@@ -126,6 +126,7 @@ const TableComponent = ({
   statusKey = "accountStatus", // Default to account status tripStatus
   showStatusChange = true, // Show status change options in menu
   actionIconType = "more", // "more" or "info"
+  actionIconType2 = "", // liqudation_now
   isCar = false,
   isCarType = false,
   isCarDriver = false,
@@ -136,9 +137,10 @@ const TableComponent = ({
   isCommissionCategory = false,
   dontShowActions = false,
   onActionClick,
+  liqudationClick,
   onSortClick,
   releasedClick,
-  isUsers
+  isUsers=false
 }) => {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
@@ -244,6 +246,19 @@ const TableComponent = ({
                   </Box>
                 </TableCell>
               ))}
+              {actionIconType2=="liqudation_now" && (
+                <TableCell
+                  align={i18n.dir() === "rtl" ? "right" : "left"}
+                  sx={{
+                    backgroundColor: theme.palette.background.secDefault,
+                    border: "1px solid #F5F0F2",
+                    fontWeight: "bold",
+                    py: { xs: 1, sm: 1.5 },
+                  }}
+                >
+                  {/* Actions column header */}
+                </TableCell>
+              )}
               {!dontShowActions && (
                 <TableCell
                   align={i18n.dir() === "rtl" ? "right" : "left"}
@@ -307,6 +322,32 @@ const TableComponent = ({
                   ))}
 
                   {/* Actions column */}
+                   { actionIconType2 == "liqudation_now" && <TableCell
+                      align="center"
+                      sx={{
+                        border: "1px solid #e0e0e0",
+                        py: { xs: 0.75, sm: 1.5 },
+                      }}
+                    >
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={(e) => liqudationClick?.(e, row)} // ⬅️ من الأب
+                          sx={{
+                            textTransform: "none",
+                            fontWeight: "bold",
+                            fontSize: "0.875rem",
+                            borderRadius: 1,
+                            px: 2,
+                            py: 0.5,
+                            minWidth: "auto",
+                          }}
+                        >
+                          {t("liquidation_now")}
+                        </Button>
+                     
+                    </TableCell>}
+                 
                   {!dontShowActions && (
                     <TableCell
                       align="center"
@@ -573,7 +614,9 @@ const TableComponent = ({
                   </MenuItem>
                 )}{" "}
                 {/* pending */}
-                {!isCar &&
+                
+                { !isUsers &&
+                  !isCar &&
                   !isCarType &&
                   !isTrafficTime &&
                   !isWallet &&

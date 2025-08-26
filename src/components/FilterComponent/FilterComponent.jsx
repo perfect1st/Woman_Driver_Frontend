@@ -33,6 +33,7 @@ const FilterComponent = ({
   isCommission = false,
   isWaitingTime = false,
   isCommissionCategory = false,
+  isLiquidation = false,
 }) => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -154,7 +155,9 @@ const FilterComponent = ({
           xs={12}
           sm={6}
           md={
-            isUsers
+            isLiquidation
+              ? 7
+              : isUsers
               ? 7
               : paymentMethod
               ? 7
@@ -180,7 +183,9 @@ const FilterComponent = ({
             size="small"
             name="search"
             placeholder={
-              isUsers
+              isLiquidation
+                ? t("search by driver name and email and phone number")
+               : isUsers
                 ? t("search by user name and email and phone number")
                 : paymentMethod
                 ? t("Search by Payment Method ID and Payment Methods Name")
@@ -284,7 +289,7 @@ const FilterComponent = ({
                 }}
               >
                 <MenuItem value="">{t("All")}</MenuItem>
-                <MenuItem value="add">{t("Add")}</MenuItem>
+                <MenuItem value="deposit">{t("deposit")}</MenuItem>
                 <MenuItem value="withdraw">{t("Withdraw")}</MenuItem>
               </CustomTextField>
             </Grid>

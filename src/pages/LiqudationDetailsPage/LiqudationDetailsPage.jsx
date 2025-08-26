@@ -12,7 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import RouteMap from "../RouteMap/RouteMap";
 
-export default function WaitingTimesDetailsPage() {
+export default function LiqudationDetailsPage() {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
   const theme = useTheme();

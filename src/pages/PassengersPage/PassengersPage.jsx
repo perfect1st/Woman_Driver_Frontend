@@ -18,6 +18,7 @@ import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable"; // ⬅️ هذا هو الجزء الناقص عندك
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
+import notify from "../../components/notify";
 
 const PassengersPage = () => {
   const theme = useTheme();
@@ -32,17 +33,15 @@ const PassengersPage = () => {
   const keyword = searchParams.get("keyword") || "";
   const status = searchParams.get("status") || "";
   const currentStatusFilter = status;
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Users");
+    return permissions ? permissions[permissionType] === true : false;
+  }
 
-    function hasPermission( permissionType) {
-  const permissions = getPermissionsByScreen("Passengers");
-  return permissions ? permissions[permissionType] === true : false;
-}
-
-// Example usage:
-console.log(hasPermission("view"));  
-console.log(hasPermission("add"));   
-console.log(hasPermission("edit"));   
-console.log(hasPermission("delete"));   
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
   const { passengers = {}, loading } = useSelector((state) => state.passenger);
   const {
     users = [],
@@ -123,10 +122,13 @@ console.log(hasPermission("delete"));
     return <LoadingPage />;
   }
 
-  if (!hasPermission("view")) return <Navigate to="/home" />;
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
 
   const onStatusChange = async (id, status) => {
+    if(!hasEditPermission){
+      return notify("noPermissionToUpdateStatus", "warning");
+    }
     console.log("id", id, "status", status);
     const PassengerId = id?.id;
     const accountStatus =

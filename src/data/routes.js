@@ -78,9 +78,9 @@ const routesData = {
       // icon: HomeIcon,
     },
     {
-      key: "WaitingTime",
-      label: { en: "Waiting Times", ar: "أوقات الانتظار" },
-      path: "/WaitingTime",
+      key: "Liqudation",
+      label: { en: "Liqudation", ar: "التصفية" },
+      path: "/Liqudation",
       // icon: HomeIcon,
     },
     {

@@ -31,7 +31,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import StarIcon from "@mui/icons-material/Star";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DomiCar from "../../assets/DomiCar.png";
 import DomiDriverImage from "../../assets/DomiDriverImage.png";
@@ -46,6 +46,7 @@ import useBaseImageUrl from "../../hooks/useBaseImageUrl";
 import { getAllPassengerTrips } from "../../redux/slices/trip/thunk";
 import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
 import { format } from "date-fns";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const statusStyles = {
   active: {
@@ -78,6 +79,16 @@ export default function RiderDetailsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
+
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Users");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
 
   // EDITABLE STATE HOOKS
   const [editable, setEditable] = useState({
@@ -228,6 +239,8 @@ export default function RiderDetailsPage() {
     return <LoadingPage />;
   }
 
+  if(!hasViewPermission) return <Navigate to="/profile" />
+
   // HANDLERS (unchanged logic)
   const handleFieldChange = (f, v) => setEditable((e) => ({ ...e, [f]: v }));
   const toggleEdit = (f) => setEditMode((m) => ({ ...m, [f]: !m[f] }));
@@ -319,9 +332,9 @@ export default function RiderDetailsPage() {
             <Typography>{editable[field]}</Typography>
           )}
         </Box>
-        <IconButton onClick={() => toggleEdit(field)}>
+        {hasEditPermission && <IconButton onClick={() => toggleEdit(field)}>
           <EditIcon />
-        </IconButton>
+        </IconButton>}
       </Box>
     );
   };

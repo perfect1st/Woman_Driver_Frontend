@@ -24,7 +24,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { getOneUser, editUser } from "../../redux/slices/user/thunk";
@@ -32,6 +32,7 @@ import { getAllPermissionGroups } from "../../redux/slices/permissionGroup/thunk
 import LoadingPage from "../../components/LoadingComponent";
 import useBaseImageUrl from "../../hooks/useBaseImageUrl";
 import imageCompression from 'browser-image-compression';
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const statusStyles = {
   active: {
@@ -39,7 +40,7 @@ const statusStyles = {
     bgColor: "#ECFDF3",
     borderColor: "#ABEFC6",
   },
-  banned: {
+  inactive: {
     textColor: "#912018",
     bgColor: "#FEF3F2",
     borderColor: "#FECDCA",
@@ -71,7 +72,15 @@ export default function UserDetailsPage() {
   const [avatarImage, setAvatarImage] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const fileInputRef = useRef();
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Users");
+    return permissions ? permissions[permissionType] === true : false;
+  }
 
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
   // FETCH user ON MOUNT
   useEffect(() => {
     dispatch(getOneUser(id));
@@ -337,9 +346,9 @@ export default function UserDetailsPage() {
             <Typography>{editable[field]}</Typography>
           )}
         </Box>
-        <IconButton onClick={() => toggleEdit(field)}>
+       {hasEditPermission && <IconButton onClick={() => toggleEdit(field)}>
           <EditIcon />
-        </IconButton>
+        </IconButton>}
       </Box>
     );
   };
@@ -348,6 +357,7 @@ export default function UserDetailsPage() {
   if (loading || !oneUser) {
     return <LoadingPage />;
   }
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
   return (
     <Box p={2}>
@@ -422,7 +432,7 @@ export default function UserDetailsPage() {
               hidden
               onChange={handleAvatarChange}
             />
-            <IconButton
+            {hasEditPermission &&<IconButton
               onClick={() => fileInputRef.current.click()}
               sx={{
                 position: "absolute",
@@ -434,8 +444,8 @@ export default function UserDetailsPage() {
               }}
             >
               <AddPhotoAlternateIcon fontSize="small" />
-            </IconButton>
-            {user.image && (
+            </IconButton>}
+            {(user.image && hasEditPermission) && (
               <IconButton
                 onClick={handleRemoveAvatar}
                 sx={{
