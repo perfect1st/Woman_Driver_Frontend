@@ -547,7 +547,23 @@
   "liquidation_success": "Liquidation completed successfully.",
   "noPermissionToUpdateStatus": "You don't have permission to update status",
   "inactive":"In Active",
-  "deposit":"Deposit"
+  "deposit":"Deposit",
+  "commission": "Commission",
+  "payment_online": "Online Payment",
+  "remaining_money_from_driver": "Remaining Money from Driver",
+  "daily_commission": "Daily Commission",
+  "paid_cash_for_trip": "Paid Cash for Trip",
+  "debit": "Debit",
+  "credit": "Credit",
+  "passenger": "Passenger",
+  "driver_with_car": "Driver (with car)",
+  "driver_company": "Driver (company)",
+  "Search user by name or phone": "Search user by name or phone",
+  "optional": "optional",
+  "Search trip by id or number": "Search trip by id or number",
+  "Amount must be a number": "Amount must be a number",
+  "An error occurred while creating the transaction": "An error occurred while creating the transaction",
+  "refused":"Refused"
 
 
 

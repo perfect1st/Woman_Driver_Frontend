@@ -48,9 +48,9 @@ const FilterComponent = ({
     companyCar: "",
     status: "",
     tripType: "",
-    userType: "",
-    transactionType: "",
-    transactionReason: "",
+    user_type: "",
+    trans_type: "",
+    transaction_type: "",
     appVehicle: "",
     date: "",
   });
@@ -64,9 +64,9 @@ const FilterComponent = ({
       companyCar: queryParams.get("companyCar") || "",
       status: queryParams.get("status") || "",
       tripType: queryParams.get("tripType") || "",
-      userType: queryParams.get("userType") || "",
-      transactionType: queryParams.get("transactionType") || "",
-      transactionReason: queryParams.get("transactionReason") || "",
+      user_type: queryParams.get("user_type") || "",
+      trans_type: queryParams.get("trans_type") || "",
+      transaction_type: queryParams.get("transaction_type") || "",
     });
   }, [location.search]);
 
@@ -84,11 +84,10 @@ const FilterComponent = ({
     if (filters.companyCar) queryParams.set("companyCar", filters.companyCar);
     if (filters.status) queryParams.set("status", filters.status);
     if (filters.tripType) queryParams.set("tripType", filters.tripType);
-    if (filters.userType) queryParams.set("userType", filters.userType);
-    if (filters.transactionType)
-      queryParams.set("transactionType", filters.transactionType);
-    if (filters.transactionReason)
-      queryParams.set("transactionReason", filters.transactionReason);
+    if (filters.user_type) queryParams.set("user_type", filters.user_type);
+    if (filters.trans_type) queryParams.set("trans_type", filters.trans_type);
+    if (filters.transaction_type)
+      queryParams.set("transaction_type", filters.transaction_type);
     if (filters.appVehicle) queryParams.set("appVehicle", filters.appVehicle);
     if (filters.date) queryParams.set("date", filters.date);
     const queryString = queryParams.toString();
@@ -110,9 +109,9 @@ const FilterComponent = ({
       companyCar: "",
       status: "",
       tripType: "",
-      userType: "",
-      transactionType: "",
-      transactionReason: "",
+      user_type: "",
+      trans_type: "",
+      transaction_type: "",
       appVehicle: "",
       date: "",
     });
@@ -130,9 +129,9 @@ const FilterComponent = ({
       carType: "",
       status: "",
       tripType: "",
-      userType: "",
-      transactionType: "",
-      transactionReason: "",
+      user_type: "",
+      trans_type: "",
+      transaction_type: "",
     });
   };
 
@@ -185,7 +184,7 @@ const FilterComponent = ({
             placeholder={
               isLiquidation
                 ? t("search by driver name and email and phone number")
-               : isUsers
+                : isUsers
                 ? t("search by user name and email and phone number")
                 : paymentMethod
                 ? t("Search by Payment Method ID and Payment Methods Name")
@@ -237,8 +236,8 @@ const FilterComponent = ({
                 fullWidth
                 size="small"
                 label={t("User Type")}
-                name="userType"
-                value={filters.userType || ""}
+                name="user_type"
+                value={filters.user_type || ""}
                 onChange={handleChange}
                 variant="outlined"
                 isRtl={isArabic}
@@ -257,7 +256,8 @@ const FilterComponent = ({
                 }}
               >
                 <MenuItem value="">{t("All")}</MenuItem>
-                <MenuItem value="driver">{t("Driver")}</MenuItem>
+                <MenuItem value="driver_with_car">{t("driver_with_car")}</MenuItem>
+                <MenuItem value="driver_company">{t("driver_company")}</MenuItem>
                 <MenuItem value="passenger">{t("Passenger")}</MenuItem>
               </CustomTextField>
             </Grid>
@@ -269,8 +269,8 @@ const FilterComponent = ({
                 fullWidth
                 size="small"
                 label={t("Transaction Type")}
-                name="transactionType"
-                value={filters.transactionType || ""}
+                name="trans_type"
+                value={filters.trans_type || ""}
                 onChange={handleChange}
                 variant="outlined"
                 isRtl={isArabic}
@@ -289,8 +289,8 @@ const FilterComponent = ({
                 }}
               >
                 <MenuItem value="">{t("All")}</MenuItem>
-                <MenuItem value="deposit">{t("deposit")}</MenuItem>
-                <MenuItem value="withdraw">{t("Withdraw")}</MenuItem>
+                <MenuItem value="debit">{t("debit")}</MenuItem>
+                <MenuItem value="credit">{t("credit")}</MenuItem>
               </CustomTextField>
             </Grid>
 
@@ -301,8 +301,8 @@ const FilterComponent = ({
                 fullWidth
                 size="small"
                 label={t("Transaction Reason")}
-                name="transactionReason"
-                value={filters.transactionReason || ""}
+                name="transaction_type"
+                value={filters.transaction_type || ""}
                 onChange={handleChange}
                 variant="outlined"
                 isRtl={isArabic}
@@ -321,10 +321,19 @@ const FilterComponent = ({
                 }}
               >
                 <MenuItem value="">{t("All")}</MenuItem>
-                <MenuItem value="bonus">{t("Bonus")}</MenuItem>
-                <MenuItem value="tripPayment">{t("Trip Payment")}</MenuItem>
-                <MenuItem value="walletCorrection">
-                  {t("Wallet Correction")}
+                <MenuItem value="cashback">{t("cashback")}</MenuItem>
+                <MenuItem value="commission">{t("commission")}</MenuItem>
+                <MenuItem value="payment_online">
+                  {t("payment_online")}
+                </MenuItem>
+                <MenuItem value="remaining_money_from_driver">
+                  {t("remaining_money_from_driver")}
+                </MenuItem>
+                <MenuItem value="daily_commission">
+                  {t("daily_commission")}
+                </MenuItem>
+                <MenuItem value="paid_cash_for_trip">
+                  {t("paid_cash_for_trip")}
                 </MenuItem>
               </CustomTextField>
             </Grid>

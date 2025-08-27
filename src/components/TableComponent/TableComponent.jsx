@@ -68,6 +68,12 @@ const statusStyles = {
     borderColor: "#FECDCA",
     // icon: <WarningIcon fontSize="small" sx={{ color: "#912018" }} />
   },
+  refused: {
+    textColor: "#912018",
+    bgColor: "#FEF3F2",
+    borderColor: "#FECDCA",
+    // icon: <WarningIcon fontSize="small" sx={{ color: "#912018" }} />
+  },
   Complete: {
     textColor: "#085D3A",
     bgColor: "#ECFDF3",
@@ -81,6 +87,12 @@ const statusStyles = {
     // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
   },
   Accepted: {
+    textColor: "#085D3A",
+    bgColor: "#ECFDF3",
+    borderColor: "#ABEFC6",
+    // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
+  },
+  accepted: {
     textColor: "#085D3A",
     bgColor: "#ECFDF3",
     borderColor: "#ABEFC6",

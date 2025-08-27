@@ -8,6 +8,8 @@ import carSlice from './slices/car/carSlice';
 import carAssignmentSlice from './slices/carAssignment/carAssignmentSlice';
 import userSlice from './slices/user/userSlice';
 import permissionGroupSlice from './slices/permissionGroup/permissionGroupSlice';
+import walletSlice from './slices/wallet/walletSlice';
+import lookupsSlice from './slices/lookups/lookupsSlice';
 
 
 export const store = configureStore({
@@ -21,7 +23,9 @@ export const store = configureStore({
     car: carSlice,
     carAssignment: carAssignmentSlice,
     user: userSlice,
-    permissionGroup: permissionGroupSlice
+    permissionGroup: permissionGroupSlice,
+    wallet: walletSlice,
+    lookups: lookupsSlice
 
   },
 });

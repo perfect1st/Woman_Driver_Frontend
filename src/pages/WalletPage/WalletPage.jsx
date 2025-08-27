@@ -1,77 +1,94 @@
-// CarTypesPage.js
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import Header from "../../components/PageHeader/header";
 import FilterComponent from "../../components/FilterComponent/FilterComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
+import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
+import LoadingPage from "../../components/LoadingComponent";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllWallets, getAllWalletsWithoutPaginations, updateTransation } from "../../redux/slices/wallet/thunk";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { saveAs } from "file-saver";
+import notify from "../../components/notify";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const WalletPage = () => {
   const theme = useTheme();
-  const { t, i18n } = useTranslation();
-  const isArabic = i18n.language == 'ar'
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isArabic = i18n.language === "ar";
 
-  // Initial car types data
-  const initialWallet = [
-    {
-      id: 1,
-      userName: "Mohammed Salem",
-      userType: "Driver",
-      dashboardUser: "Admin A",
-      transactionType: "Deposit",
-      transactionReason: "Weekly settlement",
-      status: "Accepted",
-    },
-    {
-      id: 2,
-      userName: "Lina Ahmed",
-      userType: "Customer",
-      dashboardUser: "Admin B",
-      transactionType: "Withdrawal",
-      transactionReason: "Refund",
-      status: "Pending",
-    },
-    {
-      id: 3,
-      userName: "Youssef Kamal",
-      userType: "Driver",
-      dashboardUser: "System",
-      transactionType: "Deduction",
-      transactionReason: "Penalty",
-      status: "Rejected",
-    },
-    {
-      id: 4,
-      userName: "Sara Nabil",
-      userType: "Customer",
-      dashboardUser: "Admin C",
-      transactionType: "Deposit",
-      transactionReason: "Bonus",
-      status: "Accepted",
-    },
-    {
-      id: 5,
-      userName: "Ahmed Mostafa",
-      userType: "Driver",
-      dashboardUser: "Admin A",
-      transactionType: "Withdrawal",
-      transactionReason: "Driver request",
-      status: "Pending",
-    },
-  ];
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  
-  const statusOptions = ["Accepted", "Rejected"];
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const keyword = searchParams.get("keyword") || "";
+  const user_type = searchParams.get("user_type") || "";
+  const trans_type = searchParams.get("trans_type") || "";
+  const transaction_type = searchParams.get("transaction_type") || "";
+  const status = searchParams.get("status") || "";
+  const currentStatusFilter = status;
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Wallet");
+    return permissions ? permissions[permissionType] === true : false;
+  }
 
-  const [wallet, setWallet] = useState(initialWallet);
-  const [filteredWallet, setFilteredWallet] = useState(initialWallet);
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
 
-  // Table columns configuration
-  const tableColumns = [
+  const { wallets: walletsData = {}, loading } = useSelector((state) => state.wallet);
+  const { wallets: data = [], total = 0, currentPage = 1, totalPages = 1 } = walletsData;
+
+  useEffect(() => {
+    const q =
+      `page=${page}&limit=${limit}` +
+      (keyword ? `&keyword=${keyword}` : "") +
+      (status ? `&status=${status}` : "")+
+      (user_type ? `&user_type=${user_type}` : "")+
+      (trans_type ? `&trans_type=${trans_type}` : "")+
+      (transaction_type ? `&transaction_type=${transaction_type}` : "");
+    dispatch(getAllWallets({ query: q }));
+  }, [dispatch, page, limit, keyword, status, user_type, trans_type, transaction_type]);
+
+  const updateParams = (upd) => {
+    const next = Object.fromEntries(searchParams);
+    Object.entries(upd).forEach(([k, v]) => {
+      if (v !== undefined && v !== "") next[k] = v;
+      else delete next[k];
+    });
+    setSearchParams(next);
+  };
+
+  const handleSearch = (f) => updateParams({ ...f, page: 1 });
+  const handleLimitChange = (e) =>
+    updateParams({ limit: e.target.value, page: 1 });
+  const handlePageChange = (_, v) => updateParams({ page: v });
+
+  const statusOptions = ["accepted", "pending", "refused"];
+
+  const rows = data.map((wallet, index) => ({
+    mainId: wallet?._id,
+    id: (currentPage - 1) * limit + index + 1,
+    userName: wallet.user_id?.fullname || "-",
+    userType: t(wallet.user_id?.user_type) || "-",
+    dashboardUser: "System", 
+    transactionType: wallet.trans_type,
+    transactionReason: t(wallet.transaction_type), 
+    status: wallet.status,
+    amount: wallet.amount,
+    notes: wallet.notes,
+  }));
+
+  const columns = [
     { key: "id", label: t("Transaction ID") },
     { key: "userName", label: t("User Name") },
     { key: "userType", label: t("User Type") },
@@ -81,130 +98,180 @@ const WalletPage = () => {
     { key: "status", label: t("Status") },
   ];
 
-  // Handle search/filter
-  const handleSearch = (filters) => {
-    const filtered = wallet.filter(type => {
-      const matchesSearch = !filters.search ||
-        type.id.toString().includes(filters.search.toLowerCase()) ||
-        type.name.toLowerCase().includes(filters.search.toLowerCase());
-      
-      const matchesStatus = !filters.status || type.status === filters.status;
+  const fetchAndExport = async (type) => {
+    try {
+     const q = `` +
+      (keyword ? `&keyword=${keyword}` : "") +
+      (status ? `&status=${status}` : "")+
+      (user_type ? `&user_type=${user_type}` : "")+
+      (trans_type ? `&trans_type=${trans_type}` : "")+
+      (transaction_type ? `&transaction_type=${transaction_type}` : "");
+;
+      const response = await dispatch(
+        getAllWalletsWithoutPaginations({ query: q })
+      ).unwrap();
 
-      return matchesSearch && matchesStatus;
-    });
+      const exportData = response.wallets.map((wallet, i) => ({
+        "ID": i + 1,
+        "User Name": wallet.user_id?.fullname || "-",
+        "User Type": wallet.user_id?.user_type || "-",
+        dashboardUser: "System", 
+        "Transaction Type": wallet.trans_type,
+        "Amount": wallet.amount,
+        "Status": wallet.status,
+        "Date": new Date(wallet.createdAt).toLocaleDateString(),
+        "Notes": wallet.notes,
+      }));
 
-    setFilteredWallet(filtered);
+      if (type === "excel") {
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Wallets");
+        const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+        saveAs(
+          new Blob([buf], { type: "application/octet-stream" }),
+          `Wallets_${Date.now()}.xlsx`
+        );
+      } else if (type === "pdf") {
+        const doc = new jsPDF();
+        doc.text("Wallets Report", 14, 10);
+        autoTable(doc, {
+          startY: 20,
+          head: [Object.keys(exportData[0])],
+          body: exportData.map((r) => Object.values(r)),
+        });
+        doc.save(`Wallets_${Date.now()}.pdf`);
+      } else {
+        const w = window.open("", "_blank");
+        const html = `
+          <html><head><title>Wallets</title>
+          <style>table{width:100%;border-collapse:collapse}th,td{border:1px solid #333;padding:4px;text-align:left}th{background:#eee}</style>
+          </head><body>
+            <h2>Wallets Report</h2>
+            <table>
+              <thead>
+                <tr>${Object.keys(exportData[0])
+                  .map((k) => `<th>${k}</th>`)
+                  .join("")}</tr>
+              </thead>
+              <tbody>
+                ${exportData
+                  .map(
+                    (r) =>
+                      `<tr>${Object.values(r)
+                        .map((v) => `<td>${v}</td>`)
+                        .join("")}</tr>`
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </body></html>`;
+        w.document.write(html);
+        w.document.close();
+        w.print();
+      }
+    } catch (err) {
+      console.error("Export wallets error:", err);
+    }
   };
 
-  // Handle status changes
-  const handleStatusChange = (row, newStatus) => {
-    const updatedTypes = wallet.map(type =>
-      type.id === row.id ? { ...type, status: newStatus } : type
-    );
-
-    setWallet(updatedTypes);
-    setFilteredWallet(updatedTypes);
+  const addTransactionSubmit = () => {
+    navigate("/Wallet/AddTransaction");
   };
 
-  // Handle view details
-  const handleViewDetails = (row) => {
-    navigate(`/walletDetails/${row.id}`);
-  };
-
-  // Prevent horizontal scrolling
   useEffect(() => {
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
-
     return () => {
       document.documentElement.style.overflowX = "auto";
       document.body.style.overflowX = "auto";
     };
   }, []);
 
-  const addCarTypeSubmit = () => {
-    navigate("/Wallet/AddTransaction");
+  const onStatusChange = async (id, status) => {
+    if(!hasEditPermission){
+      return notify("noPermissionToUpdateStatus", "warning");
+    }
+    console.log("id", id, "status", status);
+    const walletId = id?.mainId;
+    const accountStatus =
+      status == "Accepted"
+        ? "accepted" :
+      status == "Available"
+        ? "accepted"
+        : status == "Rejected"
+        ? "refused"
+        : status == "Pending" ? "pending" : status;
+    await dispatch(
+      updateTransation({ id: walletId, data: { status: accountStatus } })
+    );
+    const query =
+      `page=${page}&limit=${limit}` +
+      (keyword ? `&keyword=${keyword}` : "") +
+      (currentStatusFilter ? `&status=${currentStatusFilter}` : "");
+
+    dispatch(getAllWallets({ query }));
   };
+
+
+  if (loading) return <LoadingPage />;
 
   return (
     <Box
       component="main"
       sx={{
-        p: isSmallScreen ? 2 : 3,
+        p: isSmall ? 2 : 3,
         width: "100%",
         maxWidth: "100vw",
-        overflowX: "hidden",
-        boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
       }}
     >
-      {/* Header Section */}
-      <Box sx={{ width: "100%", flexShrink: 0 }}>
-        <Header
-          title={t("Wallet")}
-          subtitle={t("Wallet Details")}
-          haveBtn={true}
-          i18n={i18n}
-          btn={t("Add Transaction")}
-          btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
-          onSubmit={addCarTypeSubmit}
-          isExcel={true}
-          isPdf={true}
-          isPrinter={true}
-        />
-      </Box>
+      <Header
+        title={t("Wallet")}
+        subtitle={t("Wallet Details")}
+        i18n={i18n}
+        haveBtn
+        btn={t("Add Transaction")}
+        btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
+        onSubmit={addTransactionSubmit}
+        isExcel
+        isPdf
+        isPrinter
+        onExcel={() => fetchAndExport("excel")}
+        onPdf={() => fetchAndExport("pdf")}
+        onPrinter={() => fetchAndExport("print")}
+      />
 
-      {/* Filter Section */}
-      <Box sx={{ width: "100%", flexShrink: 0, my: 2 }}>
+      <Box sx={{ my: 2 }}>
         <FilterComponent
           onSearch={handleSearch}
+          initialFilters={{ keyword, status, user_type, trans_type, transaction_type }}
           statusOptions={statusOptions}
-          isWallet={true}
+          isWallet
         />
       </Box>
 
-      {/* Table Section */}
-      <Box
-        sx={{
-          flex: 1,
-          width: "100%",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          minHeight: 0,
-        }}
-      >
-        <Box
-          sx={{
-            flex: 1,
-            minHeight: 0,
-            width: "100%",
-            overflow: "auto",
-            borderRadius: 1,
-            boxShadow: 1,
-            "&::-webkit-scrollbar": {
-              height: "6px",
-              width: "6px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: theme.palette.grey[400],
-              borderRadius: "4px",
-            },
-          }}
-        >
-          <TableComponent
-            columns={tableColumns}
-            data={filteredWallet}
-            onStatusChange={handleStatusChange}
-            onViewDetails={handleViewDetails}
-            statusKey="status"
-            showStatusChange={true}
-            isWallet={true}
-          />
-        </Box>
-      </Box>
+      <TableComponent
+        columns={columns}
+        data={rows}
+        onViewDetails={(r) => navigate(`/walletDetails/${r.mainId}`)}
+        statusKey="status"
+        showStatusChange={true}
+        isWallet
+        onStatusChange={onStatusChange}
+
+        sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
+      />
+
+      <PaginationFooter
+        currentPage={currentPage}
+        totalPages={totalPages}
+        limit={limit}
+        onPageChange={handlePageChange}
+        onLimitChange={handleLimitChange}
+      />
     </Box>
   );
 };
