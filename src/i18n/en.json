@@ -265,7 +265,7 @@
   "Withdrawal": "Withdrawal",
   "Deduction": "Deduction",
   "Customer": "Customer",
-  "{{name}}’s Wallet #{{id}}": "{{name}}’s Wallet #{{id}}",
+  "{{name}}’s Wallet": "{{name}}’s Wallet",
   "Add Transaction": "Add Transaction",
   "Select User Type": "Select User Type",
   "Choose User Type": "Choose User Type",

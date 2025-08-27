@@ -152,7 +152,7 @@ const TableComponent = ({
   liqudationClick,
   onSortClick,
   releasedClick,
-  isUsers=false
+  isUsers=false,
 }) => {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Box,
-  Breadcrumbs,
-  Link,
   Typography,
   Card,
   CardContent,
@@ -19,7 +17,6 @@ import {
   TableContainer,
   TableRow,
   Chip,
-  Rating,
   useTheme,
   Grid,
 } from "@mui/material";
@@ -27,150 +24,70 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import FilterComponent from "../../components/FilterComponent/FilterComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import { useTranslation } from "react-i18next";
-import { FiberManualRecord, Star, Troubleshoot } from "@mui/icons-material";
-
+import { FiberManualRecord, Star } from "@mui/icons-material";
+import { useSelector, useDispatch } from "react-redux";
+import { getOneWallet, updateTransation } from "../../redux/slices/wallet/thunk";
+import { ReactComponent as LinkIcon } from "../../assets/LinkIcon.svg";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
+import notify from "../../components/notify";
+import LoadingPage from "../../components/LoadingComponent";
 const statusStyles = {
-  Available: {
+  accepted: {
     textColor: "#085D3A",
     bgColor: "#ECFDF3",
     borderColor: "#ABEFC6",
   },
-  Pending: { textColor: "#1849A9", bgColor: "#EFF8FF", borderColor: "#B2DDFF" },
-  Rejected: {
+  pending: { textColor: "#1849A9", bgColor: "#EFF8FF", borderColor: "#B2DDFF" },
+  refused: {
     textColor: "#912018",
     bgColor: "#FEF3F2",
     borderColor: "#FECDCA",
   },
-  Cancelled: {
+  cancelled: {
     textColor: "#912018",
     bgColor: "#FEF3F2",
     borderColor: "#FECDCA",
   },
-  Complete: {
-    textColor: "#085D3A",
-    bgColor: "#ECFDF3",
-    borderColor: "#ABEFC6",
-  },
-  Linked: { textColor: "#085D3A", bgColor: "#ECFDF3", borderColor: "#ABEFC6" },
-  Accepted: {
-    textColor: "#085D3A",
-    bgColor: "#ECFDF3",
-    borderColor: "#ABEFC6",
-  },
-  "OnRequest": {
-    textColor: "#93370D",
-    bgColor: "#FFFAEB",
-    borderColor: "#FEDF89",
-  },
-  "Approved by driver": {
-    textColor: "#1F2A37",
-    bgColor: "#F9FAFB",
-    borderColor: "#E5E7EB",
-  },
-  Leaved: { textColor: "#1F2A37", bgColor: "#F9FAFB", borderColor: "#E5E7EB" },
-  Start: { textColor: "#1849A9", bgColor: "#EFF8FF", borderColor: "#B2DDFF" },
 };
 
 const WalletDetailsPage = () => {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
   const theme = useTheme();
+  const { id } = useParams();
   const navigate = useNavigate();
   const { pathname, search } = useLocation();
   const params = new URLSearchParams(search);
+  const dispatch = useDispatch();
+const walletId = id
+  const { wallet , loading} = useSelector((state) => state.wallet);
+  console.log("wallet", wallet);
+  // Load wallet data
+  useEffect(() => {
+    if (id) {
+      dispatch(getOneWallet(id));
+    }
+  }, [id, dispatch]);
 
   // Tab state
   const currentTab = params.get("tab") || "details";
   const [tab, setTab] = useState(currentTab);
 
-  // History filters from URL
+  // Filters state
   const initialSearch = params.get("search") || "";
   const initialStatus = params.get("status") || "";
-
-  // Dummy user
-  const user = {
-    name: "Emma Davis",
-    id: "72641",
-    type: "Rider",
-    balance: 98.5,
-    rate: 4.8,
-    details: {
-      "Dashboard User": "Admin A",
-      Time: "14:32",
-      Date: "14/07/2025",
-      "Transaction Type": "Deposit",
-      "Transaction Reason": "Weekly settlement",
-      Status: "Accepted",
-      Amount: "EGP 98.50",
-      Trip: "Trip Details",
-      Notes: "Prompt service",
-    },
-  };
-  const statusOptions = ["Accepted", "Rejected"];
-  // Initial car types data
-  const initialWallet = [
-    {
-      id: 1,
-      userType: "Driver",
-      dashboardUser: "Admin A",
-      transactionType: "Deposit",
-      transactionReason: "Weekly settlement",
-      status: "Accepted",
-    },
-    {
-      id: 2,
-      userType: "Customer",
-      dashboardUser: "Admin B",
-      transactionType: "Withdrawal",
-      transactionReason: "Refund",
-      status: "Pending",
-    },
-    {
-      id: 3,
-      userType: "Driver",
-      dashboardUser: "System",
-      transactionType: "Deduction",
-      transactionReason: "Penalty",
-      status: "Rejected",
-    },
-    {
-      id: 4,
-      userType: "Customer",
-      dashboardUser: "Admin C",
-      transactionType: "Deposit",
-      transactionReason: "Bonus",
-      status: "Accepted",
-    },
-    {
-      id: 5,
-      userType: "Driver",
-      dashboardUser: "Admin A",
-      transactionType: "Withdrawal",
-      transactionReason: "Driver request",
-      status: "Pending",
-    },
-  ];
-
-  const tableColumns = [
-    { key: "id", label: t("Transaction ID") },
-    { key: "dashboardUser", label: t("Dashboard User") },
-    { key: "userType", label: t("User Type") },
-    { key: "transactionType", label: t("Transaction Type") },
-    { key: "transactionReason", label: t("Transaction Reason") },
-    { key: "status", label: t("Status") },
-  ];
-
-  // Initialize history and wallet lists
-  const initialHistory = [{ id: 1, ...user.details }];
-
-  const [history, setHistory] = useState(initialHistory);
-  const [wallet, setWallet] = useState(initialWallet);
-
-  // Filter state
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState(initialStatus);
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Wallet");
+    return permissions ? permissions[permissionType] === true : false;
+  }
 
-  // Sync URL on tab change or filters change
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
+  // Sync URL
   useEffect(() => {
     const ps = new URLSearchParams();
     ps.set("tab", tab);
@@ -181,64 +98,109 @@ const WalletDetailsPage = () => {
     navigate(`${pathname}?${ps.toString()}`, { replace: true });
   }, [tab, searchTerm, statusFilter]);
 
-  // Filtered lists
-  const filteredHistory = history.filter(
-    (item) =>
-      (!searchTerm ||
-        Object.values(item).some((val) =>
-          val.toString().toLowerCase().includes(searchTerm.toLowerCase())
-        )) &&
-      (!statusFilter || item.Status === statusFilter)
-  );
-  const filteredWallet = wallet.filter(
-    (item) =>
-      (!searchTerm ||
-        Object.values(item).some((val) =>
-          val.toString().toLowerCase().includes(searchTerm.toLowerCase())
-        )) &&
-      (!statusFilter || item.status === statusFilter)
-  );
+  // Wallet data
+  const user = wallet?.user || {};
+  const balance = wallet?.balance || 0;
+  const transactions = wallet?.transactions || [];
+
+  // History (transaction details for one transaction)
+  const history = transactions.map((trx, index) => ({
+    id: index + 1,
+    "Transaction Type": trx.transaction_type,
+    "Transaction Reason": trx.notes,
+    Status: trx.status,
+    Amount: `${trx.amount} SAR`,
+    "Created At": new Date(trx.createdAt).toLocaleString(),
+    Notes: trx.notes,
+  }));
+
+  const tableColumns = [
+    { key: "_id", label: t("Transaction ID") },
+    { key: "trans_type", label: t("Transaction Type") },
+    { key: "transaction_type", label: t("Transaction Reason") },
+    { key: "amount", label: t("Amount") },
+    { key: "status", label: t("Status") },
+    { key: "createdAt", label: t("Date") },
+  ];
+
+  const filterStatus = params.get("status") || "";
+  const filterTransType = params.get("trans_type") || "";
+  const filterTransactionType = params.get("transaction_type") || "";
+
+  const filteredTransactions = transactions.filter((trx) => {
+    return (
+      (!filterStatus || trx.status === filterStatus) &&
+      (!filterTransType || trx.trans_type === filterTransType) &&
+      (!filterTransactionType || trx.transaction_type === filterTransactionType)
+    );
+  });
 
   const renderStatusChip = (status) => {
-    const style = statusStyles[status] || {};
+    const style = statusStyles[status?.toLowerCase()] || {};
     return (
       <Chip
-      label={t(status)}
-      icon={<FiberManualRecord sx={{ fontSize: 12, color: style.textColor }} />}
-      sx={{
-        color: style.textColor,
-        backgroundColor: style.bgColor,
-        border: 'none',
-        [`& .MuiChip-icon`]: {
-          [isArabic ? 'mr' : 'ml']: 1,
+        label={t(status)}
+        icon={
+          <FiberManualRecord sx={{ fontSize: 12, color: style.textColor }} />
+        }
+        sx={{
           color: style.textColor,
-        },      }}
-    />
+          backgroundColor: style.bgColor,
+          border: "none",
+          [`& .MuiChip-icon`]: {
+            [isArabic ? "mr" : "ml"]: 1,
+            color: style.textColor,
+          },
+        }}
+      />
     );
   };
 
+    const onStatusChange = async (id, status) => {
+    if(!hasEditPermission){
+      return notify("noPermissionToUpdateStatus", "warning");
+    }
+    console.log("iiiiiiid", id, "status", status);
+    const walletId = id?._id;
+    const accountStatus =
+      status == "Accepted"
+        ? "accepted" :
+      status == "Available"
+        ? "accepted"
+        : status == "Rejected"
+        ? "refused"
+        : status == "Pending" ? "pending" : status;
+    await dispatch(
+      updateTransation({ id: walletId, data: { status: accountStatus } })
+    );
+    await dispatch(getOneWallet(walletId));
+  };
+
+  if(loading) return <LoadingPage />
+
   return (
-    <Box component="main" sx={{ p: 3 }}>
-          <Box display="flex" alignItems="center" flexWrap="wrap" mb={2}>
+    <Box component="main" sx={{ p: 3 , ...(tab === "details" && { maxWidth: "md" }),}}>
+      {/* Breadcrumb */}
+      <Box display="flex" alignItems="center" flexWrap="wrap" mb={2}>
         <Typography
-          onClick={() => navigate('/wallet')}
+          onClick={() => navigate("/wallet")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Wallet")}
         </Typography>
         <Typography mx={1}>{`<`}</Typography>
         <Typography
-          onClick={() => navigate('/wallet')}
+          onClick={() => navigate("/wallet")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Wallet Details")}
         </Typography>
         <Typography mx={1}>{`<`}</Typography>
-        <Typography color="text.primary">{user.name}</Typography>
-              </Box>
+        <Typography color="text.primary">{user?.name || "-"}</Typography>
+      </Box>
 
       <Typography variant="h5" sx={{ mt: 2, mb: 3 }}>
-        {t("{{name}}’s Wallet #{{id}}", { name: user.name, id: user.id })}
+        {t("{{name}}’s Wallet", { name: user?.name || "-" })}
       </Typography>
 
       <Tabs value={tab} onChange={(e, v) => setTab(v)} sx={{ mb: 3 }}>
@@ -246,12 +208,13 @@ const WalletDetailsPage = () => {
         <Tab label={t("Wallet History")} value="history" />
       </Tabs>
 
+      {/* Details Tab */}
       {tab === "details" && (
         <Box>
           <Card sx={{ mb: 3, background: theme.palette.secondary.sec }}>
             <CardContent>
               <Typography variant="h5" fontWeight="bold">
-                {t("Wallet")}: SAR {user.balance.toFixed(2)}
+                {t("Wallet")}: SAR {balance.toFixed(2)}
               </Typography>
               <Paper
                 elevation={1}
@@ -259,7 +222,7 @@ const WalletDetailsPage = () => {
               >
                 <CreditCardIcon sx={{ mr: 1 }} />
                 <Typography>
-                  {t("Your Cash")}: SAR {user.balance.toFixed(2)}
+                  {t("Your Cash")}: SAR {balance.toFixed(2)}
                 </Typography>
               </Paper>
             </CardContent>
@@ -273,29 +236,24 @@ const WalletDetailsPage = () => {
                 color="primary"
                 mb={1}
               >
-                {t(user.type)}
+                {t("User")}
               </Typography>
               <Divider sx={{ mb: 2 }} />
 
               <Grid container alignItems="center" spacing={2}>
                 <Grid item>
-                  <Avatar
-                    src="/path/to/demo/image.jpg"
-                    sx={{ width: 64, height: 64 }}
-                  />
+                  <Avatar sx={{ width: 64, height: 64 }}>
+                    {user?.name?.[0]}
+                  </Avatar>
                 </Grid>
                 <Grid item xs>
-                  <Typography fontWeight="bold">{user.name}</Typography>
-                  <Box display="flex" alignItems="center">
-                    <Typography variant="body2" color="text.secondary">
-                      {user.rate}
-                    </Typography>
-                    <Star
-                      fontSize="small"
-                      color="primary"
-                      sx={{ ml: 0.5 }}
-                    />
-                  </Box>
+                  <Typography fontWeight="bold">{user?.name}</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {user?.email}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {user?.phone}
+                  </Typography>
                 </Grid>
                 <Grid item>
                   <Button
@@ -310,6 +268,7 @@ const WalletDetailsPage = () => {
             </CardContent>
           </Card>
 
+          {/* Transaction Details Table */}
           <Typography variant="h6" fontWeight="bold" color="primary" mb={2}>
             {t("Details")}
           </Typography>
@@ -328,29 +287,104 @@ const WalletDetailsPage = () => {
               }}
             >
               <TableBody>
-                {Object.entries(user.details).map(([key, val], idx) => (
-                  <TableRow
-                    key={key}
-                    sx={{
-                      backgroundColor:
-                        idx % 2 === 0
-                          ? theme.palette.secondary.sec
-                          : theme.palette.background.paper,
-                      "& td": { py: 2, px: 1 },
-                    }}
-                  >
-                    <TableCell>{t(key)}</TableCell>
-                    <TableCell>
-                      {key === "Status" ? renderStatusChip(val) : val}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {(() => {
+                  const trx = wallet?.transaction;
+                  if (!trx) return null;
+
+                  const rows = [
+                    {
+                      key: "Dashboard User",
+                      value: trx?.user_id?.fullname || "-",
+                      clickable: true,
+                      onClick: () =>
+                        navigate(`/userDetails/${trx?.user_id?._id}`),
+                    },
+                    {
+                      key: "Time",
+                      value: new Date(trx.createdAt).toLocaleTimeString(),
+                    },
+                    {
+                      key: "Date",
+                      value: new Date(trx.createdAt).toLocaleDateString(),
+                    },
+                    { key: "Transaction Type", value: trx.trans_type },
+                    { key: "Transaction Reason", value: trx.transaction_type },
+                    {
+                      key: "Status",
+                      value: trx.status,
+                      render: () => renderStatusChip(trx.status),
+                    },
+                    { key: "Amount", value: `${trx.amount} SAR` },
+                    trx.trips_id?._id && {
+                      key: "Trip",
+                      value: trx.trips_id?.trip_number || "-",
+                      clickable: true,
+                      onClick: () =>
+                        navigate(`/tripDetails/${trx.trips_id?._id}`),
+                    },
+                    trx.notes && { key: "Notes", value: trx.notes },
+                  ].filter(Boolean);
+
+                  return rows.map((row, idx) => (
+                    <TableRow
+                      key={row.key}
+                      sx={{
+                        backgroundColor:
+                          idx % 2 === 0
+                            ? theme.palette.secondary.sec
+                            : theme.palette.background.paper,
+                        "& td": { py: 2, px: 1 },
+                      }}
+                    >
+                      <TableCell>{t(row.key)}</TableCell>
+                      <TableCell>
+                        {row.render ? (
+                          row.render()
+                        ) : row.clickable ? (
+                          <Button
+                            sx={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Typography
+                              component="span"
+                              sx={{
+                                color: theme.palette.text.blue, // use theme blue
+                                cursor: "pointer",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                textDecoration: "underline", // underline like a real link
+                                fontWeight: "bold",
+                              }}
+                              onClick={row.onClick}
+                            >
+                              {t(row.value)}
+                            </Typography>
+                            <LinkIcon
+                              fontSize="small"
+                              sx={{
+                                mx: 1,
+                                transform: isArabic ? "rotate(180deg)" : "none",
+                              }}
+                            />
+                          </Button>
+                        ) : (
+                          t(row.value)
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ));
+                })()}
               </TableBody>
             </Table>
           </TableContainer>
         </Box>
       )}
 
+      {/* History Tab */}
       {tab === "history" && (
         <Box>
           <Box sx={{ mb: 2 }}>
@@ -359,21 +393,37 @@ const WalletDetailsPage = () => {
                 setSearchTerm(search);
                 setStatusFilter(status);
               }}
-              statusOptions={statusOptions}
-              isWallet={true}
+              statusOptions={["accepted", "pending", "rejected"]}
+              isWalletDetails={true}
               isInWalletDetails={true}
               initialSearch={initialSearch}
               initialStatus={initialStatus}
             />
           </Box>
           <TableComponent
-            columns={tableColumns}
-            data={initialWallet}
-            statusKey="status"
-            customCellRenderer={{ Status: renderStatusChip }}
-            isWallet={true}
-            isInDetails={true}
-          />
+  columns={tableColumns.map((col) => ({
+    ...col,
+    headerName: col.key === "status" ? col.headerName : t(col.headerName),
+  }))}
+  data={filteredTransactions.map((trx, index) => ({
+    id: index + 1, 
+    ...Object.keys(trx).reduce((acc, key) => {
+      acc[key] =
+        key === "status"
+          ? trx[key] 
+          : typeof trx[key] === "string"
+          ? t(trx[key])
+          : trx[key];
+      return acc;
+    }, {}),
+    createdAt: new Date(trx.createdAt).toLocaleDateString(),
+  }))}
+  statusKey="status"
+  customCellRenderer={{ status: renderStatusChip }}
+  onStatusChange={onStatusChange}
+  isWallet={true}
+  isInDetails={true}
+/>
         </Box>
       )}
     </Box>

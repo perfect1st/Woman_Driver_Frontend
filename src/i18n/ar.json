@@ -275,7 +275,7 @@
   "Withdrawal": "سحب",
   "Deduction": "خصم",
   "Customer": "عميل",
-  "{{name}}’s Wallet #{{id}}": "محفظة {{name}} رقم #{{id}}",
+  "{{name}}’s Wallet": "محفظة {{name}}",
   "Add Transaction": "إضافة معاملة",
   "Select User Type": "اختر نوع المستخدم",
   "Choose User Type": "اختر نوع المستخدم",

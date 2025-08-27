@@ -34,6 +34,7 @@ const FilterComponent = ({
   isWaitingTime = false,
   isCommissionCategory = false,
   isLiquidation = false,
+  isWalletDetails = false,
 }) => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -149,88 +150,90 @@ const FilterComponent = ({
     <Box sx={{ mb: 3, px: { xs: 1, sm: 2 } }}>
       <Grid container spacing={2} alignItems="center">
         {/* Search Field */}
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          md={
-            isLiquidation
-              ? 7
-              : isUsers
-              ? 7
-              : paymentMethod
-              ? 7
-              : isWallet
-              ? 6
-              : isCarType
-              ? 7
-              : isCar
-              ? 4
-              : isTrip
-              ? 4
-              : isDriver
-              ? 4
-              : isCommission
-              ? 4
-              : isCommissionCategory
-              ? 4
-              : 7
-          }
-        >
-          <CustomTextField
-            fullWidth
-            size="small"
-            name="search"
-            placeholder={
+        {!isWalletDetails && (
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={
               isLiquidation
-                ? t("search by driver name and email and phone number")
+                ? 7
                 : isUsers
-                ? t("search by user name and email and phone number")
+                ? 7
                 : paymentMethod
-                ? t("Search by Payment Method ID and Payment Methods Name")
+                ? 7
                 : isWallet
-                ? t("Search by User name and Wallet ID")
-                : isTrafficTime
-                ? t("Search by Traffic Time ID and Traffic Time Name")
-                : isCarDriver
-                ? t("Search by Cars-Drivers ID and Driver Name and Car Model")
+                ? 6
                 : isCarType
-                ? t("Search by Car Type ID and Car Type Name")
+                ? 7
                 : isCar
-                ? t("Search by Car ID and Car Model")
+                ? 4
                 : isTrip
-                ? t("Search by Rider name and Driver name")
+                ? 4
                 : isDriver
-                ? t("Search by Driver name and number")
+                ? 4
                 : isCommission
-                ? t("Search by Commission ID and Driver Name")
+                ? 4
                 : isCommissionCategory
-                ? t("Search by Commission Category ID")
-                : isWaitingTime
-                ? t("Search by Waiting Time ID and Trip ID")
-                : t("Search by Passenger name and number")
+                ? 4
+                : 7
             }
-            sx={{
-              backgroundColor: theme.palette.secondary.sec,
-              borderRadius: 1,
-            }}
-            value={filters.search}
-            onChange={handleChange}
-            isRtl={isArabic}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Grid>
+          >
+            <CustomTextField
+              fullWidth
+              size="small"
+              name="search"
+              placeholder={
+                isLiquidation
+                  ? t("search by driver name and email and phone number")
+                  : isUsers
+                  ? t("search by user name and email and phone number")
+                  : paymentMethod
+                  ? t("Search by Payment Method ID and Payment Methods Name")
+                  : isWallet
+                  ? t("Search by User name and Wallet ID")
+                  : isTrafficTime
+                  ? t("Search by Traffic Time ID and Traffic Time Name")
+                  : isCarDriver
+                  ? t("Search by Cars-Drivers ID and Driver Name and Car Model")
+                  : isCarType
+                  ? t("Search by Car Type ID and Car Type Name")
+                  : isCar
+                  ? t("Search by Car ID and Car Model")
+                  : isTrip
+                  ? t("Search by Rider name and Driver name")
+                  : isDriver
+                  ? t("Search by Driver name and number")
+                  : isCommission
+                  ? t("Search by Commission ID and Driver Name")
+                  : isCommissionCategory
+                  ? t("Search by Commission Category ID")
+                  : isWaitingTime
+                  ? t("Search by Waiting Time ID and Trip ID")
+                  : t("Search by Passenger name and number")
+              }
+              sx={{
+                backgroundColor: theme.palette.secondary.sec,
+                borderRadius: 1,
+              }}
+              value={filters.search}
+              onChange={handleChange}
+              isRtl={isArabic}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+        )}
 
-        {isWallet && (
+        {isWallet || isWalletDetails && (
           <>
             {/* User Type Select */}
-            <Grid item xs={12} sm={6} md={3}>
+           {!isWalletDetails && <Grid item xs={12} sm={6} md={3}>
               <CustomTextField
                 select
                 fullWidth
@@ -256,11 +259,15 @@ const FilterComponent = ({
                 }}
               >
                 <MenuItem value="">{t("All")}</MenuItem>
-                <MenuItem value="driver_with_car">{t("driver_with_car")}</MenuItem>
-                <MenuItem value="driver_company">{t("driver_company")}</MenuItem>
+                <MenuItem value="driver_with_car">
+                  {t("driver_with_car")}
+                </MenuItem>
+                <MenuItem value="driver_company">
+                  {t("driver_company")}
+                </MenuItem>
                 <MenuItem value="passenger">{t("Passenger")}</MenuItem>
               </CustomTextField>
-            </Grid>
+            </Grid>}
 
             {/* Transaction Type Select */}
             <Grid item xs={12} sm={6} md={3}>
@@ -295,7 +302,7 @@ const FilterComponent = ({
             </Grid>
 
             {/* Transaction Reason Select */}
-            <Grid item xs={12} sm={6} md={6}>
+            <Grid item xs={12} sm={6} md={isWalletDetails ? 4 : 6}>
               <CustomTextField
                 select
                 fullWidth
@@ -619,6 +626,10 @@ const FilterComponent = ({
                   ? t("Car Type Status")
                   : isCar
                   ? t("Car status")
+                  : isWalletDetails
+                  ? t("Status")
+                  : isWallet
+                  ? t("Status")
                   : t("Account Status")
               }
               name="status"

@@ -58,7 +58,7 @@ const walletSlice = createSlice({
       })
       .addCase(getOneWallet.fulfilled, (state, action) => {
         state.loading = false;
-        state.trips = action.payload;
+        state.wallet = action.payload;
       })
       .addCase(getOneWallet.rejected, (state, action) => {
         state.loading = false;
