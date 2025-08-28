@@ -2,15 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   getAllWallets,
   getOneWallet,
-  getAllWalletsWithoutPaginations
+  getAllWalletsWithoutPaginations,
+  getUserWallet
 } from "./thunk";
 
 const initialState = {
   allWallets: [],
   wallets: [],
   wallet: null,
-
-
   loading: false,
   error: null,
 };
@@ -61,6 +60,20 @@ const walletSlice = createSlice({
         state.wallet = action.payload;
       })
       .addCase(getOneWallet.rejected, (state, action) => {
+        state.loading = false;
+        state.wallet = null;
+        state.error = action.error.message;
+      });
+    builder
+      .addCase(getUserWallet.pending, (state) => {
+        state.loading = true;
+        state.wallet = null;
+      })
+      .addCase(getUserWallet.fulfilled, (state, action) => {
+        state.loading = false;
+        state.wallet = action.payload;
+      })
+      .addCase(getUserWallet.rejected, (state, action) => {
         state.loading = false;
         state.wallet = null;
         state.error = action.error.message;

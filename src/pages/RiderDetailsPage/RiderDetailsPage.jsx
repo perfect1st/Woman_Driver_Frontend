@@ -143,6 +143,7 @@ export default function RiderDetailsPage() {
     });
   };
   
+  const baseImageUrl = useBaseImageUrl();
 
   // Transform API trip data to component format
   const transformTrips = (trips) => {
@@ -201,7 +202,6 @@ export default function RiderDetailsPage() {
     return allPassengerTrips ? transformTrips(allPassengerTrips) : [];
   }, [allPassengerTrips]);
 
-  const baseImageUrl = useBaseImageUrl();
 
   // BUILD rider OBJECT
   const rider = useMemo(
@@ -464,7 +464,10 @@ export default function RiderDetailsPage() {
                     variant="contained"
                     color="primary"
                     sx={{ fontSize: 16, fontWeight: 700 }}
-                  >
+                    onClick={() =>
+                      navigate(`/walletDetails/${id}?fromUser=true`)
+                    }
+                     >
                     {t("Transaction")}
                   </Button>
                 </Box>

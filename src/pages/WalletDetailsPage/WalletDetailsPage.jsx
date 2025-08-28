@@ -26,11 +26,17 @@ import TableComponent from "../../components/TableComponent/TableComponent";
 import { useTranslation } from "react-i18next";
 import { FiberManualRecord, Star } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
-import { getOneWallet, updateTransation } from "../../redux/slices/wallet/thunk";
+import {
+  getOneWallet,
+  getUserWallet,
+  updateTransation,
+} from "../../redux/slices/wallet/thunk";
 import { ReactComponent as LinkIcon } from "../../assets/LinkIcon.svg";
+import StarIcon from "@mui/icons-material/Star";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 import notify from "../../components/notify";
 import LoadingPage from "../../components/LoadingComponent";
+import useBaseImageUrl from "../../hooks/useBaseImageUrl";
 const statusStyles = {
   accepted: {
     textColor: "#085D3A",
@@ -56,16 +62,19 @@ const WalletDetailsPage = () => {
   const theme = useTheme();
   const { id } = useParams();
   const navigate = useNavigate();
-  const { pathname, search } = useLocation();
+  const { pathname, search, state } = useLocation();
   const params = new URLSearchParams(search);
+  const fromUser = params.get("fromUser") === "true";
   const dispatch = useDispatch();
-const walletId = id
-  const { wallet , loading} = useSelector((state) => state.wallet);
+  const walletId = id;
+  const { wallet, loading } = useSelector((state) => state.wallet);
   console.log("wallet", wallet);
   // Load wallet data
   useEffect(() => {
     if (id) {
-      dispatch(getOneWallet(id));
+      if (fromUser) {
+        dispatch(getUserWallet(id));
+      } else dispatch(getOneWallet(id));
     }
   }, [id, dispatch]);
 
@@ -78,18 +87,19 @@ const walletId = id
   const initialStatus = params.get("status") || "";
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState(initialStatus);
+  const baseImageUrl = useBaseImageUrl();
   function hasPermission(permissionType) {
     const permissions = getPermissionsByScreen("Wallet");
     return permissions ? permissions[permissionType] === true : false;
   }
 
-  const hasViewPermission = hasPermission("view")
-  const hasAddPermission = hasPermission("add")
-  const hasEditPermission = hasPermission("edit")
-  const hasDeletePermission = hasPermission("delete")
+  const hasViewPermission = hasPermission("view");
+  const hasAddPermission = hasPermission("add");
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete");
   // Sync URL
   useEffect(() => {
-    const ps = new URLSearchParams();
+    const ps = new URLSearchParams(search);
     ps.set("tab", tab);
     if (tab === "history") {
       if (searchTerm) ps.set("search", searchTerm);
@@ -156,30 +166,35 @@ const walletId = id
     );
   };
 
-    const onStatusChange = async (id, status) => {
-    if(!hasEditPermission){
+  const onStatusChange = async (id, status) => {
+    if (!hasEditPermission) {
       return notify("noPermissionToUpdateStatus", "warning");
     }
     console.log("iiiiiiid", id, "status", status);
     const walletId = id?._id;
     const accountStatus =
       status == "Accepted"
-        ? "accepted" :
-      status == "Available"
+        ? "accepted"
+        : status == "Available"
         ? "accepted"
         : status == "Rejected"
         ? "refused"
-        : status == "Pending" ? "pending" : status;
+        : status == "Pending"
+        ? "pending"
+        : status;
     await dispatch(
       updateTransation({ id: walletId, data: { status: accountStatus } })
     );
     await dispatch(getOneWallet(walletId));
   };
 
-  if(loading) return <LoadingPage />
+  if (loading) return <LoadingPage />;
 
   return (
-    <Box component="main" sx={{ p: 3 , ...(tab === "details" && { maxWidth: "md" }),}}>
+    <Box
+      component="main"
+      sx={{ p: 3, ...(tab === "details" && { maxWidth: "md" }) }}
+    >
       {/* Breadcrumb */}
       <Box display="flex" alignItems="center" flexWrap="wrap" mb={2}>
         <Typography
@@ -196,16 +211,20 @@ const walletId = id
           {t("Wallet Details")}
         </Typography>
         <Typography mx={1}>{`<`}</Typography>
-        <Typography color="text.primary">{user?.name || "-"}</Typography>
+        <Typography color="text.primary">
+          {wallet?.transaction?.user_id?.fullname || wallet?.user?.name || "-"}
+        </Typography>
       </Box>
 
       <Typography variant="h5" sx={{ mt: 2, mb: 3 }}>
-        {t("{{name}}’s Wallet", { name: user?.name || "-" })}
+        {t("{{name}}’s Wallet", {
+          name: wallet?.transaction?.user_id?.fullname || wallet?.user?.name || "-",
+        })}
       </Typography>
 
       <Tabs value={tab} onChange={(e, v) => setTab(v)} sx={{ mb: 3 }}>
         <Tab label={t("Wallet Details")} value="details" />
-        <Tab label={t("Wallet History")} value="history" />
+        {wallet?.transactions?.length > 0 && <Tab label={t("Wallet History")} value="history" />}
       </Tabs>
 
       {/* Details Tab */}
@@ -242,24 +261,47 @@ const walletId = id
 
               <Grid container alignItems="center" spacing={2}>
                 <Grid item>
-                  <Avatar sx={{ width: 64, height: 64 }}>
-                    {user?.name?.[0]}
-                  </Avatar>
+                <Avatar
+  sx={{ width: 64, height: 64 }}
+  src={`${baseImageUrl}${wallet?.transaction?.user_id?.profile_image || wallet?.user?.profile}`}
+>
+  {wallet?.transaction?.user_id?.fullname?.[0] || wallet?.user?.name?.[0]}
+</Avatar>
+
                 </Grid>
                 <Grid item xs>
-                  <Typography fontWeight="bold">{user?.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {user?.email}
+                  <Typography fontWeight="bold">
+                    {wallet?.transaction?.user_id?.fullname || wallet?.user?.name }
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {user?.phone}
-                  </Typography>
+                  {wallet?.transaction?.user_id?.ratings && (
+                    <Box display="flex" alignItems="center" gap={0.5}>
+                      <Typography variant="body2" color="text.secondary">
+                        {wallet?.transaction?.user_id?.ratings?.average ||
+                          "notRated"}
+                      </Typography>
+                      <StarIcon fontSize="small" color="warning" />
+                    </Box>
+                  )}
                 </Grid>
                 <Grid item>
                   <Button
                     variant="outlined"
                     color="primary"
                     sx={{ borderWidth: 2 }}
+                    onClick={()=>{
+                      if(wallet?.transaction == null){
+                        if(fromUser){
+                          return navigate(`/riderDetails/${wallet?.transaction?.user_id?._id || wallet?.user?.id}`)
+                        }
+                        navigate(`/driverDetails/${wallet?.transaction?.user_id?._id || wallet?.user?.id}`)
+                      } else{
+                        if(wallet?.transaction?.user_id?.user_type == "passenger")
+                          {
+                            return navigate(`/riderDetails/${wallet?.transaction?.user_id?._id || wallet?.user?.id}`)                        
+                          } 
+                        navigate(`/driverDetails/${wallet?.transaction?.user_id?._id || wallet?.user?.id}`)
+                      }
+                    }}
                   >
                     {t("View Profile")}
                   </Button>
@@ -269,9 +311,9 @@ const walletId = id
           </Card>
 
           {/* Transaction Details Table */}
-          <Typography variant="h6" fontWeight="bold" color="primary" mb={2}>
+          {wallet?.transaction && <Typography variant="h6" fontWeight="bold" color="primary" mb={2}>
             {t("Details")}
-          </Typography>
+          </Typography>}
 
           <TableContainer>
             <Table
@@ -401,29 +443,30 @@ const walletId = id
             />
           </Box>
           <TableComponent
-  columns={tableColumns.map((col) => ({
-    ...col,
-    headerName: col.key === "status" ? col.headerName : t(col.headerName),
-  }))}
-  data={filteredTransactions.map((trx, index) => ({
-    id: index + 1, 
-    ...Object.keys(trx).reduce((acc, key) => {
-      acc[key] =
-        key === "status"
-          ? trx[key] 
-          : typeof trx[key] === "string"
-          ? t(trx[key])
-          : trx[key];
-      return acc;
-    }, {}),
-    createdAt: new Date(trx.createdAt).toLocaleDateString(),
-  }))}
-  statusKey="status"
-  customCellRenderer={{ status: renderStatusChip }}
-  onStatusChange={onStatusChange}
-  isWallet={true}
-  isInDetails={true}
-/>
+            columns={tableColumns.map((col) => ({
+              ...col,
+              headerName:
+                col.key === "status" ? col.headerName : t(col.headerName),
+            }))}
+            data={filteredTransactions.map((trx, index) => ({
+              id: index + 1,
+              ...Object.keys(trx).reduce((acc, key) => {
+                acc[key] =
+                  key === "status"
+                    ? trx[key]
+                    : typeof trx[key] === "string"
+                    ? t(trx[key])
+                    : trx[key];
+                return acc;
+              }, {}),
+              createdAt: new Date(trx.createdAt).toLocaleDateString(),
+            }))}
+            statusKey="status"
+            customCellRenderer={{ status: renderStatusChip }}
+            onStatusChange={onStatusChange}
+            isWallet={true}
+            isInDetails={true}
+          />
         </Box>
       )}
     </Box>
