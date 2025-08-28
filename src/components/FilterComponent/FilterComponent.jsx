@@ -230,10 +230,10 @@ const FilterComponent = ({
           </Grid>
         )}
 
-        {isWallet || isWalletDetails && (
+        {(isWallet || isWalletDetails) && (
           <>
             {/* User Type Select */}
-           {!isWalletDetails && <Grid item xs={12} sm={6} md={3}>
+           {isWallet && <Grid item xs={12} sm={6} md={3}>
               <CustomTextField
                 select
                 fullWidth

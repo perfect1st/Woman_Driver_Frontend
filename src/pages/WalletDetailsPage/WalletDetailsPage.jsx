@@ -65,6 +65,7 @@ const WalletDetailsPage = () => {
   const { pathname, search, state } = useLocation();
   const params = new URLSearchParams(search);
   const fromUser = params.get("fromUser") === "true";
+  const fromDriver = params.get("fromDriver") === "true";
   const dispatch = useDispatch();
   const walletId = id;
   const { wallet, loading } = useSelector((state) => state.wallet);
@@ -72,7 +73,7 @@ const WalletDetailsPage = () => {
   // Load wallet data
   useEffect(() => {
     if (id) {
-      if (fromUser) {
+      if (fromUser || fromDriver) {
         dispatch(getUserWallet(id));
       } else dispatch(getOneWallet(id));
     }

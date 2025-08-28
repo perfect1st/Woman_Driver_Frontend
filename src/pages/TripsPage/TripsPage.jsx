@@ -8,7 +8,7 @@ import PaginationFooter from "../../components/PaginationFooter/PaginationFooter
 import LoadingPage from "../../components/LoadingComponent";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAllTrips,
@@ -19,6 +19,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { saveAs } from "file-saver";
 import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const statusMap = {
   requested: "OnRequest",
@@ -44,6 +45,16 @@ const TripsPage = () => {
   const car_types_id = searchParams.get("carType") || "";
   const is_scheduled = searchParams.get("tripType") || "";
   const statusFilter = searchParams.get("status") || "";
+
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Trips");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
 
   // redux state
   const { trips = {}, loading } = useSelector((s) => s.trip);
@@ -187,6 +198,7 @@ const TripsPage = () => {
   };
 
   if (loading) return <LoadingPage />;
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
   return (
     <Box

@@ -8,9 +8,10 @@ import PaginationFooter from "../../components/PaginationFooter/PaginationFooter
 import LoadingPage from "../../components/LoadingComponent";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  editCar,
   getAllCars,
   getAllCarsWithoutPaginations,
 } from "../../redux/slices/car/thunk";
@@ -19,6 +20,8 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { saveAs } from "file-saver";
 import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
+import notify from "../../components/notify";
 
 const CarsPage = () => {
   const theme = useTheme();
@@ -34,16 +37,28 @@ const CarsPage = () => {
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const keyword = searchParams.get("keyword") || "";
   const car_types_id = searchParams.get("carType") || "";
+  const status = searchParams.get("status") || "";
+  const currentStatusFilter = status;
 
   const { allCarTypes } = useSelector((state) => state.carType);
 
   const { cars = {}, loading } = useSelector((state) => state.car);
   const { data = [], total = 0, page: currentPage = 1, totalPages = 1 } = cars;
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Cars");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
 
   useEffect(() => {
     const q =
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
+      (status ? `&status=${status}` : "") +
       (car_types_id ? `&car_types_id=${car_types_id}` : "");
     dispatch(getAllCars({ query: q }));
   }, [dispatch, page, limit, keyword, car_types_id]);
@@ -160,6 +175,33 @@ const CarsPage = () => {
     navigate("/Cars/AddCar");
   };
 
+
+  const onStatusChange = async (id, status) => {
+    if(!hasEditPermission){
+      return notify("noPermissionToUpdateStatus", "warning");
+    }
+    console.log("id", id, "status", status);
+    const carId = id?.mainId;
+    const accountStatus =
+      status == "Available"
+        ? "accepted" :
+      status == "Available"
+        ? "accepted"
+        : status == "Rejected"
+        ? "refused"
+        : status == "Pending" ? "pending" : status;
+    await dispatch(
+      editCar({ id: carId, data: { status: accountStatus } })
+    );
+    const query =
+      `page=${page}&limit=${limit}` +
+      (keyword ? `&keyword=${keyword}` : "") +
+      (currentStatusFilter ? `&status=${currentStatusFilter}` : "");
+
+    dispatch(getAllCars({ query }));
+  };
+
+
   useEffect(() => {
     dispatch(getAllCarTypesWithoutPaginations({ query: "" }));
 
@@ -172,6 +214,8 @@ const CarsPage = () => {
   }, []);
 
   if (loading) return <LoadingPage />;
+  if (!hasViewPermission) return <Navigate to="/profile" />;
+
 
   return (
     <Box
@@ -219,6 +263,7 @@ const CarsPage = () => {
         statusKey="status"
         showStatusChange={true}
         isCar
+        onStatusChange={onStatusChange}
         sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
       />
 

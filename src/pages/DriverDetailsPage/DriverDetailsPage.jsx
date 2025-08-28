@@ -1162,7 +1162,7 @@ const formatTime = (dateString) => {
         </Typography>
 
         <Box display="flex" alignItems="center" mt={0.5}>
-          <Typography>{hasDriverData ? "4.89" : "4.89"}</Typography>
+          <Typography>{hasDriverData ? driverData?.ratings?.average.toFixed(2) : '0'}</Typography>
           <StarIcon fontSize="small" color="primary" sx={{ ml: 0.5 }} />
         </Box>
       </Box>
@@ -1596,11 +1596,28 @@ const formatTime = (dateString) => {
                   <Typography variant="h6">
                     {t("Wallet")}: {hasDriverData ? "SAR 0.00" : "SAR 98.50"}
                   </Typography>
-                  <CreditCardIcon color="primary" />
+                  {false &&<CreditCardIcon color="primary" />}
                 </Box>
-                <Typography variant="body1" mt={1}>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                 <Typography variant="body1" mt={1}>
                   {t("Your Cash")}: {hasDriverData ? "SAR 0.00" : "SAR 98.50"}
                 </Typography>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ fontSize: 16, fontWeight: 700 }}
+                    onClick={() =>
+                      navigate(`/walletDetails/${id}?fromDriver=true`)
+                    }
+                     >
+                    {t("Transaction")}
+                  </Button>
+                </Box>
+                
               </Paper>
               <Typography variant="h6" color="primary" mb={1}>
                 {t("Payment Details")}
@@ -1635,7 +1652,7 @@ const formatTime = (dateString) => {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12}>
+            {false &&<Grid item xs={12}>
               <Typography variant="h6" color="primary" mt={3} mb={1}>
                 {t("Transactions")}
               </Typography>
@@ -1643,7 +1660,7 @@ const formatTime = (dateString) => {
               {mockTransactions.map((transaction) =>
                 renderTransactionItem(transaction)
               )}
-            </Grid>
+            </Grid>}
           </Grid>
         )}
 

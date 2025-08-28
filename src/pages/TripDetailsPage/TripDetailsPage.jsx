@@ -26,7 +26,7 @@ import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import WarningIcon from "@mui/icons-material/Warning";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import RouteMap from "../RouteMap/RouteMap";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,6 +34,7 @@ import { getOneTrip } from "../../redux/slices/trip/thunk";
 import LoadingPage from "../../components/LoadingComponent";
 import useBaseImageUrl from "../../hooks/useBaseImageUrlForDriver";
 import usePassengerBaseImageUrl from "../../hooks/useBaseImageUrl";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const tripStatusStyles = {
   cancelled: {
@@ -83,6 +84,15 @@ export default function TripDetailsPage() {
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingRider, setLoadingRider] = useState(false);
   const [loadingDriver, setLoadingDriver] = useState(false);
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Trips");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
 
   // Redux: slice.one holds { trip, loading }
   const { trip, loading } = useSelector((s) => s.trip);
@@ -162,6 +172,8 @@ export default function TripDetailsPage() {
        
        }
      };
+
+     if (!hasViewPermission) return <Navigate to="/profile" />;
 
   return (
     <Box p={isMobile ? 1 : 2} maxWidth="md">

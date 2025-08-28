@@ -7,7 +7,7 @@ import PaginationFooter from "../../components/PaginationFooter/PaginationFooter
 import LoadingPage from "../../components/LoadingComponent";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllWallets, getAllWalletsWithoutPaginations, updateTransation } from "../../redux/slices/wallet/thunk";
 import * as XLSX from "xlsx";
@@ -215,6 +215,7 @@ const WalletPage = () => {
 
 
   if (loading) return <LoadingPage />;
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
   return (
     <Box
