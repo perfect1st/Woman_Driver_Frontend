@@ -34,6 +34,7 @@ const TripsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const isArabic = i18n.language == "ar"
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [searchParams, setSearchParams] = useSearchParams();
   const { allCarTypes } = useSelector((state) => state.carType);
@@ -89,11 +90,11 @@ const TripsPage = () => {
   // map API data to table rows
   const rows = data.map((trip, i) => ({
     id: trip._id,
-    tripId: trip._id.slice(-6).toUpperCase(), // or any custom formatting
+    tripId: trip.trip_number.toUpperCase(), // or any custom formatting
     riderName: trip.user_id.fullname,
     driverName: trip.driver_id?.fullname || t("Unassigned"),
     tripType: trip.is_scheduled ? t("Scheduled") : t("On Demand"),
-    carType: trip.car_types_id.name_en,
+    carType: isArabic ?trip.car_types_id.name_ar :trip.car_types_id.name_en,
     tripStatus: statusMap[trip.trips_status] || trip.trips_status,
   }));
 
@@ -136,7 +137,7 @@ const TripsPage = () => {
       console.log("response", response);
       const exportData = response.data.map((trip, idx) => ({
         ID: idx + 1,
-        "Trip ID": trip._id.slice(-6).toUpperCase(),
+        "Trip ID": trip.trip_number.toUpperCase(),
         Rider: trip.user_id.fullname,
         Driver: trip.driver_id?.fullname || t("Unassigned"),
         Type: trip.car_types_id.name_en,

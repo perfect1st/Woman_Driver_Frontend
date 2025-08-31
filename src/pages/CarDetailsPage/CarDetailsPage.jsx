@@ -31,7 +31,7 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import StarIcon from "@mui/icons-material/Star";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DomiCar from "../../assets/DomiCar.png";
 import IOSSwitch from "../../components/IOSSwitch";
@@ -40,6 +40,7 @@ import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thu
 import { useDispatch, useSelector } from "react-redux";
 import useBaseImageUrlForDriver from "../../hooks/useBaseImageUrlForDriver";
 import notify from "../../components/notify";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 // Mock assets and styles
 const statusStyles = {
@@ -115,6 +116,16 @@ export default function CarDetailsPage() {
 
   const { car } = useSelector((state) => state.car);
   const { allCarTypes } = useSelector((state) => state.carType);
+
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Cars");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete")
 
   useEffect(() => {
     if (car) {
@@ -362,9 +373,9 @@ export default function CarDetailsPage() {
           <Typography sx={{ color: theme.palette.text.primary }}>
             {getCarTypeName(editableFields.carType)}
           </Typography>
-          <IconButton onClick={() => toggleEditMode(field)}>
+          {hasEditPermission && <IconButton onClick={() => toggleEditMode(field)}>
             <EditIcon />
-          </IconButton>
+          </IconButton>}
         </Box>
       );
     }
@@ -492,9 +503,9 @@ export default function CarDetailsPage() {
               py: 0.5,
             }}
           />
-          <IconButton onClick={() => toggleEditMode(field)}>
+          {hasEditPermission && <IconButton onClick={() => toggleEditMode(field)}>
             <EditIcon />
-          </IconButton>
+          </IconButton>}
         </Box>
       );
     }
@@ -511,9 +522,9 @@ export default function CarDetailsPage() {
           <Typography sx={{ color: theme.palette.text.primary }}>
             {formatDate(editableFields[field])}
           </Typography>
-          <IconButton onClick={() => toggleEditMode(field)}>
+          {hasEditPermission && <IconButton onClick={() => toggleEditMode(field)}>
             <EditIcon />
-          </IconButton>
+          </IconButton>}
         </Box>
       );
     }
@@ -529,9 +540,9 @@ export default function CarDetailsPage() {
         <Typography sx={{ color: theme.palette.text.primary }}>
           {editableFields[field]}
         </Typography>
-        <IconButton onClick={() => toggleEditMode(field)}>
+       {hasEditPermission && <IconButton onClick={() => toggleEditMode(field)}>
           <EditIcon />
-        </IconButton>
+        </IconButton>}
       </Box>
     );
   };
@@ -582,6 +593,9 @@ export default function CarDetailsPage() {
       </CardContent>
     </Card>
   );
+
+
+  if(!hasViewPermission) return <Navigate to="/profile" />
 
   return (
     <Box p={2}>
@@ -652,6 +666,7 @@ export default function CarDetailsPage() {
             onChange={toggleAvailability}
             sx={{ mx: 1 }}
             color="primary"
+            disabled
           />
         </Box>
       </Box>
@@ -680,6 +695,7 @@ export default function CarDetailsPage() {
                   onChange={toggleCompanyCar}
                   color="primary"
                   sx={{ mx: 1 }}
+                  disabled
                 />
               </Box>
             </Box>
@@ -944,14 +960,14 @@ export default function CarDetailsPage() {
               >
                 {t("Close")}
               </Button>
-              <Button
+            {hasEditPermission &&  <Button
                 variant="contained"
                 color="primary"
                 sx={{ mx: 1 }}
                 onClick={handleEditImage}
               >
                 {t("Update")}
-              </Button>
+              </Button>}
             </>
           )}
         </DialogActions>

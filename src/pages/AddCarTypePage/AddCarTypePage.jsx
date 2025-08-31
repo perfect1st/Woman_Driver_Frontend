@@ -15,7 +15,7 @@ import {
   AddCircleOutline as AddIcon,
   Close as CloseIcon,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -23,6 +23,7 @@ import imageCompression from "browser-image-compression";
 import { useDispatch } from "react-redux";
 import { addCarType } from "../../redux/slices/carType/thunk";
 import notify from "../../components/notify";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 export default function AddCarTypePage() {
   const theme = useTheme();
@@ -32,6 +33,17 @@ export default function AddCarTypePage() {
   const [carTypeImage, setCarTypeImage] = useState(null);
   const isArabic = i18n.language === "ar";
   const [loading, setLoading] = useState(false);
+
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("CarTypes");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete")
+
 
   const validationSchema = Yup.object({
     nameEn: Yup.string()
@@ -109,6 +121,9 @@ export default function AddCarTypePage() {
   const handleRemoveImage = () => {
     setCarTypeImage(null);
   };
+
+
+  if(!hasAddPermission) return <Navigate to="/profile" />
 
   return (
     <Box

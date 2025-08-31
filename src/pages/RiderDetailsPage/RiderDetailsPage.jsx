@@ -217,7 +217,7 @@ export default function RiderDetailsPage() {
       email: editable.email,
       password: editable.password,
       status: editable.status,
-      wallet: "SAR 98.50",
+      wallet: "",
       verification_code: editable.verification_code,
       is_code_verified: editable.is_code_verified,
       trips: transformedTrips,
@@ -452,14 +452,15 @@ export default function RiderDetailsPage() {
           <Grid item xs={12}>
             <Card sx={{ background: theme.palette.secondary.sec }}>
               <CardContent>
-                <Typography variant="subtitle2">{t("Wallet")}</Typography>
+                {/* <Typography variant="subtitle2">{t("Wallet")}</Typography> */}
                 <Box
                   mt={1}
                   display="flex"
                   alignItems="center"
                   justifyContent="space-between"
                 >
-                  <Typography>{rider.wallet}</Typography>
+                  <Typography fontWeight={"bold"}>{t("Wallet")}</Typography>
+                  {/* <Typography>{rider.wallet}</Typography> */}
                   <Button
                     variant="contained"
                     color="primary"
@@ -526,6 +527,27 @@ export default function RiderDetailsPage() {
       </Box>
 
       {/* Trips List */}
+     {rider?.trips?.length == 0 ?  <Box
+        sx={{
+          maxWidth: "md",
+          width: "100%",
+          minHeight: { xs: 240, sm: 320 }, 
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          px: 2,
+        }}
+      >
+        <Box textAlign="center">
+          <Typography variant="h6" mb={1} sx={{ fontWeight: 700 }}>
+            {t("there_are_no_trips")}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {t("no_trips_subtitle", "Once the rider completes trips they will appear here.")}
+          </Typography>
+        </Box>
+      </Box>
+       :  <>
       <Typography variant="h6" mt={4} mb={2}>
         {t("Trips")}
       </Typography>
@@ -589,6 +611,7 @@ export default function RiderDetailsPage() {
           </>
         )}
       </Box>
+      </>}
 
       {/* Drawer */}
       <Drawer

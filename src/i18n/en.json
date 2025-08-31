@@ -29,9 +29,11 @@
   "Account status": "Account status",
   "Details": "Details",
   "Available": "Available",
+  "available": "Available",
   "active": "Active",
   "Pending": "Pending...",
   "pending": "Pending...",
+  "unavailable": "Rejected",
   "Rejected": "Rejected",
   "banned": "Rejected",
   "Search by Passenger name and number": "Search by Passenger name and number",
@@ -563,7 +565,10 @@
   "Search trip by id or number": "Search trip by id or number",
   "Amount must be a number": "Amount must be a number",
   "An error occurred while creating the transaction": "An error occurred while creating the transaction",
-  "refused":"Refused"
+  "refused":"Refused",
+  "there_are_no_trips": "There are no trips",
+  "no_trips_subtitle": "Once the rider completes trips they will appear here.",
+  "maintenance":"Maintenance"
 
 
 

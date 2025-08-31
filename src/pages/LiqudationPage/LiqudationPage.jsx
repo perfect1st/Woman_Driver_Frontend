@@ -104,7 +104,7 @@ const LiquidationPage = () => {
   };
 
   const onRowClick = (e, row) => {
-    navigate(`/liquidation-details/${row._id}`);
+    navigate(`/LiqudationDetails/${row._id}`);
   };
 
   const onLiquidationClick = (e, row) => {

@@ -30,10 +30,12 @@
   "Account status": "حالة الحساب",
   "Details": "تفاصيل",
   "Available": "متاح",
+  "available": "متاح",
   "active": "متاح",
   "Pending": "قيد الانتظار...",
   "pending": "قيد الانتظار...",
   "Rejected": "مرفوض",
+  "unavailable": "مرفوض",
   "banned": "مرفوض",
   "Search by Passenger name and number": "ابحث باسم الراكب أو رقمه",
   "Search by Driver name and number": "ابحث باسم السائق أو رقمه",
@@ -575,5 +577,9 @@
   "remaining_money_from driver": "المبلغ المتبقي من السائق",
   "Amount must be a number": "يجب أن يكون المبلغ رقمًا",
   "An error occurred while creating the transaction": "حدث خطأ أثناء إنشاء المعاملة",
-  "refused":"مرفوض"
+  "refused":"مرفوض",
+  "there_are_no_trips": "لا توجد رحلات",
+  "no_trips_subtitle": "ستظهر الرحلات هنا فور إكمالها من قبل السائق.",
+  "maintenance": "صيانة"
+
 }

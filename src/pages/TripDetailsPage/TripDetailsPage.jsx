@@ -193,7 +193,7 @@ export default function TripDetailsPage() {
           {t("Trips Details")}
         </Typography>
         <Typography mx={1}>{`<`}</Typography>
-        <Typography>#{id}</Typography>
+        <Typography>#{trip?.trip_number}</Typography>
       </Box>
 
       {/* Header */}

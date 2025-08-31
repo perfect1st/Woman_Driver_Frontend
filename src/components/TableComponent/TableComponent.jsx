@@ -36,6 +36,12 @@ const statusStyles = {
     borderColor: "#ABEFC6",
     // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
   },
+  available: {
+    textColor: "#085D3A",
+    bgColor: "#ECFDF3",
+    borderColor: "#ABEFC6",
+    // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
+  },
   Pending: {
     textColor: "#1849A9",
     bgColor: "#EFF8FF",
@@ -49,6 +55,12 @@ const statusStyles = {
     // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#1849A9" }} />
   },
   Rejected: {
+    textColor: "#912018",
+    bgColor: "#FEF3F2",
+    borderColor: "#FECDCA",
+    // icon: <WarningIcon fontSize="small" sx={{ color: "#912018" }} />
+  },
+  unavailable: {
     textColor: "#912018",
     bgColor: "#FEF3F2",
     borderColor: "#FECDCA",
@@ -105,6 +117,12 @@ const statusStyles = {
     // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
   },
   OnRequest: {
+    textColor: "#93370D",
+    bgColor: "#FFFAEB",
+    borderColor: "#FEDF89",
+    // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#93370D" }} />
+  },
+  maintenance: {
     textColor: "#93370D",
     bgColor: "#FFFAEB",
     borderColor: "#FEDF89",
@@ -653,6 +671,30 @@ const TableComponent = ({
                       {statusStyles.pending.icon}
                       <Box component="span" sx={{ ml: 1 }}>
                         {t("Pending")}
+                      </Box>
+                    </MenuItem>
+                  )}
+                { isCar &&
+                   (
+                    <MenuItem
+                      onClick={() => handleStatusSelect("maintenance")}
+                      sx={{
+                        color: statusStyles.maintenance.textColor,
+                        borderLeft: isArabic
+                          ? ""
+                          : `4px solid ${statusStyles.maintenance.borderColor}`,
+                        borderRight: isArabic
+                          ? `4px solid ${statusStyles.maintenance.borderColor}`
+                          : "",
+                        pl: 2,
+                        py: 1,
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      {statusStyles.maintenance.icon}
+                      <Box component="span" sx={{ ml: 1 }}>
+                        {t("maintenance")}
                       </Box>
                     </MenuItem>
                   )}

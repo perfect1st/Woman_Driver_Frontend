@@ -14,7 +14,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import IOSSwitch from "../../components/IOSSwitch";
 import { getOneCarType, editCarType } from "../../redux/slices/carType/thunk";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,6 +22,7 @@ import imageCompression from "browser-image-compression";
 import useBaseImageUrlForDriver from "../../hooks/useBaseImageUrlForDriver";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import notify from "../../components/notify";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const CarTypeDetailsPage = () => {
   const { t, i18n } = useTranslation();
@@ -30,6 +31,17 @@ const CarTypeDetailsPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const baseImageUrl = useBaseImageUrlForDriver();
+
+
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("CarTypes");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete")
 
   const { carType } = useSelector((state) => state.carType);
   console.log("carType",carType)
@@ -207,14 +219,15 @@ const CarTypeDetailsPage = () => {
             {currency ? " SAR" : ""}
             {field === "waitingPrice" && " / 1 Min."}
           </Typography>
-          <IconButton onClick={() => toggleEditMode(field)}>
+          {hasEditPermission && <IconButton onClick={() => toggleEditMode(field)}>
             <EditIcon />
-          </IconButton>
+          </IconButton>}
         </Box>
       )}
     </Card>
   );
 
+  if(!hasViewPermission) return <Navigate to="/profile" />
   return (
     <Box p={2}>
       {/* Breadcrumb */}
@@ -273,6 +286,7 @@ const CarTypeDetailsPage = () => {
           onChange={toggleAvailability}
           sx={{ mx: 1 }}
           color="primary"
+          disabled={!hasEditPermission}
         />
         </Box>
         </Box>

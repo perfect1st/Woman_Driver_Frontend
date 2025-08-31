@@ -21,7 +21,7 @@ import {
   Close as CloseIcon,
   DirectionsCar as CarIcon,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -30,6 +30,7 @@ import { addCar } from "../../redux/slices/car/thunk";
 import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
 import notify from "../../components/notify";
 import imageCompression from "browser-image-compression";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const LICENSE_FIELDS = ["front", "back"];
 const IMAGE_FIELDS = ["front", "back", "right", "left"];
@@ -92,7 +93,18 @@ export default function AddCarPage() {
   const {  allCarTypes } = useSelector(
     (state) => state.carType
   );
-console.log("allCarTypes",allCarTypes)
+
+
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Cars");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit")
+  const hasDeletePermission = hasPermission("delete")
+
   const [licenseImages, setLicenseImages] = useState({});
   const [images, setImages] = useState({});
 
@@ -202,6 +214,8 @@ console.log("allCarTypes",allCarTypes)
   const handleRemoveImage = (field) => () => {
     setImages((prev) => ({ ...prev, [field]: null }));
   };
+
+  if(!hasAddPermission) return <Navigate to="/profile" />
 
   return (
     <Box

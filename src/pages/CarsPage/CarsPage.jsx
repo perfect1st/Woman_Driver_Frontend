@@ -78,7 +78,7 @@ const CarsPage = () => {
   const handlePageChange = (_, v) => updateParams({ page: v });
 
   const companyCarOptions = ["Company Car", "User Car"];
-  const statusOptions = ["Available", "Rejected"];
+  const statusOptions = ["Available", "Rejected", "maintenance"];
 
   const rows = data.map((car, index) => ({
     mainId:car?._id,
@@ -91,7 +91,7 @@ const CarsPage = () => {
     ) || '-',
     companyCar: car.is_company_car ? "Company Car" : "User Car",
     licenseExpiry: new Date(car.createdAt).toLocaleDateString(),
-    status: "Available", // تحتاج API توفر الحالة الفعلية
+    status: car.status, // تحتاج API توفر الحالة الفعلية
 
   }));
 
@@ -183,12 +183,12 @@ const CarsPage = () => {
     console.log("id", id, "status", status);
     const carId = id?.mainId;
     const accountStatus =
-      status == "Available"
-        ? "accepted" :
-      status == "Available"
-        ? "accepted"
+      status == "active"
+        ? "available" 
         : status == "Rejected"
-        ? "refused"
+        ? "unavailable"
+        : status == "maintenance"
+        ? "maintenance"
         : status == "Pending" ? "pending" : status;
     await dispatch(
       editCar({ id: carId, data: { status: accountStatus } })
@@ -233,7 +233,7 @@ const CarsPage = () => {
         title={t("Cars")}
         subtitle={t("Cars Details")}
         i18n={i18n}
-        haveBtn
+        haveBtn={hasAddPermission}
         btn={t("Add Car")}
         btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
         onSubmit={addCarSubmit}

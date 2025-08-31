@@ -5,7 +5,7 @@ import Header from "../../components/PageHeader/header";
 import FilterComponent from "../../components/FilterComponent/FilterComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAllCarTypes,
@@ -19,6 +19,8 @@ import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { ControlPoint } from "@mui/icons-material";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
+import notify from "../../components/notify";
 
 const CarTypesPage = () => {
   const theme = useTheme();
@@ -42,6 +44,17 @@ const CarTypesPage = () => {
     page: currentPage = 1,
     totalPages = 1,
   } = carTypes;
+
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("CarTypes");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete")
+
 
   useEffect(() => {
     const query =
@@ -177,7 +190,9 @@ const CarTypesPage = () => {
 
   const onStatusChange = async (row, newStatus) => {
     // Optional: API call to update status
-    console.log("Car Type ID:", row.id, "New Status:", newStatus);
+    if(!hasEditPermission){
+      return notify("noPermissionToUpdateStatus", "warning");
+    }
     const data ={
       status: newStatus == "active" ? true : false
     }
@@ -194,6 +209,7 @@ const CarTypesPage = () => {
   };
 
   if (loading) return <LoadingPage />;
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
   const addCarTypeSubmit = () => {
     navigate("/CarTypes/AddCarType");
@@ -214,7 +230,7 @@ const CarTypesPage = () => {
       <Header
         title={t("Car Types")}
         subtitle={t("Car Types Details")}
-        haveBtn={true}
+        haveBtn={hasAddPermission}
         i18n={i18n}
         btn={t("Add Car Type")}
         btnIcon={<ControlPoint sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
