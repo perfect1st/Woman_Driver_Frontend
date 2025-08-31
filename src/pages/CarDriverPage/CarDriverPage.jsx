@@ -6,7 +6,7 @@ import TableComponent from "../../components/TableComponent/TableComponent";
 import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllCarAssignments, getAllCarAssignmentsWithoutPaginations, editCarAssignment } from "../../redux/slices/carAssignment/thunk";
 import LoadingPage from "../../components/LoadingComponent";
@@ -15,6 +15,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { saveAs } from "file-saver";
 import notify from "../../components/notify";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const CarDriverPage = () => {
   const theme = useTheme();
@@ -23,6 +24,17 @@ const CarDriverPage = () => {
   const { t, i18n } = useTranslation();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isArabic = i18n.language === "ar";
+
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("CarDriver");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete")
+
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -159,6 +171,10 @@ const CarDriverPage = () => {
     navigate(`/CarDriverDetails/${row.mainId}`);
   };
   const releasedClick = async (row) => {
+    if(!hasEditPermission){
+      return notify("noPermissionToUpdateStatus", "warning");
+    }
+
     try {
       // تحقق إن كان هناك تاريخ إنهاء مسبق
       if (row?.releaseDate && row.releaseDate !== t("notReleased")) {
@@ -185,6 +201,7 @@ const CarDriverPage = () => {
   };
   
   if (loading) return <LoadingPage />;
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
   return (
     <Box
@@ -205,7 +222,7 @@ const CarDriverPage = () => {
   title={t("Cars-Drivers")}
   subtitle={t("Cars-Drivers Details")}
   i18n={i18n}
-  haveBtn
+  haveBtn={hasAddPermission}
   btn={t("Link Car-Driver")}
   btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
   onSubmit={addCarDriverSubmit}

@@ -21,7 +21,7 @@ import {
   InputAdornment,
   ListItemText,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import StarIcon from "@mui/icons-material/Star";
 import SearchIcon from "@mui/icons-material/Search";
@@ -35,6 +35,7 @@ import { useDispatch, useSelector } from "react-redux";
 import useBaseImageUrlForDriver from "../../hooks/useBaseImageUrlForDriver";
 import notify from "../../components/notify";
 import { format } from "date-fns";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 export default function LinkCarDriverPage() {
   const { t, i18n } = useTranslation();
@@ -48,6 +49,15 @@ export default function LinkCarDriverPage() {
   const { availableCars, availableDrivers } = useSelector(
     (state) => state.carAssignment
   );
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("CarDriver");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete")
 
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [selectedCar, setSelectedCar] = useState(null);
@@ -114,7 +124,7 @@ export default function LinkCarDriverPage() {
   };
   
   
-  
+  if(!hasAddPermission) return <Navigate to="/profile" />
 
   return (
     <Box p={isMobile ? 1 : 2} maxWidth="md">

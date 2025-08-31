@@ -12,12 +12,13 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   editPaymentMethod,
   getOnePaymentMethod,
 } from "../../redux/slices/paymentMethod/thunk";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const PaymentMethodsDetailsPage = () => {
   const { t, i18n } = useTranslation();
@@ -26,6 +27,18 @@ const PaymentMethodsDetailsPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+
+    function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("PaymentMethods");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view");
+  const hasAddPermission = hasPermission("add");
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete");
+
   useEffect(() => {
     dispatch(getOnePaymentMethod(id));
   }, []);
@@ -127,13 +140,15 @@ const PaymentMethodsDetailsPage = () => {
           >
             {editableFields[field]}
           </Typography>
-          <IconButton onClick={() => toggleEditMode(field)}>
+          {hasEditPermission && <IconButton onClick={() => toggleEditMode(field)}>
             <EditIcon />
-          </IconButton>
+          </IconButton>}
         </Box>
       )}
     </Card>
   );
+
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
   return (
     <Box p={3}>

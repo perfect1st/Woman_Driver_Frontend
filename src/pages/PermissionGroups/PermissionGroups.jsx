@@ -26,7 +26,7 @@ import {
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 import {
   getAllPermissionGroups,
@@ -37,6 +37,7 @@ import {
 
 import CustomTextField from "../../components/RTLTextField";
 import LoadingPage from "../../components/LoadingComponent";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 export default function PermissionGroupsPage() {
   const theme = useTheme();
@@ -48,6 +49,17 @@ export default function PermissionGroupsPage() {
   const { allPermissionGroups, loading } = useSelector(
     (state) => state.permissionGroup
   );
+
+    function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("permissions");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view");
+  const hasAddPermission = hasPermission("add");
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete");
+
 
   const [modalOpen, setModalOpen] = useState(false);
   const [currentName, setCurrentName] = useState("");
@@ -101,6 +113,7 @@ export default function PermissionGroupsPage() {
   if (loading) {
     return <LoadingPage />;
   }
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
   return (
     <Box p={3}>
@@ -115,14 +128,14 @@ export default function PermissionGroupsPage() {
         <Typography variant="h5" fontWeight={600}>
           {t("permissions.title")}
         </Typography>
-        <Button
+     {hasAddPermission &&   <Button
           variant="contained"
           color="primary"
           startIcon={<AddIcon sx={{mx:1}} />}
           onClick={handleOpenAdd}
         >
           {t("permissions.addGroup")}
-        </Button>
+        </Button>}
       </Box>
 
       <TableContainer
@@ -199,22 +212,22 @@ export default function PermissionGroupsPage() {
           py: { xs: 0.75, sm: 1.5 },
         }}
       >
-        <Box display="flex" justifyContent="center" gap={1}>
-          <IconButton
+       {(hasViewPermission || hasEditPermission || hasDeletePermission) && <Box display="flex" justifyContent="center" gap={1}>
+         {hasViewPermission && <IconButton
             onClick={() => navigate(`showpermissiongroup/${group._id}`)}
             size="small"
           >
             <VisibilityIcon fontSize="small" />
-          </IconButton>
+          </IconButton>}
 
-          <IconButton onClick={() => handleOpenEdit(group)} size="small">
+         {hasEditPermission && <IconButton onClick={() => handleOpenEdit(group)} size="small">
             <EditIcon fontSize="small" color="primary" />
-          </IconButton>
+          </IconButton>}
 
-          <IconButton onClick={() => openDeleteModal(group._id)} size="small">
+          {hasDeletePermission && <IconButton onClick={() => openDeleteModal(group._id)} size="small">
             <DeleteIcon fontSize="small" color="error" />
-          </IconButton>
-        </Box>
+          </IconButton>}
+        </Box>}
       </TableCell>
     </TableRow>
   ))}

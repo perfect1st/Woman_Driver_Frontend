@@ -15,13 +15,14 @@ import {
   useTheme,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   getOnePermissionGroups,
   updatePermissionsActions,
 } from "../../redux/slices/permissionGroup/thunk";
 import LoadingPage from "../../components/LoadingComponent";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 export default function PermissionGroupDetailsPage() {
   const dispatch = useDispatch();
@@ -32,6 +33,16 @@ export default function PermissionGroupDetailsPage() {
   const isArabic = i18n.language === "ar";
   const [localScreens, setLocalScreens] = useState([]);
   const [saving, setSaving] = useState(false);
+
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("permissions");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view");
+  const hasAddPermission = hasPermission("add");
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete");
 
   const { onePermissionGroups, loading } = useSelector(
     (state) => state.permissionGroup
@@ -86,6 +97,7 @@ export default function PermissionGroupDetailsPage() {
   if (loading) {
     return <LoadingPage />;
   }
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
   return (
     <Box p={3}>
@@ -144,7 +156,7 @@ export default function PermissionGroupDetailsPage() {
           </TableBody>
         </Table>
       </TableContainer>
-<div style={{display:"flex", justifyContent:"flex-end"}}>
+{hasEditPermission && <div style={{display:"flex", justifyContent:"flex-end"}}>
       <Button
         variant="contained"
         size="large"
@@ -155,7 +167,7 @@ export default function PermissionGroupDetailsPage() {
       >
         {saving ? t("common.saving") : t("common.saveChanges")}
       </Button>
-</div>
+</div>}
     </Box>
   );
 }

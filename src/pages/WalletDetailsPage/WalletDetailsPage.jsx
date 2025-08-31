@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -190,6 +190,8 @@ const WalletDetailsPage = () => {
   };
 
   if (loading) return <LoadingPage />;
+
+  if(!hasViewPermission) return <Navigate to="/profile" />
 
   return (
     <Box

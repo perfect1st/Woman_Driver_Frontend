@@ -580,6 +580,7 @@
   "refused":"مرفوض",
   "there_are_no_trips": "لا توجد رحلات",
   "no_trips_subtitle": "ستظهر الرحلات هنا فور إكمالها من قبل السائق.",
-  "maintenance": "صيانة"
+  "maintenance": "صيانة",
+  "Not set": "غير محدد"
 
 }

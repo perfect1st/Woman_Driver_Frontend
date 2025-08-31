@@ -11,7 +11,7 @@ import {
   Autocomplete,
   TextField,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -19,6 +19,7 @@ import CustomTextField from "../../components/RTLTextField";
 import { getAllUsersLookups, getAllTripsLookups } from "../../redux/slices/lookups/thunk";
 import { createTransaction } from "../../redux/slices/wallet/thunk";
 import { useSelector, useDispatch } from "react-redux";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 export default function AddTransactionPage() {
   const theme = useTheme();
@@ -36,6 +37,17 @@ export default function AddTransactionPage() {
   // Debounce refs for search
   const userSearchRef = useRef(null);
   const tripSearchRef = useRef(null);
+
+
+    function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Wallet");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view");
+  const hasAddPermission = hasPermission("add");
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete");
 
   // constants
   const userTypeOptions = [
@@ -99,7 +111,6 @@ export default function AddTransactionPage() {
         await dispatch(createTransaction({data:payload}));
 
         setLoading(false);
-return;
         navigate("/wallet");
       } catch (err) {
         console.error(err);
@@ -140,6 +151,7 @@ return;
     if (tripSearchRef.current) clearTimeout(tripSearchRef.current);
   };
 
+  if(!hasAddPermission) return <Navigate to="/profile" />
   return (
     <Box maxWidth="md" sx={{ p: 2 }} component="form" onSubmit={formik.handleSubmit}>
       {/* Breadcrumbs */}

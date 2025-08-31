@@ -23,7 +23,7 @@ import {
   InputAdornment,
   CircularProgress,
 } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import EditIcon from "@mui/icons-material/Edit";
 import StarIcon from "@mui/icons-material/Star";
@@ -42,6 +42,7 @@ import useBaseImageUrlForDriver from "../../hooks/useBaseImageUrlForDriver";
 import notify from "../../components/notify";
 import { format, parseISO } from "date-fns";
 import { getUserCookie } from "../../hooks/authCookies";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 // Status styles
 const statusStyles = {
@@ -73,6 +74,17 @@ console.log("user",user)
   const { assignment, availableCars, loading, updating } = useSelector(
     (state) => state.carAssignment
   );
+
+    function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("CarDriver");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view")
+  const hasAddPermission = hasPermission("add")
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete")
+
 
   // Local state
   const [selectedCar, setSelectedCar] = useState(null);
@@ -169,6 +181,7 @@ console.log("user",user)
   const styles = statusStyles[status] || {};
 
   if (loading) return <LoadingPage />;
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
   return (
     <Box p={isMobile ? 1 : 2} maxWidth="md">
@@ -270,7 +283,7 @@ console.log("user",user)
                   >{`${selectedCar.car_model} • ${selectedCar.car_color}`}</Typography>
                 </Grid>
                 <Grid item>
-                  <Button
+                 {hasEditPermission && <Button
                     onClick={handleChangeCar}
                     variant="outlined"
                     sx={{
@@ -281,12 +294,12 @@ console.log("user",user)
                     }}
                   >
                     {t("Change")}
-                  </Button>
+                  </Button>}
                 </Grid>
               </>
             ) : (
               <Grid item xs={12} textAlign="center">
-                <Button
+               {hasEditPermission && <Button
                   onClick={handleChangeCar}
                   variant="contained"
                   sx={{
@@ -297,7 +310,7 @@ console.log("user",user)
                   }}
                 >
                   {t("Choose Car")}
-                </Button>
+                </Button>}
               </Grid>
             )}
           </Grid>
@@ -556,7 +569,7 @@ console.log("user",user)
             </Box>
           </CardContent>
         </Card>
-              {!assignment?.release_date &&<Button
+              {!assignment?.release_date && hasEditPermission &&<Button
                 variant="outlined"
                 onClick={handleReleaseNow}
                 sx={{
@@ -565,6 +578,7 @@ console.log("user",user)
                   "&:hover": {
                     borderColor: theme.palette.error.dark,
                     backgroundColor: theme.palette.error.light,
+                    color: "#fff",
                   },
                 }}
               >

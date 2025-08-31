@@ -8,12 +8,13 @@ import {
   CircularProgress,
   Divider,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 import { addPaymentMethod } from "../../redux/slices/paymentMethod/thunk";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 
 export default function AddPaymentMethodPage() {
@@ -22,6 +23,17 @@ export default function AddPaymentMethodPage() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("PaymentMethods");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view");
+  const hasAddPermission = hasPermission("add");
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete");
+
   const validationSchema = Yup.object({
     nameEn: Yup.string()
       .required(t("Payment Method Name English is required"))
@@ -57,6 +69,7 @@ export default function AddPaymentMethodPage() {
    
     },
   });
+  if (!hasAddPermission) return <Navigate to="/profile" />;
 
   return (
     <Box maxWidth="md" sx={{ p: 2 }} component="form" onSubmit={formik.handleSubmit}>
