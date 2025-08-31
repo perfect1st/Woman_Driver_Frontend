@@ -96,7 +96,7 @@ const routesData = {
       // icon: HomeIcon,
     },
     {
-      key: "Permissions",
+      key: "permissions",
       label: { en: "Permission Groups", ar: "مجموعات الصلاحيات" },
       path: "/PermissionGroups",
       // icon: HomeIcon,
