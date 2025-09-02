@@ -90,18 +90,26 @@ const LiquidationPage = () => {
     updateParams({ limit: e.target.value, page: 1 });
   const handlePageChange = (_, value) => updateParams({ page: value });
 
+  const formatDate = (dateStr, lang) => {
+  if (!dateStr) return "-";
+  return new Date(dateStr).toLocaleDateString(lang, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
   // prepare rows
   const rows = data.map((l) => ({
     id: l._id,
     serial: l.serial_num,
-    startDate: new Date(l.start_date).toLocaleDateString(),
-    endDate: new Date(l.end_date).toLocaleDateString(),
+    startDate: formatDate(l.start_date, i18n.language),
+    endDate: formatDate(l.end_date, i18n.language),
     status: l.status,
     driverName: l.driver?.name || "-", // عشان تستخدمها في الرسالة
   }));
 
   const columns = [
-    { key: "serial", label: t("Serial Number") },
+    { key: "serial", label: t("ID") },
     { key: "startDate", label: t("Start Date") },
     { key: "endDate", label: t("End Date") },
     { key: "status", label: t("Status") },
@@ -117,12 +125,13 @@ const LiquidationPage = () => {
       const response = await dispatch(
         getAllLiquidationsWithoutPaginations({ query })
       ).unwrap();
-      const allLiquidations = response?.data || [];
+      
+      const allLiquidations = response || [];
 
       const exportData = allLiquidations.map((l) => ({
         "Serial Number": l.serial_num,
-        "Start Date": new Date(l.start_date).toLocaleDateString(),
-        "End Date": new Date(l.end_date).toLocaleDateString(),
+        "Start Date": formatDate(l.start_date, "en"),
+        "End Date": formatDate(l.end_date, "en"),
         Status: l.status,
         "Created At": new Date(l.createdAt).toLocaleDateString(),
       }));
@@ -208,8 +217,6 @@ const LiquidationPage = () => {
       await dispatch(
         editLiquidation({ id: selectedRow.id, data: { status: "completed" } })
       ).unwrap();
-      notify(t("liquidation_success"), "success");
-
       // refresh
       const query =
         `page=${page}&limit=${limit}` +
@@ -246,7 +253,7 @@ const LiquidationPage = () => {
     >
       <Header
         title={t("Liquidations")}
-        subtitle={""}
+        subtitle={t("Liquidation Details")}
         i18n={i18n}
         isExcel
         isPdf

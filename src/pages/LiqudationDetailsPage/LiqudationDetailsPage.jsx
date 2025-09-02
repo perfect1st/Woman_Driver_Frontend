@@ -40,7 +40,7 @@ const LiquidationDetailsPage = () => {
 
   useEffect(() => {
     const query =
-      `page=${page}&limit=${limit}` + (keyword ? `&serial_num=${keyword}` : "")+ (user_type ? `&user_type=${user_type}` : "");
+      `page=${page}&limit=${limit}` + (keyword ? `&keyword=${keyword}` : "")+ (user_type ? `&user_type=${user_type}` : "");
     dispatch(getOneLiquidation({ id, query }));
   }, [dispatch, id, page, limit, keyword,user_type]);
 

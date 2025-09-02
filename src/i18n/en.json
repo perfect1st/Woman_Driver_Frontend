@@ -577,6 +577,7 @@
   "Enter Driver Company Commission Value": "Enter Driver Company Commission Value",
   "Commission Driver With Car Value is required": "Commission Driver With Car Value is required",
   "Commission Driver Company Value is required": "Commission Driver Company Value is required",
-  "search by liquidation number": "Search by liquidation number"
+  "search by liquidation number": "Search by liquidation number",
+  "something_went_wrong":"Something went wrong"
 
 }

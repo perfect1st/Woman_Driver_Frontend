@@ -591,6 +591,7 @@
   "Enter Driver Company Commission Value": "أدخل قيمة عمولة السائق (سيارة الشركة)",
   "Commission Driver With Car Value is required": "قيمة عمولة السائق (مع السيارة) مطلوبة",
   "Commission Driver Company Value is required": "قيمة عمولة السائق (سيارة الشركة) مطلوبة",
-  "search by liquidation number": "البحث برقم التسوية"
+  "search by liquidation number": "البحث برقم التصفية",
+  "something_went_wrong":"حدث خطاء ما"
 
 }
