@@ -90,6 +90,8 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose, onAction }) => {
               matchPath("/CommissionDetails/:id", location.pathname)) ||
             (item.key === "CommissionCategory" &&
               matchPath("/CommissionCategoryDetails/:id", location.pathname)) ||
+            (item.key === "CommissionCategory" &&
+              matchPath("/CommissionCategory/AddCommissionCategory", location.pathname)) ||
             (item.key === "Liqudation" &&
               matchPath("/LiqudationDetails/:id", location.pathname));
 

@@ -11,6 +11,7 @@ import permissionGroupSlice from './slices/permissionGroup/permissionGroupSlice'
 import walletSlice from './slices/wallet/walletSlice';
 import lookupsSlice from './slices/lookups/lookupsSlice';
 import dailyCommissionsSlice from './slices/dailyCommissions/dailyCommissionsSlice';
+import commissionCategorySlice from './slices/commissionCategory/commissionCategorySlice';
 
 
 export const store = configureStore({
@@ -27,7 +28,8 @@ export const store = configureStore({
     permissionGroup: permissionGroupSlice,
     wallet: walletSlice,
     lookups: lookupsSlice,
-    dailyCommissions: dailyCommissionsSlice
+    dailyCommissions: dailyCommissionsSlice,
+    commissionCategory: commissionCategorySlice
 
   },
 });

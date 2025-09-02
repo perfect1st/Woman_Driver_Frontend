@@ -7,7 +7,7 @@ import TableComponent from "../../components/TableComponent/TableComponent";
 import { useTranslation } from "react-i18next";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllDailyCommissions } from "../../redux/slices/dailyCommissions/thunk";
+import { getAllDailyCommissions, getAllDailyCommissionsWithoutPaginations } from "../../redux/slices/dailyCommissions/thunk";
 import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
 import LoadingPage from "../../components/LoadingComponent";
 import * as XLSX from "xlsx";
@@ -31,7 +31,7 @@ const CommissionPage = () => {
   const date = searchParams.get("date") || ""; // e.g. 2025-09-01
 
   // redux state
-  const { dailyCommissions = {}, loading } = useSelector(
+  const { dailyCommissions = {}, allDailyCommissions, loading } = useSelector(
     (state) => state.dailyCommissions
   );
   const {
@@ -132,23 +132,17 @@ const formatDate = (dateStr, lang) => {
   // Export (excel/pdf/print)
   const fetchAndExport = async (type) => {
     try {
-      // try to get all records for export by asking backend for a big limit.
-      // If backend offers a dedicated "without pagination" endpoint, replace query accordingly.
       const queryParts = [];
       if (keyword) queryParts.push(`keyword=${keyword}`);
       if (user_type !== "") queryParts.push(`user_type=${user_type}`);
       if (date) queryParts.push(`date=${date}`);
 
-      // ask for all by setting a big limit or using total if available
-      const desiredLimit = total && total > 0 ? total : 10000;
-      queryParts.push(`page=1`);
-      queryParts.push(`limit=${desiredLimit}`);
+     ;
       const query = queryParts.join("&");
 
-      const response = await dispatch(getAllDailyCommissions({ query })).unwrap();
-      const all = response?.data || [];
-
-      const exportData = all.map((c, idx) => {
+      const response = await dispatch(getAllDailyCommissionsWithoutPaginations({ query })).unwrap();
+      
+      const exportData = allDailyCommissions?.data.map((c, idx) => {
         
         const is_user_type = c.driver_id?.user_type === "driver_company";
         return {

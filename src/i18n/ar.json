@@ -577,10 +577,17 @@
   "remaining_money_from driver": "المبلغ المتبقي من السائق",
   "Amount must be a number": "يجب أن يكون المبلغ رقمًا",
   "An error occurred while creating the transaction": "حدث خطأ أثناء إنشاء المعاملة",
-  "refused":"مرفوض",
+  "refused": "مرفوض",
   "there_are_no_trips": "لا توجد رحلات",
   "no_trips_subtitle": "ستظهر الرحلات هنا فور إكمالها من قبل السائق.",
   "maintenance": "صيانة",
-  "Not set": "غير محدد"
-
+  "Not set": "غير محدد",
+  "Commission (Driver With Car)": "عمولة السائق (مع السيارة)",
+  "Commission (Driver Company)": "عمولة السائق (سيارة الشركة)",
+  "Commission (Driver With Car) %": "عمولة السائق (مع السيارة) %",
+  "Commission (Driver Company) %": "عمولة السائق (سيارة الشركة) %",
+  "Enter Driver With Car Commission Value": "أدخل قيمة عمولة السائق (مع السيارة)",
+  "Enter Driver Company Commission Value": "أدخل قيمة عمولة السائق (سيارة الشركة)",
+  "Commission Driver With Car Value is required": "قيمة عمولة السائق (مع السيارة) مطلوبة",
+  "Commission Driver Company Value is required": "قيمة عمولة السائق (سيارة الشركة) مطلوبة"
 }

@@ -532,7 +532,7 @@
   "User ID": "User ID",
   "Name": "Name",
   "search by user name and email and phone number": "Search by user name, email, and phone number",
-  "Release date set to today":"Release date set to today",
+  "Release date set to today": "Release date set to today",
   "Start Date": "Start Date",
   "End Date": "End Date",
   "Total Balance": "Total Balance",
@@ -541,15 +541,15 @@
   "Liquidation ID": "Liquidation ID",
   "liquidation_now": "Liquidate Now",
   "driver_already_liquidated": "This driver has already been liquidated.",
-  "search by driver name and email and phone number":"search by driver name and email and phone number",
+  "search by driver name and email and phone number": "search by driver name and email and phone number",
   "confirm_liquidation_title": "Confirm Liquidation",
   "confirm_liquidation_message": "Are you sure you want to liquidate {{name}}?",
   "confirm": "Confirm",
   "cancel": "Cancel",
   "liquidation_success": "Liquidation completed successfully.",
   "noPermissionToUpdateStatus": "You don't have permission to update status",
-  "inactive":"In Active",
-  "deposit":"Deposit",
+  "inactive": "In Active",
+  "deposit": "Deposit",
   "commission": "Commission",
   "payment_online": "Online Payment",
   "remaining_money_from_driver": "Remaining Money from Driver",
@@ -565,13 +565,15 @@
   "Search trip by id or number": "Search trip by id or number",
   "Amount must be a number": "Amount must be a number",
   "An error occurred while creating the transaction": "An error occurred while creating the transaction",
-  "refused":"Refused",
+  "refused": "Refused",
   "there_are_no_trips": "There are no trips",
   "no_trips_subtitle": "Once the rider completes trips they will appear here.",
-  "maintenance":"Maintenance",
-  "Not set":"Not set"
-
-
-
-
+  "maintenance": "Maintenance",
+  "Not set": "Not set",
+  "Commission (Driver With Car)": "Commission (Driver With Car)",
+  "Commission (Driver Company)": "Commission (Driver Company)",
+  "Enter Driver With Car Commission Value": "Enter Driver With Car Commission Value",
+  "Enter Driver Company Commission Value": "Enter Driver Company Commission Value",
+  "Commission Driver With Car Value is required": "Commission Driver With Car Value is required",
+  "Commission Driver Company Value is required": "Commission Driver Company Value is required"
 }

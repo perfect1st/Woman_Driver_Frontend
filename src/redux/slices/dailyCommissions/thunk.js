@@ -20,6 +20,27 @@ export const getAllDailyCommissions = createAsyncThunk(
     }
   }
 );
+
+
+export const getAllDailyCommissionsWithoutPaginations = createAsyncThunk(
+  "/dailyCommissionsSlice/getAllDailyCommissionsWithoutPaginations",
+  async ({ query = '' }) => {
+    try {
+      let api = `/dailyCommissions`
+      if(query) api += `?${query}`
+      const response = await useGetDataToken(api);
+      return response;
+    } catch (error) {
+      if (error.message === "Network Error") {
+        return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري ", "error");
+      } else {
+        return notify(error.response.data, "error");
+      }
+    }
+  }
+);
+
+
 // get one  Daily Commission 
 export const getOneDailyCommission = createAsyncThunk(
   "/dailyCommissionsSlice/getOneDailyCommission",

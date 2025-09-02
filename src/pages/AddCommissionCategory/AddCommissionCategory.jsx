@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -14,45 +14,55 @@ import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import CustomTextField from "../../components/RTLTextField";
-
+import {addCommissionCategory} from "../../redux/slices/commissionCategory/thunk";
+import {
+  getAllCarTypesWithoutPaginations,
+} from "../../redux/slices/carType/thunk";
+import { useDispatch, useSelector } from "react-redux";
 export default function AddCommissionCategory() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language =="ar"
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
-  const carTypeOptions = ["SUV", "Sedan", "Truck", "Van"];
+  const { allCarTypes } = useSelector((state) => state.carType);
+console.log("allCarTypes",allCarTypes)
+  useEffect(()=>{
+    dispatch(getAllCarTypesWithoutPaginations({query:""}))
+  },[])
 
   const validationSchema = Yup.object({
-    commissionValue: Yup.number()
-      .required(t("Commission Value is required"))
+    commission_value_driver_with_car: Yup.number()
+      .required(t("Commission Driver With Car Value is required"))
       .positive(t("Value must be positive")),
-    carType: Yup.string().required(t("Car Type is required")),
-    amountFrom: Yup.number()
+      commission_value_driver_company: Yup.number()
+      .required(t("Commission Driver Company Value is required"))
+      .positive(t("Value must be positive")),
+      car_types_id: Yup.string().required(t("Car Type is required")),
+    amount_from: Yup.number()
       .required(t("Amount From is required"))
       .positive(t("Amount must be positive")),
-    amountTo: Yup.number()
+    amount_to: Yup.number()
       .required(t("Amount To is required"))
       .positive(t("Amount must be positive")),
   });
 
   const formik = useFormik({
     initialValues: {
-      commissionValue: "",
-      carType: "",
-      amountFrom: "",
-      amountTo: "",
+      commission_value_driver_with_car: "",
+      commission_value_driver_company: "",
+      car_types_id: "",
+      amount_from: "",
+      amount_to: "",
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setLoading(true);
-
-      setTimeout(() => {
-        console.log("Commission Category Submitted:", values);
-        setLoading(false);
-        alert(t("Commission category added successfully!"));
-        navigate("/CommissionCategories");
-      }, 1500);
+      await dispatch(addCommissionCategory({data:values}))
+      console.log("Commission Category Submitted:", values);
+      setLoading(false);
     },
   });
 
@@ -67,7 +77,7 @@ export default function AddCommissionCategory() {
       {/* Breadcrumbs */}
       <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", mb: 2 }}>
         <Typography
-          onClick={() => navigate("/CommissionCategories")}
+          onClick={() => navigate("/CommissionCategory")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Commission Categories")}
@@ -83,12 +93,12 @@ export default function AddCommissionCategory() {
 
       {/* Commission Value */}
       <Typography variant="h6" gutterBottom mt={3}>
-        {`${t("Commission Value")}  %`} <Typography component="span" color="error.main">*</Typography>
+        {`${t("Commission (Driver With Car)")}  %`} <Typography component="span" color="error.main">*</Typography>
       </Typography>
       <CustomTextField
         fullWidth
-        name="commissionValue"
-        placeholder={t("Enter Commission Value")}
+        name="commission_value_driver_with_car"
+        placeholder={t("Enter Driver With Car Commission Value")}
         variant="standard"
         type="text"
         InputProps={{
@@ -96,16 +106,42 @@ export default function AddCommissionCategory() {
           endAdornment: <Typography ml={1}>%</Typography>,
           sx: inputStyle,
         }}
-        value={formik.values.commissionValue}
+        value={formik.values.commission_value_driver_with_car}
         onChange={(e) => {
           const value = e.target.value;
           if (/^\d*\.?\d*$/.test(value)) {
-            formik.setFieldValue("commissionValue", value);
+            formik.setFieldValue("commission_value_driver_with_car", value);
           }
         }}
         onBlur={formik.handleBlur}
-        error={formik.touched.commissionValue && Boolean(formik.errors.commissionValue)}
-        helperText={formik.touched.commissionValue && formik.errors.commissionValue}
+        error={formik.touched.commission_value_driver_with_car && Boolean(formik.errors.commission_value_driver_with_car)}
+        helperText={formik.touched.commission_value_driver_with_car && formik.errors.commission_value_driver_with_car}
+        sx={{ mb: 3 }}
+      />
+      <Typography variant="h6" gutterBottom mt={3}>
+        {`${t("Commission (Driver Company)")}  %`} <Typography component="span" color="error.main">*</Typography>
+      </Typography>
+      <CustomTextField
+        fullWidth
+        name="commission_value_driver_company"
+        placeholder={t("Enter Driver Company Commission Value")}
+        variant="standard"
+        type="text"
+        InputProps={{
+          disableUnderline: true,
+          endAdornment: <Typography ml={1}>%</Typography>,
+          sx: inputStyle,
+        }}
+        value={formik.values.commission_value_driver_company}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (/^\d*\.?\d*$/.test(value)) {
+            formik.setFieldValue("commission_value_driver_company", value);
+          }
+        }}
+        onBlur={formik.handleBlur}
+        error={formik.touched.commission_value_driver_company && Boolean(formik.errors.commission_value_driver_company)}
+        helperText={formik.touched.commission_value_driver_company && formik.errors.commission_value_driver_company}
         sx={{ mb: 3 }}
       />
 
@@ -116,23 +152,23 @@ export default function AddCommissionCategory() {
       <CustomTextField
         select
         fullWidth
-        name="carType"
+        name="car_types_id"
         placeholder={t("Select Car Type")}
         variant="standard"
         InputProps={{
           disableUnderline: true,
           sx: inputStyle,
         }}
-        value={formik.values.carType}
+        value={formik.values.car_types_id}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        error={formik.touched.carType && Boolean(formik.errors.carType)}
-        helperText={formik.touched.carType && formik.errors.carType}
+        error={formik.touched.car_types_id && Boolean(formik.errors.car_types_id)}
+        helperText={formik.touched.car_types_id && formik.errors.car_types_id}
         sx={{ mb: 3 }}
       >
-        {carTypeOptions.map((type) => (
-          <MenuItem key={type} value={type}>
-            {type}
+        {allCarTypes?.data?.map((type) => (
+          <MenuItem key={type?._id} value={type?._id}>
+            {isArabic ? type?.name_ar : type?.name_en}
           </MenuItem>
         ))}
       </CustomTextField>
@@ -143,7 +179,7 @@ export default function AddCommissionCategory() {
       </Typography>
       <CustomTextField
         fullWidth
-        name="amountFrom"
+        name="amount_from"
         placeholder={t("Enter Amount From")}
         variant="standard"
         type="text"
@@ -152,16 +188,16 @@ export default function AddCommissionCategory() {
           endAdornment: <Typography ml={1}>{t("SAR")}</Typography>,
           sx: inputStyle,
         }}
-        value={formik.values.amountFrom}
+        value={formik.values.amount_from}
         onChange={(e) => {
           const value = e.target.value;
           if (/^\d*\.?\d*$/.test(value)) {
-            formik.setFieldValue("amountFrom", value);
+            formik.setFieldValue("amount_from", value);
           }
         }}
         onBlur={formik.handleBlur}
-        error={formik.touched.amountFrom && Boolean(formik.errors.amountFrom)}
-        helperText={formik.touched.amountFrom && formik.errors.amountFrom}
+        error={formik.touched.amount_from && Boolean(formik.errors.amount_from)}
+        helperText={formik.touched.amount_from && formik.errors.amount_from}
         sx={{ mb: 3 }}
       />
 
@@ -171,7 +207,7 @@ export default function AddCommissionCategory() {
       </Typography>
       <CustomTextField
         fullWidth
-        name="amountTo"
+        name="amount_to"
         placeholder={t("Enter Amount To")}
         variant="standard"
         type="text"
@@ -180,16 +216,16 @@ export default function AddCommissionCategory() {
           endAdornment: <Typography ml={1}>{t("SAR")}</Typography>,
           sx: inputStyle,
         }}
-        value={formik.values.amountTo}
+        value={formik.values.amount_to}
         onChange={(e) => {
           const value = e.target.value;
           if (/^\d*\.?\d*$/.test(value)) {
-            formik.setFieldValue("amountTo", value);
+            formik.setFieldValue("amount_to", value);
           }
         }}
         onBlur={formik.handleBlur}
-        error={formik.touched.amountTo && Boolean(formik.errors.amountTo)}
-        helperText={formik.touched.amountTo && formik.errors.amountTo}
+        error={formik.touched.amount_to && Boolean(formik.errors.amount_to)}
+        helperText={formik.touched.amount_to && formik.errors.amount_to}
         sx={{ mb: 3 }}
       />
 
