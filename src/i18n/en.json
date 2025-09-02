@@ -235,6 +235,7 @@
   "Traffic Time Name": "Traffic Time Name",
   "Time From": "Time From",
   "Time To": "Time To",
+  "ID":"ID",
   "Search by Traffic Time ID and Traffic Time Name": "Search by Traffic Time ID and Traffic Time Name",
   "Traffic Time Name English": "Traffic Time Name English",
   "Traffic Time Name Arabic": "Traffic Time Name Arabic",
@@ -575,5 +576,7 @@
   "Enter Driver With Car Commission Value": "Enter Driver With Car Commission Value",
   "Enter Driver Company Commission Value": "Enter Driver Company Commission Value",
   "Commission Driver With Car Value is required": "Commission Driver With Car Value is required",
-  "Commission Driver Company Value is required": "Commission Driver Company Value is required"
+  "Commission Driver Company Value is required": "Commission Driver Company Value is required",
+  "search by liquidation number": "Search by liquidation number"
+
 }

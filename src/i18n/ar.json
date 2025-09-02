@@ -26,6 +26,7 @@
   "Rider name": "اسم الراكب",
   "Rider Name": "اسم الراكب",
   "City": "المدينة",
+  "ID":"مسلسل",
   "Trips number": "عدد الرحلات",
   "Account status": "حالة الحساب",
   "Details": "تفاصيل",
@@ -589,5 +590,7 @@
   "Enter Driver With Car Commission Value": "أدخل قيمة عمولة السائق (مع السيارة)",
   "Enter Driver Company Commission Value": "أدخل قيمة عمولة السائق (سيارة الشركة)",
   "Commission Driver With Car Value is required": "قيمة عمولة السائق (مع السيارة) مطلوبة",
-  "Commission Driver Company Value is required": "قيمة عمولة السائق (سيارة الشركة) مطلوبة"
+  "Commission Driver Company Value is required": "قيمة عمولة السائق (سيارة الشركة) مطلوبة",
+  "search by liquidation number": "البحث برقم التسوية"
+
 }

@@ -1,110 +1,196 @@
-import React, { useState, useEffect } from "react";
-import { Box, useMediaQuery, useTheme, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  useMediaQuery,
+  useTheme,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from "@mui/material";
 import Header from "../../components/PageHeader/header";
 import FilterComponent from "../../components/FilterComponent/FilterComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
+import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
+import LoadingPage from "../../components/LoadingComponent";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useSearchParams, Navigate } from "react-router-dom";
+import {
+  getAllLiquidations,
+  getAllLiquidationsWithoutPaginations,
+  editLiquidation,
+} from "../../redux/slices/liquidation/thunk";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 import notify from "../../components/notify";
 
 const LiquidationPage = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // example initial data, replace with API call if needed
-  const initialLiquidations = [
-    {
-      _id: "LQ001",
-      startDate: "2024-07-01",
-      endDate: "2024-07-05",
-      status: "completed",
-      driverName: "gomaa",
-      phoneNumber: "01008974112",
-      totalBalance: 150.0,
-    },
-    {
-      _id: "LQ002",
-      startDate: "2024-07-10",
-      endDate: "2024-07-12",
-      status: "pending",
-      driverName: "mohamed",
-      phoneNumber: "1231231231",
-      totalBalance: -75.5,
-    },
-    {
-      _id: "LQ003",
-      startDate: "2024-07-10",
-      endDate: "2024-07-12",
-      status: "pending",
-      driverName: "mokhtar",
-      phoneNumber: "1231231231",
-      totalBalance: -120.5,
-    },
-    {
-      _id: "LQ004",
-      startDate: "2024-07-10",
-      endDate: "2024-07-12",
-      status: "pending",
-      driverName: "moataz",
-      phoneNumber: "1231231231",
-      totalBalance: 321.5,
-    },
-  ];
-
-  const [liquidations, setLiquidations] = useState(initialLiquidations);
   const [confirmLiquidation, setConfirmLiquidation] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [filteredLiquidations, setFilteredLiquidations] = useState(initialLiquidations);
 
-  const tableColumns = [
-    { key: "_id", label: t("Liquidation ID") },
-    { key: "driverName", label: t("Driver Name") },
-    { key: "phoneNumber", label: t("Phone Number") },
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const keyword = searchParams.get("keyword") || "";
+  const status = searchParams.get("status") || "";
+  const date = searchParams.get("date") || ""; // e.g. 2025-09-01
+
+  const { liquidations = {}, loading } = useSelector(
+    (state) => state.liquidation
+  );
+
+  const {
+    data = [],
+    total = 0,
+    page: currentPage = 1,
+    totalPages = 1,
+  } = liquidations;
+
+  // Permissions
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("Liquidations");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+
+  const hasViewPermission = hasPermission("view");
+  const hasEditPermission = hasPermission("edit");
+
+  // fetch
+  useEffect(() => {
+    const query =
+      `page=${page}&limit=${limit}` +
+      (keyword ? `&serial_num=${keyword}` : "") +
+      (date ? `&date=${date}` : "");
+    dispatch(getAllLiquidations({ query }));
+  }, [dispatch, page, limit, date, keyword]);
+
+  const updateParams = (updates) => {
+    const params = Object.fromEntries(searchParams);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") params[key] = value;
+      else delete params[key];
+    });
+    setSearchParams(params);
+  };
+
+  const handleSearch = (filters) => updateParams({ ...filters, page: 1 });
+  const handleLimitChange = (e) =>
+    updateParams({ limit: e.target.value, page: 1 });
+  const handlePageChange = (_, value) => updateParams({ page: value });
+
+  // prepare rows
+  const rows = data.map((l) => ({
+    id: l._id,
+    serial: l.serial_num,
+    startDate: new Date(l.start_date).toLocaleDateString(),
+    endDate: new Date(l.end_date).toLocaleDateString(),
+    status: l.status,
+    driverName: l.driver?.name || "-", // عشان تستخدمها في الرسالة
+  }));
+
+  const columns = [
+    { key: "serial", label: t("Serial Number") },
     { key: "startDate", label: t("Start Date") },
     { key: "endDate", label: t("End Date") },
     { key: "status", label: t("Status") },
-    {
-      key: "totalBalance",
-      label: t("Total Balance"),
-      render: (row) => {
-        const isPositive = row.totalBalance >= 0;
-        const Icon = isPositive ? ArrowUpward : ArrowDownward;
-        const color = isPositive ? theme.palette.success.main : theme.palette.error.main;
-        return (
-          <Box display="flex" alignItems="center" sx={{ color }}>
-            <Icon fontSize="small" />
-            <Box component="span" sx={{ ml: 0.5 }}>
-              {row.totalBalance.toFixed(2)}
-            </Box>
-          </Box>
-        );
-      },
-    },
   ];
 
-  const handleSearch = (filters) => {
-    const filtered = liquidations.filter((item) => {
-      const lowerSearch = filters.search?.toLowerCase() || "";
-      const matchesText =
-        !lowerSearch ||
-        item._id.toLowerCase().includes(lowerSearch) ||
-        item.driverName.toLowerCase().includes(lowerSearch) ||
-        item.phoneNumber.includes(lowerSearch);
+  // Export handler (نفس الكود بتاعك)
 
-      const matchesDate =
-        (!filters.startDate || item.startDate === filters.startDate) &&
-        (!filters.endDate || item.endDate === filters.endDate);
+  const fetchAndExport = async (type) => {
+    try {
+      const query =
+        (keyword ? `&serial_num=${keyword}` : "") +
+        (date ? `&date=${date}` : "");
+      const response = await dispatch(
+        getAllLiquidationsWithoutPaginations({ query })
+      ).unwrap();
+      const allLiquidations = response?.data || [];
 
-      return matchesText && matchesDate;
-    });
-    setFilteredLiquidations(filtered);
+      const exportData = allLiquidations.map((l) => ({
+        "Serial Number": l.serial_num,
+        "Start Date": new Date(l.start_date).toLocaleDateString(),
+        "End Date": new Date(l.end_date).toLocaleDateString(),
+        Status: l.status,
+        "Created At": new Date(l.createdAt).toLocaleDateString(),
+      }));
+
+      if (type === "excel") {
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Liquidations");
+        const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+        const data = new Blob([excelBuffer], {
+          type: "application/octet-stream",
+        });
+        saveAs(data, `Liquidations_${new Date().toISOString()}.xlsx`);
+      } else if (type === "pdf") {
+        const doc = new jsPDF();
+        doc.text("Liquidations Report", 14, 10);
+        autoTable(doc, {
+          startY: 20,
+          head: [Object.keys(exportData[0])],
+          body: exportData.map((row) => Object.values(row)),
+        });
+        doc.save(`Liquidations_${new Date().toISOString()}.pdf`);
+      } else if (type === "print") {
+        const printableWindow = window.open("", "_blank");
+        const htmlContent = `
+          <html>
+            <head>
+              <title>Liquidations Report</title>
+              <style>
+                table { width: 100%; border-collapse: collapse; }
+                th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+              </style>
+            </head>
+            <body>
+              <h2>Liquidations Report</h2>
+              <table>
+                <thead>
+                  <tr>${Object.keys(exportData[0])
+                    .map((key) => `<th>${key}</th>`)
+                    .join("")}</tr>
+                </thead>
+                <tbody>
+                  ${exportData
+                    .map(
+                      (row) =>
+                        `<tr>${Object.values(row)
+                          .map((value) => `<td>${value}</td>`)
+                          .join("")}</tr>`
+                    )
+                    .join("")}
+                </tbody>
+              </table>
+            </body>
+          </html>
+        `;
+        printableWindow.document.write(htmlContent);
+        printableWindow.document.close();
+        printableWindow.print();
+      }
+    } catch (err) {
+      console.error("Export error:", err);
+    }
   };
 
+  // Row actions
   const onRowClick = (e, row) => {
-    navigate(`/LiqudationDetails/${row._id}`);
+    navigate(`/LiqudationDetails/${row.id}`);
   };
 
   const onLiquidationClick = (e, row) => {
@@ -115,21 +201,27 @@ const LiquidationPage = () => {
     setConfirmLiquidation(true);
   };
 
-  const handleConfirm = () => {
-    // perform liquidation action, e.g., API call
-    notify(t("liquidation_success"), "success");
-    // update status locally
-    setLiquidations((prev) =>
-      prev.map((item) =>
-        item._id === selectedRow._id ? { ...item, status: "completed" } : item
-      )
-    );
-    setFilteredLiquidations((prev) =>
-      prev.map((item) =>
-        item._id === selectedRow._id ? { ...item, status: "completed" } : item
-      )
-    );
+  const handleConfirm = async () => {
+    if (!selectedRow) return;
+
+    try {
+      await dispatch(
+        editLiquidation({ id: selectedRow.id, data: { status: "completed" } })
+      ).unwrap();
+      notify(t("liquidation_success"), "success");
+
+      // refresh
+      const query =
+        `page=${page}&limit=${limit}` +
+        (keyword ? `&serial_num=${keyword}` : "") +
+        (date ? `&date=${date}` : "");
+      dispatch(getAllLiquidations({ query }));
+    } catch (error) {
+      notify(t("something_went_wrong"), "error");
+    }
+
     setConfirmLiquidation(false);
+    setSelectedRow(null);
   };
 
   const handleCancel = () => {
@@ -137,23 +229,16 @@ const LiquidationPage = () => {
     setConfirmLiquidation(false);
   };
 
-  useEffect(() => {
-    document.documentElement.style.overflowX = "hidden";
-    document.body.style.overflowX = "hidden";
-    return () => {
-      document.documentElement.style.overflowX = "auto";
-      document.body.style.overflowX = "auto";
-    };
-  }, []);
+  if (loading) return <LoadingPage />;
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
   return (
     <Box
+      component="main"
       sx={{
-        p: isSmallScreen ? 2 : 3,
+        p: isSmall ? 2 : 3,
         width: "100%",
         maxWidth: "100vw",
-        overflowX: "hidden",
-        boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
@@ -161,35 +246,59 @@ const LiquidationPage = () => {
     >
       <Header
         title={t("Liquidations")}
-        subtitle={t("Liquidation Details")}
+        subtitle={""}
         i18n={i18n}
-        isExcel={true}
-        isPdf={true}
-        isPrinter={true}
+        isExcel
+        isPdf
+        isPrinter
+        onExcel={() => fetchAndExport("excel")}
+        onPdf={() => fetchAndExport("pdf")}
+        onPrinter={() => fetchAndExport("print")}
       />
 
       <Box sx={{ my: 2 }}>
-        <FilterComponent onSearch={handleSearch} isLiquidation={true}  statusOptions={["active", "Pending"]} />
+        <FilterComponent
+          onSearch={handleSearch}
+          initialFilters={{ keyword, status, date }}
+          statusOptions={["pending", "completed"]}
+          isLiquidation
+          DonthasStatus={true}
+        />
       </Box>
 
-      <Box sx={{ flex: 1, overflow: "auto" }}>
-      <TableComponent
-          columns={tableColumns}
-          data={filteredLiquidations}
+        <TableComponent
+          columns={columns}
+          data={rows}
           actionIconType="details"
           actionIconType2="liqudation_now"
           showStatusChange={false}
           onActionClick={onRowClick}
           liqudationClick={onLiquidationClick}
+                  statusKey="status"
+                  sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
         />
-      </Box>
 
-      {/* Confirmation Dialog */}
-      <Dialog open={confirmLiquidation} onClose={handleCancel} maxWidth="xs" fullWidth>
+      <PaginationFooter
+        currentPage={currentPage}
+        totalPages={totalPages}
+        limit={limit}
+        onPageChange={handlePageChange}
+        onLimitChange={handleLimitChange}
+      />
+
+      {/* Dialog */}
+      <Dialog
+        open={confirmLiquidation}
+        onClose={handleCancel}
+        maxWidth="xs"
+        fullWidth
+      >
         <DialogTitle>{t("confirm_liquidation_title")}</DialogTitle>
         <DialogContent>
           <Typography>
-            {t("confirm_liquidation_message", { name: selectedRow?.driverName })}
+            {t("confirm_liquidation_message", {
+              name: selectedRow?.serial,
+            })}
           </Typography>
         </DialogContent>
         <DialogActions>
