@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -27,6 +27,8 @@ import { ReactComponent as PdfIcon } from "../../assets/pdf-02.svg";
 import { ReactComponent as PrinterIcon } from "../../assets/printer.svg";
 import carImage from "../../assets/DomiCar.png";
 import driverImage from "../../assets/DomiDriverImage.png";
+import {getOneDailyCommission} from "../../redux/slices/dailyCommissions/thunk"
+import { useDispatch, useSelector } from "react-redux";
 export default function CommissionDetailsPage() {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
@@ -34,10 +36,17 @@ export default function CommissionDetailsPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const [activeTab, setActiveTab] = useState(0);
   const [searchDate, setSearchDate] = useState("");
   const [loading, setLoading] = useState(false);
+  const { dailyCommission } = useSelector(
+    (state) => state.dailyCommissions
+  );
+  useEffect(()=>{
+    dispatch(getOneDailyCommission(id))
+  },[])
 
   const handleTabChange = (e, newVal) => setActiveTab(newVal);
 

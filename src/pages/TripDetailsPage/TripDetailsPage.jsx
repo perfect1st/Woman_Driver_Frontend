@@ -390,7 +390,7 @@ export default function TripDetailsPage() {
                       <Box display="flex" alignItems="center">
                         <Box
                           component="img"
-                          src={`${baseImageUrl}${trip.car_snapshot.car_image}`}
+                          src={`${baseImageUrl}${trip.car_snapshot.car_images[0]?.front}`}
                           alt={trip.car_snapshot.car_model}
                           sx={{ width: 64, height: 64, objectFit: "contain" }}
                         />

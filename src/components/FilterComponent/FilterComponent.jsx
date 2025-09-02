@@ -52,7 +52,7 @@ const FilterComponent = ({
     user_type: "",
     trans_type: "",
     transaction_type: "",
-    appVehicle: "",
+    user_type: "",
     date: "",
   });
 
@@ -89,7 +89,7 @@ const FilterComponent = ({
     if (filters.trans_type) queryParams.set("trans_type", filters.trans_type);
     if (filters.transaction_type)
       queryParams.set("transaction_type", filters.transaction_type);
-    if (filters.appVehicle) queryParams.set("appVehicle", filters.appVehicle);
+    if (filters.user_type) queryParams.set("user_type", filters.user_type);
     if (filters.date) queryParams.set("date", filters.date);
     const queryString = queryParams.toString();
 
@@ -113,7 +113,7 @@ const FilterComponent = ({
       user_type: "",
       trans_type: "",
       transaction_type: "",
-      appVehicle: "",
+      user_type: "",
       date: "",
     });
 
@@ -404,8 +404,8 @@ const FilterComponent = ({
               fullWidth
               size="small"
               label={t("App Vehicle?")}
-              name="appVehicle"
-              value={filters.appVehicle || ""}
+              name="user_type"
+              value={filters.user_type || ""}
               onChange={handleChange}
               variant="outlined"
               isRtl={isArabic}
@@ -428,8 +428,8 @@ const FilterComponent = ({
               }}
             >
               <MenuItem value="">{t("All")}</MenuItem>
-              <MenuItem value="true">{t("Yes")}</MenuItem>
-              <MenuItem value="false">{t("No")}</MenuItem>
+              <MenuItem value="driver_company">{t("Yes")}</MenuItem>
+              <MenuItem value="driver_with_car">{t("No")}</MenuItem>
             </CustomTextField>
           </Grid>
         )}

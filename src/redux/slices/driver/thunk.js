@@ -63,7 +63,7 @@ export const editDriver = createAsyncThunk(
   "/driverSlice/editDriver",
   async ({ id = "", data }) => {
     try {
-      const response = await useUpdateData(`/users/driver/${id}`, data);
+      const response = await useUpdateData(`/users/driverByAdmin/${id}`, data);
       return response;
     } catch (error) {
       if (error.message === "Network Error")
