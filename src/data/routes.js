@@ -102,6 +102,12 @@ const routesData = {
       // icon: HomeIcon,
     },
     {
+      key: "Coupons",
+      label: { en: "Coupons", ar: "كوبونات" },
+      path: "/Coupons",
+      // icon: HomeIcon,
+    },
+    {
       key: "settings",
       label: { en: "settings", ar: "الاعدادات" },
       icon: setting,
