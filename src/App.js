@@ -59,6 +59,8 @@ import CouponsPage from "./pages/CouponsPage/CouponsPage";
 import AddOfferPage from "./pages/OffersPage/AddOffer";
 import OffersPage from "./pages/OffersPage/OffersPage";
 import AddCouponPage from "./pages/CouponsPage/AddCoupon";
+import CouponDetailsPage from "./pages/CouponsPage/CouponDetailsPage";
+import OfferDetailsPage from "./pages/OffersPage/OfferDetails";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -417,6 +419,16 @@ import AddCouponPage from "./pages/CouponsPage/AddCoupon";
     }
   />
   <Route
+    path="/couponDetails/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <CouponDetailsPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
     path="/Cars"
     element={
       // <ProtectedRoute>
@@ -592,6 +604,16 @@ import AddCouponPage from "./pages/CouponsPage/AddCoupon";
       // <ProtectedRoute>
         <MainLayout>
           <WalletPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/offerDetails/:id"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <OfferDetailsPage />
         </MainLayout>
       // </ProtectedRoute>
     }

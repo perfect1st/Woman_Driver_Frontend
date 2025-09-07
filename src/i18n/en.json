@@ -582,6 +582,7 @@
   "something_went_wrong": "Something went wrong",
   "Coupons": "Coupons",
   "Coupons Details": "Coupons Details",
+  "Coupon Details": "Coupon Details",
   "Coupon Title": "Coupon",
   "Type": "Type",
   "Value": "Value",
@@ -600,6 +601,13 @@
       "details": "Offers Details",
       "add": "Add Offer"
     },
+    "title": "Offer Title",
+    "type": "Offer Type",
+    "value": "Offer Value",
+    "max_discount": "Maximum Discount Value",
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "desc": "Description",
     "add_title": "Add Offer",
     "fields": {
       "title": "Offer Name",
@@ -643,6 +651,16 @@
     "add_title": "Add Coupon",
     "save": "Save",
     "saving": "Saving...",
+    "title": "Coupon Title",
+    "type": "Coupon Type",
+    "value": "Coupon Value",
+    "max_discount": "Maximum Discount",
+    "usage_count": "Total Usage Count",
+    "usage_per_user": "Usage Count per User",
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "desc": "Description",
+    "status": "Status",
     "breadcrumb": {
       "coupons": "Coupons",
       "details": "Details",
@@ -691,5 +709,9 @@
       "end_date_after": "End date must be after start date",
       "desc": "Description is required"
     }
-  }
+  },
+  "percentage": "Percentage",
+  "fixed": "Fixed Value",
+
+  "Offer Details": "Offer Details"
 }
