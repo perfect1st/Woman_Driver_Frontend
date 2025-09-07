@@ -594,6 +594,7 @@
   "search by Coupon Title": "search by Coupon Title",
   "Offers": "Offers",
   "Offers Details": "Offers Details",
+  "Offer Details": "Offer Details",
   "Offer Title": "Offer",
   "offer": {
     "breadcrumb": {
@@ -711,7 +712,6 @@
     }
   },
   "percentage": "Percentage",
-  "fixed": "Fixed Value",
+  "fixed": "Fixed Value"
 
-  "Offer Details": "Offer Details"
 }
