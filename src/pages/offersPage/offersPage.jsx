@@ -7,10 +7,10 @@ import { useTranslation } from "react-i18next";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  editCoupon,
-  getAllCoupons,
-  getAllCouponsWithoutPaginations,
-} from "../../redux/slices/coupon/thunk";
+  editOffer,
+  getAllOffers,
+  getAllOffersWithoutPaginations,
+} from "../../redux/slices/offer/thunk";
 import LoadingPage from "../../components/LoadingComponent";
 import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
 import * as XLSX from "xlsx";
@@ -20,7 +20,7 @@ import autoTable from "jspdf-autotable";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 import notify from "../../components/notify";
 
-const CouponsPage = () => {
+const OffersPage = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
@@ -35,27 +35,27 @@ const CouponsPage = () => {
   const currentStatusFilter = status;
 
   function hasPermission(permissionType) {
-    const permissions = getPermissionsByScreen("Coupons");
+    const permissions = getPermissionsByScreen("Offers");
     return permissions ? permissions[permissionType] === true : false;
   }
 
   const hasViewPermission = hasPermission("view");
   const hasEditPermission = hasPermission("edit");
 
-  const { coupons = {}, loading } = useSelector((state) => state.coupon);
+  const { offers = {}, loading } = useSelector((state) => state.offer);
   const {
     data = [],
     page: currentPage = 1,
     totalPages = 1,
     total = 0,
-  } = coupons;
+  } = offers;
 
   useEffect(() => {
     const query =
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
       (status ? `&status=${status}` : "");
-    dispatch(getAllCoupons({ query }));
+    dispatch(getAllOffers({ query }));
   }, [dispatch, page, limit, status, keyword]);
 
   const updateParams = (updates) => {
@@ -71,6 +71,7 @@ const CouponsPage = () => {
   const handleLimitChange = (e) =>
     updateParams({ limit: e.target.value, page: 1 });
   const handlePageChange = (_, value) => updateParams({ page: value });
+
   const formatDate = (dateStr, lang) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
@@ -82,27 +83,23 @@ const CouponsPage = () => {
     });
   };
 
-  // rows mapping for coupons
-  const rows = data.map((c, index) => ({
-    id: c._id,
+  // rows mapping for offers
+  const rows = data.map((o, index) => ({
+    id: o._id,
     index: (currentPage - 1) * limit + index + 1,
-    title: c.title,
-    value: `${c.coupon_value} ${c.coupon_type == "percentage" ? "%" : t("SAR")}`,
-    usageCount: c.usage_count,
-    maxDiscount: c.maximum_discount_value,
-    perUser: c.usage_count_per_user_value,
-    startDate: formatDate(c.start_date, i18n.language),
-    endDate: formatDate(c.end_date, i18n.language),
-    status: c.status === "active" ? "Active" : "In Active",
+    title: o.title,
+    value: `${o.offer_value} ${o.offer_type == "percentage" ? "%" : t("SAR")}`,
+    maxDiscount: o.maximum_discount_value,
+    startDate: formatDate(o.start_date, i18n.language),
+    endDate: formatDate(o.end_date, i18n.language),
+    status: o.status === "active" ? "Active" : "In Active",
   }));
 
   const columns = [
     { key: "index", label: t("ID") },
-    { key: "title", label: t("Coupon Title") },
+    { key: "title", label: t("Offer Title") },
     { key: "value", label: t("Value") },
-    { key: "usageCount", label: t("Usage Count") },
     { key: "maxDiscount", label: t("Max Discount") },
-    { key: "perUser", label: t("Usage/User") },
     { key: "startDate", label: t("Start Date") },
     { key: "endDate", label: t("End Date") },
     { key: "status", label: t("Status") },
@@ -115,68 +112,66 @@ const CouponsPage = () => {
     if (!hasEditPermission) {
       return notify("noPermissionToUpdateStatus", "warning");
     }
-    const couponId = row?.id;
+    const offerId = row?.id;
     const newStatus = status === "active" ? "active" : "in_active";
-    await dispatch(editCoupon({ id: couponId, data: { status: newStatus } }));
+    await dispatch(editOffer({ id: offerId, data: { status: newStatus } }));
     const query =
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
       (currentStatusFilter ? `&status=${currentStatusFilter}` : "");
-    dispatch(getAllCoupons({ query }));
+    dispatch(getAllOffers({ query }));
   };
-
 
   const fetchAndExport = async (type) => {
     try {
       const queryParts = [];
       if (keyword) queryParts.push(`keyword=${keyword}`);
-      if (status !== "") queryParts.push(`user_type=${status}`);
-     ;
+      if (status !== "") queryParts.push(`status=${status}`);
       const query = queryParts.join("&");
 
-      const response = await dispatch(getAllCouponsWithoutPaginations({ query })).unwrap();
-      console.log("response",response)
-      
-      const exportData = response?.data.map((c, idx) => {
-        
+      const response = await dispatch(
+        getAllOffersWithoutPaginations({ query })
+      ).unwrap();
+
+      const exportData = response?.data.map((o, idx) => {
         return {
           ID: idx + 1,
-          "Coupon": c.title,
-          "value": `${c.coupon_value} ${c.coupon_type == "percentage" ? "%" : t("SAR")}`,
-          "Usage count": c.usage_count,
-          "Max Discount": c.maximum_discount_value,
-          "Usage/User": c.usage_count_per_user_value,
-          "start Date": formatDate(c.start_date, "en"),
-          "End Date": formatDate(c.end_date, "en"),
+          Offer: o.title,
+          Type: o.offer_type,
+          Value: o.offer_value,
+          "Max Discount": o.maximum_discount_value,
+          Description: o.desc || "-",
+          "Start Date": formatDate(o.start_date, "en"),
+          "End Date": formatDate(o.end_date, "en"),
         };
       });
 
-      if (exportData.length === 0) return;
+      if (!exportData || exportData.length === 0) return;
 
       if (type === "excel") {
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Copons");
+        XLSX.utils.book_append_sheet(wb, ws, "Offers");
         const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
         const dataBlob = new Blob([excelBuffer], {
           type: "application/octet-stream",
         });
-        saveAs(dataBlob, `Copons_${new Date().toISOString()}.xlsx`);
+        saveAs(dataBlob, `Offers_${new Date().toISOString()}.xlsx`);
       } else if (type === "pdf") {
         const doc = new jsPDF();
-        doc.text("Copons Report", 14, 10);
+        doc.text("Offers Report", 14, 10);
         autoTable(doc, {
           startY: 20,
           head: [Object.keys(exportData[0])],
           body: exportData.map((row) => Object.values(row)),
         });
-        doc.save(`Copons_${new Date().toISOString()}.pdf`);
+        doc.save(`Offers_${new Date().toISOString()}.pdf`);
       } else if (type === "print") {
         const printableWindow = window.open("", "_blank");
         const htmlContent = `
           <html>
             <head>
-              <title>Copons Report</title>
+              <title>Offers Report</title>
               <style>
                 table { width: 100%; border-collapse: collapse; }
                 th, td { border: 1px solid #333; padding: 8px; text-align: left; }
@@ -184,7 +179,7 @@ const CouponsPage = () => {
               </style>
             </head>
             <body>
-              <h2>Coupons Report</h2>
+              <h2>Offers Report</h2>
               <table>
                 <thead>
                   <tr>${Object.keys(exportData[0])
@@ -228,8 +223,8 @@ const CouponsPage = () => {
       }}
     >
       <Header
-        title={t("Coupons")}
-        subtitle={t("Coupons Details")}
+        title={t("Offers")}
+        subtitle={t("Offers Details")}
         i18n={i18n}
         isExcel
         isPdf
@@ -244,19 +239,19 @@ const CouponsPage = () => {
           onSearch={handleSearch}
           initialFilters={{ keyword, status }}
           statusOptions={["active", "in_active"]}
-          isCoupon={true}
+          isOffer={true}
         />
       </Box>
 
       <TableComponent
         columns={columns}
         data={rows}
-        onViewDetails={(r) => navigate(`/couponDetails/${r.id}`)}
+        onViewDetails={(r) => navigate(`/offerDetails/${r.id}`)}
         loading={loading}
         sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
         onStatusChange={onStatusChange}
-         statusKey="status"
-         isCoupon={true}
+        statusKey="status"
+        isOffer={true}
       />
 
       <PaginationFooter
@@ -270,4 +265,4 @@ const CouponsPage = () => {
   );
 };
 
-export default CouponsPage;
+export default OffersPage;

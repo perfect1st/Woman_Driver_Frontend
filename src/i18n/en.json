@@ -550,6 +550,7 @@
   "liquidation_success": "Liquidation completed successfully.",
   "noPermissionToUpdateStatus": "You don't have permission to update status",
   "inactive": "In Active",
+  "in_active": "In Active",
   "deposit": "Deposit",
   "commission": "Commission",
   "payment_online": "Online Payment",
@@ -578,6 +579,17 @@
   "Commission Driver With Car Value is required": "Commission Driver With Car Value is required",
   "Commission Driver Company Value is required": "Commission Driver Company Value is required",
   "search by liquidation number": "Search by liquidation number",
-  "something_went_wrong":"Something went wrong"
+  "something_went_wrong":"Something went wrong",
+  "Coupons": "Coupons",
+  "Coupons Details": "Coupons Details",
+  "Coupon Title": "Coupon",
+  "Type": "Type",
+  "Value": "Value",
+  "Usage Count": "Usage Count",
+  "Max Discount": "Max Discount",
+  "Usage/User": "Usage/User",
+  "Active": "Active",
+  "In Active": "Inactive",
+  "search by Coupon Title":"search by Coupon Title"
 
 }

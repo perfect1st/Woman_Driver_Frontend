@@ -56,6 +56,7 @@ import { getUserCookie } from "./hooks/authCookies";
 import UserDetailsPage from "./pages/UserDetailsPage/UserDetailsPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import CouponsPage from "./pages/CouponsPage/CouponsPage";
+import OffersPage from "./pages/offersPage/offersPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -579,6 +580,16 @@ import CouponsPage from "./pages/CouponsPage/CouponsPage";
       // <ProtectedRoute>
         <MainLayout>
           <WalletPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/Offers"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <OffersPage />
         </MainLayout>
       // </ProtectedRoute>
     }

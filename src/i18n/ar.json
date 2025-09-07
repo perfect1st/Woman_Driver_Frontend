@@ -561,6 +561,7 @@
   "liquidation_success": "تمت التصفية بنجاح.",
   "noPermissionToUpdateStatus": "ليس لديك صلاحية لتحديث الحالة",
   "inactive": "غير نشط",
+  "in_active": "غير نشط",
   "deposit": "ايداع",
   "commission": "عمولة",
   "payment_online": "دفع عبر الإنترنت",
@@ -592,6 +593,16 @@
   "Commission Driver With Car Value is required": "قيمة عمولة السائق (مع السيارة) مطلوبة",
   "Commission Driver Company Value is required": "قيمة عمولة السائق (سيارة الشركة) مطلوبة",
   "search by liquidation number": "البحث برقم التصفية",
-  "something_went_wrong":"حدث خطاء ما"
-
+  "something_went_wrong":"حدث خطاء ما",
+  "Coupons": "الكوبونات",
+  "Coupons Details": "تفاصيل الكوبونات",
+  "Coupon Title": "الكوبون",
+  "Type": "النوع",
+  "Value": "القيمة",
+  "Usage Count": "عدد مرات الاستخدام",
+  "Max Discount": "الحد الأقصى للخصم",
+  "Usage/User": "الاستخدام/للمستخدم",
+  "Active": "نشط",
+  "In Active": "غير نشط",
+  "search by Coupon Title":"البحث باسم الكوبون"
 }

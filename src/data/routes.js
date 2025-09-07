@@ -108,6 +108,12 @@ const routesData = {
       // icon: HomeIcon,
     },
     {
+      key: "Offers",
+      label: { en: "Offers", ar: "العروض" },
+      path: "/Offers",
+      // icon: HomeIcon,
+    },
+    {
       key: "settings",
       label: { en: "settings", ar: "الاعدادات" },
       icon: setting,

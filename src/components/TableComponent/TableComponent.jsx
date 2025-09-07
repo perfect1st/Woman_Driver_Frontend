@@ -30,6 +30,12 @@ import { useNavigate } from "react-router-dom";
 // Define all possible status styles
 const statusStyles = {
   // Account status styles (for passengers/drivers)
+  Active: {
+    textColor: "#085D3A",
+    bgColor: "#ECFDF3",
+    borderColor: "#ABEFC6",
+    // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
+  },
   Available: {
     textColor: "#085D3A",
     bgColor: "#ECFDF3",
@@ -53,6 +59,12 @@ const statusStyles = {
     bgColor: "#EFF8FF",
     borderColor: "#B2DDFF",
     // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#1849A9" }} />
+  },
+  "In Active": {
+    textColor: "#912018",
+    bgColor: "#FEF3F2",
+    borderColor: "#FECDCA",
+    // icon: <WarningIcon fontSize="small" sx={{ color: "#912018" }} />
   },
   Rejected: {
     textColor: "#912018",
@@ -171,6 +183,7 @@ const TableComponent = ({
   onSortClick,
   releasedClick,
   isUsers=false,
+  isCoupon=false,
 }) => {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
@@ -506,95 +519,7 @@ const TableComponent = ({
                  </Box>
                </MenuItem>
              </>
-              // <>
-              //   {/* Linked */}
-              //   <MenuItem
-              //     onClick={() => handleStatusSelect("Linked")}
-              //     sx={{
-              //       color: statusStyles.Linked.textColor,
-              //       borderLeft: isArabic
-              //         ? ""
-              //         : `4px solid ${statusStyles.Linked.borderColor}`,
-              //       borderRight: isArabic
-              //         ? `4px solid ${statusStyles.Linked.borderColor}`
-              //         : "",
-              //       pl: 2,
-              //       py: 1,
-              //       display: "flex",
-              //       alignItems: "center",
-              //     }}
-              //   >
-              //     {statusStyles.Linked.icon}
-              //     <Box component="span" sx={{ ml: 1 }}>
-              //       {t("Linked")}
-              //     </Box>
-              //   </MenuItem>
-              //   {/* OnRequest */}
-              //   <MenuItem
-              //     onClick={() => handleStatusSelect("OnRequest")}
-              //     sx={{
-              //       color: statusStyles["OnRequest"].textColor,
-              //       borderLeft: isArabic
-              //         ? ""
-              //         : `4px solid ${statusStyles["OnRequest"].borderColor}`,
-              //       borderRight: isArabic
-              //         ? `4px solid ${statusStyles["OnRequest"].borderColor}`
-              //         : "",
-              //       pl: 2,
-              //       py: 1,
-              //       display: "flex",
-              //       alignItems: "center",
-              //     }}
-              //   >
-              //     {statusStyles["OnRequest"].icon}
-              //     <Box component="span" sx={{ ml: 1 }}>
-              //       {t("OnRequest")}
-              //     </Box>
-              //   </MenuItem>
-              //   {/* Leaved */}
-              //   <MenuItem
-              //     onClick={() => handleStatusSelect("Leaved")}
-              //     sx={{
-              //       color: statusStyles.Leaved.textColor,
-              //       borderLeft: isArabic
-              //         ? ""
-              //         : `4px solid ${statusStyles.Leaved.borderColor}`,
-              //       borderRight: isArabic
-              //         ? `4px solid ${statusStyles.Leaved.borderColor}`
-              //         : "",
-              //       pl: 2,
-              //       py: 1,
-              //       display: "flex",
-              //       alignItems: "center",
-              //     }}
-              //   >
-              //     {statusStyles.Leaved.icon}
-              //     <Box component="span" sx={{ ml: 1 }}>
-              //       {t("Leaved")}
-              //     </Box>
-              //   </MenuItem>
-              //   <MenuItem
-              //     onClick={() => handleStatusSelect("Rejected")}
-              //     sx={{
-              //       color: statusStyles.Rejected.textColor,
-              //       borderLeft: isArabic
-              //         ? ""
-              //         : `4px solid ${statusStyles.Rejected.borderColor}`,
-              //       borderRight: isArabic
-              //         ? `4px solid ${statusStyles.Rejected.borderColor}`
-              //         : "",
-              //       pl: 2,
-              //       py: 1,
-              //       display: "flex",
-              //       alignItems: "center",
-              //     }}
-              //   >
-              //     {statusStyles.Rejected.icon}
-              //     <Box component="span" sx={{ ml: 1 }}>
-              //       {t("Rejected")}
-              //     </Box>
-              //   </MenuItem>
-              // </>
+          
             ) : (
               <>
                 {/* Available */}
@@ -651,6 +576,7 @@ const TableComponent = ({
                   !isTrafficTime &&
                   !isWallet &&
                   !paymentMethod &&
+                  !isCoupon &&
                   !isCommissionCategory && (
                     <MenuItem
                       onClick={() => handleStatusSelect("pending")}

@@ -37,6 +37,7 @@ const FilterComponent = ({
   isWalletDetails = false,
   hasDriversType = false,
   DonthasStatus = false,
+  isCoupon = false
 
 }) => {
   const theme = useTheme();
@@ -159,7 +160,9 @@ const FilterComponent = ({
             xs={12}
             sm={6}
             md={
-              isLiquidation
+              isCoupon
+                ? 7
+              : isLiquidation
                 ? 7
                 : isUsers
                 ? 7
@@ -187,7 +190,9 @@ const FilterComponent = ({
               size="small"
               name="search"
               placeholder={
-                isLiquidation
+                isCoupon
+                  ? t("search by Coupon Title")
+                : isLiquidation
                   ? t("search by liquidation number")
                   : isUsers
                   ? t("search by user name and email and phone number")

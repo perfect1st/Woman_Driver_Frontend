@@ -14,6 +14,7 @@ import dailyCommissionsSlice from "./slices/dailyCommissions/dailyCommissionsSli
 import commissionCategorySlice from "./slices/commissionCategory/commissionCategorySlice";
 import liquidationSlice from "./slices/liquidation/liquidationSlice";
 import couponSlice from "./slices/coupon/couponSlice";
+import offerSlice from "./slices/offer/offerSlice";
 
 export const store = configureStore({
   reducer: {
@@ -32,5 +33,6 @@ export const store = configureStore({
     commissionCategory: commissionCategorySlice,
     liquidation: liquidationSlice,
     coupon: couponSlice,
+    offer: offerSlice,
   },
 });
