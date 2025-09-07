@@ -669,7 +669,7 @@ import OfferDetailsPage from "./pages/OffersPage/OfferDetails";
     }
   />
   <Route
-    path="/TrafficTimes/AddTrafficTime"
+    path="/TrafficTime/AddTrafficTime"
     element={
       // <ProtectedRoute>
         <MainLayout>

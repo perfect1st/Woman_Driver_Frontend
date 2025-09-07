@@ -712,6 +712,6 @@
     }
   },
   "percentage": "Percentage",
-  "fixed": "Fixed Value"
-
+  "fixed": "Fixed Value",
+  "kilo_price_percentage": "Kilo Price %"
 }

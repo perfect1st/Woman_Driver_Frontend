@@ -60,7 +60,7 @@ const statusStyles = {
     borderColor: "#B2DDFF",
     // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#1849A9" }} />
   },
-  "In Active": {
+  inactive: {
     textColor: "#912018",
     bgColor: "#FEF3F2",
     borderColor: "#FECDCA",

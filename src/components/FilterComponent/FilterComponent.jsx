@@ -674,7 +674,7 @@ const FilterComponent = ({
                   ? t("Status")
                   : isWallet
                   ? t("Status")
-                  : t("Account Status")
+                  : t("Status")
               }
               name="status"
               value={filters.status}

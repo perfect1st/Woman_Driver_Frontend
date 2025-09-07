@@ -241,7 +241,7 @@
   "No cars found": "لم يتم العثور على سيارات",
   "Traffic Time": "مواعيد الذروة",
   "Traffic Time Details": "تفاصيل مواعيد الذروة",
-  "Add Traffic Time": "إضافة موعد مرور",
+  "Add Traffic Time": "إضافة موعد الذروة",
   "Traffic Time ID": "رقم موعد الذروة",
   "Traffic Time Name": "اسم موعد الذروة",
   "Time From": "من الساعة",
@@ -666,7 +666,7 @@
     "add_title": "إضافة كوبون",
     "save": "حفظ",
     "saving": "جاري الحفظ...",
-     "title": "عنوان الكوبون",
+    "title": "عنوان الكوبون",
     "type": "نوع الكوبون",
     "value": "قيمة الكوبون",
     "max_discount": "أقصى خصم",
@@ -725,8 +725,7 @@
       "desc": "الوصف مطلوب"
     }
   },
-        "percentage": "نسبة مئوية",
-      "fixed": "قيمة ثابتة"
-      
-    
+  "percentage": "نسبة مئوية",
+  "fixed": "قيمة ثابتة",
+  "kilo_price_percentage": " سعر الكيلو % "
 }

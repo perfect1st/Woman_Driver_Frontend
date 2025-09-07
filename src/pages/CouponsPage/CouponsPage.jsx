@@ -97,7 +97,7 @@ const CouponsPage = () => {
     maxDiscount: c.maximum_discount_value,
     startDate: formatDate(c.start_date, i18n.language),
     endDate: formatDate(c.end_date, i18n.language),
-    status: c.status === "active" ? "Active" : "In Active",
+    status: c.status === "active" ? "Active" : "inactive",
   }));
 
   const columns = [
@@ -118,7 +118,7 @@ const CouponsPage = () => {
       return notify("noPermissionToUpdateStatus", "warning");
     }
     const couponId = row?.id;
-    const newStatus = status === "active" ? "active" : "in_active";
+    const newStatus = status === "active" ? "active" : "inactive";
     await dispatch(editCoupon({ id: couponId, data: { status: newStatus } }));
     const query =
       `page=${page}&limit=${limit}` +
@@ -251,7 +251,7 @@ const CouponsPage = () => {
         <FilterComponent
           onSearch={handleSearch}
           initialFilters={{ keyword, status }}
-          statusOptions={["active", "in_active"]}
+          statusOptions={["active", "inactive"]}
           isCoupon={true}
         />
       </Box>

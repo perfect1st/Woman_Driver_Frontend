@@ -7,51 +7,56 @@ import {
   useTheme,
   CircularProgress,
   Divider,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useDispatch } from "react-redux";
+import { addTrafficTime } from "../../redux/slices/trafficTime/thunk";
 
 export default function AddTrafficTimePage() {
   const theme = useTheme();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
   const validationSchema = Yup.object({
-    nameEn: Yup.string()
+    title_en: Yup.string()
       .required(t("Traffic Time Name English is required"))
       .min(2, t("Name must be at least 2 characters")),
-    nameAr: Yup.string()
+    title_ar: Yup.string()
       .required(t("Traffic Time Name Arabic is required"))
       .min(2, t("Name must be at least 2 characters")),
-    timeFrom: Yup.string().required(t("Time From is required")),
-    timeTo: Yup.string().required(t("Time To is required")),
-    kiloPrice: Yup.number()
+    time_from: Yup.string().required(t("Time From is required")),
+    time_to: Yup.string().required(t("Time To is required")),
+    kilo_price_percentage: Yup.number()
       .required(t("Kilo Price is required"))
       .positive(t("Price must be positive")),
   });
 
   const formik = useFormik({
     initialValues: {
-      nameEn: "",
-      nameAr: "",
-      timeFrom: "",
-      timeTo: "",
-      kiloPrice: "",
+      title_en: "",
+      title_ar: "",
+      time_from: "",
+      time_to: "",
+      kilo_price_percentage: "",
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setLoading(true);
-
-      // Simulate API
-      setTimeout(() => {
-        console.log("Traffic Time Submitted:", values);
-        setLoading(false);
-        alert(t("Traffic time added successfully!"));
+      try {
+        await dispatch(addTrafficTime({ data: values })).unwrap();
         navigate("/TrafficTime");
-      }, 1500);
+      } catch (error) {
+        console.error("Add TrafficTime error:", error);
+      } finally {
+        setLoading(false);
+      }
     },
   });
 
@@ -66,13 +71,6 @@ export default function AddTrafficTimePage() {
           {t("Traffic Time")}
         </Typography>
         <Typography sx={{ mx: 1 }}>{"<"}</Typography>
-        <Typography
-          onClick={() => navigate("/TrafficTime")}
-          sx={{ cursor: "pointer", color: theme.palette.primary.main }}
-        >
-          {t("Traffic Time Details")}
-        </Typography>
-        <Typography sx={{ mx: 1 }}>{"<"}</Typography>
         <Typography>{t("Add Traffic Time")}</Typography>
       </Box>
 
@@ -81,30 +79,24 @@ export default function AddTrafficTimePage() {
         {t("Add Traffic Time")}
       </Typography>
 
-      {/* Fields */}
-
       {/* English Name */}
       <Typography variant="h6" gutterBottom mt={3}>
         {t("Traffic Time Name English")} <Typography component="span" color="error.main">*</Typography>
       </Typography>
       <TextField
         fullWidth
-        name="nameEn"
+        name="title_en"
         placeholder={t("Enter the Traffic Time Name English")}
         variant="standard"
         InputProps={{
           disableUnderline: true,
-          sx: {
-            backgroundColor: theme.palette.secondary.sec,
-            borderRadius: 1,
-            p: "10px 12px",
-          },
+          sx: { backgroundColor: theme.palette.secondary.sec, borderRadius: 1, p: "10px 12px" },
         }}
-        value={formik.values.nameEn}
+        value={formik.values.title_en}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        error={formik.touched.nameEn && Boolean(formik.errors.nameEn)}
-        helperText={formik.touched.nameEn && formik.errors.nameEn}
+        error={formik.touched.title_en && Boolean(formik.errors.title_en)}
+        helperText={formik.touched.title_en && formik.errors.title_en}
         sx={{ mb: 3 }}
       />
 
@@ -114,22 +106,18 @@ export default function AddTrafficTimePage() {
       </Typography>
       <TextField
         fullWidth
-        name="nameAr"
+        name="title_ar"
         placeholder={t("Enter the Traffic Time Name Arabic")}
         variant="standard"
         InputProps={{
           disableUnderline: true,
-          sx: {
-            backgroundColor: theme.palette.secondary.sec,
-            borderRadius: 1,
-            p: "10px 12px",
-          },
+          sx: { backgroundColor: theme.palette.secondary.sec, borderRadius: 1, p: "10px 12px" },
         }}
-        value={formik.values.nameAr}
+        value={formik.values.title_ar}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        error={formik.touched.nameAr && Boolean(formik.errors.nameAr)}
-        helperText={formik.touched.nameAr && formik.errors.nameAr}
+        error={formik.touched.title_ar && Boolean(formik.errors.title_ar)}
+        helperText={formik.touched.title_ar && formik.errors.title_ar}
         sx={{ mb: 3 }}
       />
 
@@ -140,22 +128,17 @@ export default function AddTrafficTimePage() {
       <TextField
         fullWidth
         type="time"
-        name="timeFrom"
+        name="time_from"
         variant="standard"
-        InputLabelProps={{ shrink: true }}
         InputProps={{
           disableUnderline: true,
-          sx: {
-            backgroundColor: theme.palette.secondary.sec,
-            borderRadius: 1,
-            p: "10px 12px",
-          },
+          sx: { backgroundColor: theme.palette.secondary.sec, borderRadius: 1, p: "10px 12px" },
         }}
-        value={formik.values.timeFrom}
+        value={formik.values.time_from}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        error={formik.touched.timeFrom && Boolean(formik.errors.timeFrom)}
-        helperText={formik.touched.timeFrom && formik.errors.timeFrom}
+        error={formik.touched.time_from && Boolean(formik.errors.time_from)}
+        helperText={formik.touched.time_from && formik.errors.time_from}
         sx={{ mb: 3 }}
       />
 
@@ -166,55 +149,47 @@ export default function AddTrafficTimePage() {
       <TextField
         fullWidth
         type="time"
-        name="timeTo"
+        name="time_to"
         variant="standard"
         InputProps={{
           disableUnderline: true,
-          sx: {
-            backgroundColor: theme.palette.secondary.sec,
-            borderRadius: 1,
-            p: "10px 12px",
-          },
+          sx: { backgroundColor: theme.palette.secondary.sec, borderRadius: 1, p: "10px 12px" },
         }}
-        value={formik.values.timeTo}
+        value={formik.values.time_to}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        error={formik.touched.timeTo && Boolean(formik.errors.timeTo)}
-        helperText={formik.touched.timeTo && formik.errors.timeTo}
+        error={formik.touched.time_to && Boolean(formik.errors.time_to)}
+        helperText={formik.touched.time_to && formik.errors.time_to}
         sx={{ mb: 3 }}
       />
 
       {/* Kilo Price */}
       <Typography variant="h6" gutterBottom>
-        {t("Kilo Price")} <Typography component="span" color="error.main">*</Typography>
+        {t("kilo_price_percentage")} <Typography component="span" color="error.main">*</Typography>
       </Typography>
       <TextField
         fullWidth
-        name="kiloPrice"
-        placeholder={t("Enter Kilo Price")}
+        name="kilo_price_percentage"
+        placeholder={`${t("Enter Kilo Price")} %`}
         variant="standard"
         type="text"
         InputProps={{
           disableUnderline: true,
-          endAdornment: <Typography>SAR</Typography>,
-          sx: {
-            backgroundColor: theme.palette.secondary.sec,
-            borderRadius: 1,
-            p: "10px 12px",
-          },
+          endAdornment: <Typography>%</Typography>,
+          sx: { backgroundColor: theme.palette.secondary.sec, borderRadius: 1, p: "10px 12px" },
         }}
-        value={formik.values.kiloPrice}
+        value={formik.values.kilo_price_percentage}
         onChange={(e) => {
           const value = e.target.value;
           if (/^\d*\.?\d*$/.test(value)) {
-            formik.setFieldValue("kiloPrice", value);
+            formik.setFieldValue("kilo_price_percentage", value);
           }
         }}
         onBlur={formik.handleBlur}
-        error={formik.touched.kiloPrice && Boolean(formik.errors.kiloPrice)}
-        helperText={formik.touched.kiloPrice && formik.errors.kiloPrice}
+        error={formik.touched.kilo_price_percentage && Boolean(formik.errors.kilo_price_percentage)}
+        helperText={formik.touched.kilo_price_percentage && formik.errors.kilo_price_percentage}
         sx={{ mb: 3 }}
-      />
+      />    
 
       <Divider sx={{ my: 3 }} />
 

@@ -95,7 +95,7 @@ const OffersPage = () => {
     maxDiscount: o.maximum_discount_value,
     startDate: formatDate(o.start_date, i18n.language),
     endDate: formatDate(o.end_date, i18n.language),
-    status: o.status === "active" ? "Active" : "In Active",
+    status: o.status === "active" ? "Active" : "inactive",
   }));
 
   const columns = [
@@ -116,7 +116,7 @@ const OffersPage = () => {
       return notify("noPermissionToUpdateStatus", "warning");
     }
     const offerId = row?.id;
-    const newStatus = status === "active" ? "active" : "in_active";
+    const newStatus = status === "active" ? "active" : "inactive";
     await dispatch(editOffer({ id: offerId, data: { status: newStatus } }));
     const query =
       `page=${page}&limit=${limit}` +
@@ -247,7 +247,7 @@ const OffersPage = () => {
         <FilterComponent
           onSearch={handleSearch}
           initialFilters={{ keyword, status }}
-          statusOptions={["active", "in_active"]}
+          statusOptions={["active", "inactive"]}
           isOffer={true}
         />
       </Box>

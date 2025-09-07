@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -12,47 +12,53 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  editTrafficTime,
+  getOneTrafficTime,
+} from "../../redux/slices/trafficTime/thunk";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const TrafficTimeDetailsPage = () => {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
+  const { id } = useParams();
   const theme = useTheme();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // Dummy traffic time object
-  const oneTrafficTime = {
-    id: "#76312",
-    nameEn: "Traffic Time 7 PM",
-    nameAr: "موعد الذروة 7 مساءً",
-    timeFrom: "06:00",
-    timeTo: "10:00",
-    kiloPrice: "150 %",
-  };
+  // Permissions
+  function hasPermission(permissionType) {
+    const permissions = getPermissionsByScreen("TrafficTime");
+    return permissions ? permissions[permissionType] === true : false;
+  }
+  const hasViewPermission = hasPermission("view");
+  const hasEditPermission = hasPermission("edit");
 
-  const [editableFields, setEditableFields] = useState({
-    nameEn: oneTrafficTime.nameEn,
-    nameAr: oneTrafficTime.nameAr,
-    timeFrom: oneTrafficTime.timeFrom,
-    timeTo: oneTrafficTime.timeTo,
-    kiloPrice: oneTrafficTime.kiloPrice,
-  });
+  const { trafficTime } = useSelector((state) => state.trafficTime);
 
-  const [editMode, setEditMode] = useState({
-    nameEn: false,
-    nameAr: false,
-    timeFrom: false,
-    timeTo: false,
-    kiloPrice: false,
-  });
+  // Fetch single traffic time
+  useEffect(() => {
+    dispatch(getOneTrafficTime(id));
+  }, [dispatch, id]);
 
-  const [loading, setLoading] = useState({
-    nameEn: false,
-    nameAr: false,
-    timeFrom: false,
-    timeTo: false,
-    kiloPrice: false,
-  });
+  const [editableFields, setEditableFields] = useState({});
+  const [editMode, setEditMode] = useState({});
+  const [loading, setLoading] = useState({});
+
+  useEffect(() => {
+    if (trafficTime) {
+      setEditableFields({
+        title_en: trafficTime.title_en || "",
+        title_ar: trafficTime.title_ar || "",
+        time_from: trafficTime.time_from || "",
+        time_to: trafficTime.time_to || "",
+        kilo_price_percentage: trafficTime.kilo_price_percentage || 0,
+        status: trafficTime.status || "active",
+      });
+    }
+  }, [trafficTime]);
 
   const handleFieldChange = (field, value) => {
     setEditableFields((prev) => ({
@@ -61,44 +67,48 @@ const TrafficTimeDetailsPage = () => {
     }));
   };
 
-  const handleSave = (field) => {
+  const handleSave = async (field) => {
     setLoading((prev) => ({ ...prev, [field]: true }));
-
-    setTimeout(() => {
-      setLoading((prev) => ({ ...prev, [field]: false }));
+    const data = {
+      [field]: editableFields[field],
+    };
+    try {
+      await dispatch(editTrafficTime({ id, data }));
+      await dispatch(getOneTrafficTime(id));
+    } catch (error) {
+      console.error("Error saving field:", error);
+    } finally {
       setEditMode((prev) => ({ ...prev, [field]: false }));
-      console.log(`Saved ${field}:`, editableFields[field]);
-    }, 1000);
+      setLoading((prev) => ({ ...prev, [field]: false }));
+    }
   };
 
   const toggleEditMode = (field) => {
-    setEditMode((prev) => ({
-      ...prev,
-      [field]: !prev[field],
-    }));
+    setEditMode((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
-  const renderEditableCard = (field, label,type='text') => (
+  const renderEditableCard = (field, label, type = "text") => (
     <Card
       sx={{
         background: theme.palette.secondary.sec,
-        p: 1,
+        p: 2,
         mb: 2,
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <Typography variant="title" fontWeight={"bold"}>{t(label)}</Typography>
+      <Typography variant="subtitle1" fontWeight="bold">
+        {t(label)}
+      </Typography>
 
       {editMode[field] ? (
         <Box display="flex" alignItems="center" mt={1} gap={1}>
           <TextField
-          type={type}
+            type={type}
             value={editableFields[field]}
             onChange={(e) => handleFieldChange(field, e.target.value)}
             fullWidth
             size="small"
-            sx={{ flexGrow: 1 }}
           />
           <IconButton
             onClick={() => handleSave(field)}
@@ -108,70 +118,82 @@ const TrafficTimeDetailsPage = () => {
           </IconButton>
         </Box>
       ) : (
-        <Box display="flex" alignItems="center" justifyContent="space-between" mt={1} gap={1}>
-          <Typography
-            variant="title"
-            sx={{ color: theme.palette.text.blue }}
-          >
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          mt={1}
+        >
+          <Typography variant="body1" sx={{ color: theme.palette.text.primary }}>
             {editableFields[field]}
           </Typography>
-          <IconButton
-            onClick={() => toggleEditMode(field)}
-            sx={{ visibility: editMode[field] ? "hidden" : "visible" }}
-          >
-            <EditIcon />
-          </IconButton>
+          {hasEditPermission && (
+            <IconButton onClick={() => toggleEditMode(field)}>
+              <EditIcon />
+            </IconButton>
+          )}
         </Box>
       )}
     </Card>
   );
 
+  if (!hasViewPermission) return <Navigate to="/profile" />;
+
   return (
-    <Box p={2}>
+    <Box p={3}>
       {/* Breadcrumb */}
-      <Box display="flex" alignItems="center" flexWrap="wrap" mb={2}>
+      <Box display="flex" alignItems="center" mb={2}>
         <Typography
           onClick={() => navigate("/TrafficTime")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Traffic Time")}
         </Typography>
-        <Typography mx={1}>{`<`}</Typography>
+        <Typography mx={1}>{"<"}</Typography>
         <Typography
           onClick={() => navigate("/TrafficTime")}
           sx={{ cursor: "pointer", color: theme.palette.primary.main }}
         >
           {t("Traffic Time Details")}
         </Typography>
-        <Typography mx={1}>{`<`}</Typography>
-        <Typography>{isArabic ? oneTrafficTime.nameAr :oneTrafficTime.nameEn}</Typography>
+        <Typography mx={1}>{"<"}</Typography>
+        <Typography>
+          {isArabic ? trafficTime?.title_ar : trafficTime?.title_en}
+        </Typography>
       </Box>
 
       {/* Title */}
-      <Box mb={2}>
+      <Box mb={3}>
         <Typography variant="h5" fontWeight="bold">
-        {isArabic ? oneTrafficTime.nameAr :oneTrafficTime.nameEn} {oneTrafficTime.id}
+          {isArabic ? trafficTime?.title_ar : trafficTime?.title_en}
         </Typography>
       </Box>
 
       {/* Editable Info Cards */}
-      <Box maxWidth="md">
+      <Box maxWidth="sm">
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            {renderEditableCard("nameEn", "Traffic Time Name English")}
+            {renderEditableCard("title_en", "Traffic Time Name English")}
           </Grid>
           <Grid item xs={12}>
-            {renderEditableCard("nameAr", "Traffic Time Name Arabic")}
+            {renderEditableCard("title_ar", "Traffic Time Name Arabic")}
           </Grid>
           <Grid item xs={12}>
-            {renderEditableCard("timeFrom", "Time From",'time')}
+            {renderEditableCard("time_from", "Time From", "time")}
           </Grid>
           <Grid item xs={12}>
-            {renderEditableCard("timeTo", "Time To",'time')}
+            {renderEditableCard("time_to", "Time To", "time")}
           </Grid>
           <Grid item xs={12}>
-            {renderEditableCard("kiloPrice", "Kilo Price")}
+            {renderEditableCard(
+              "kilo_price_percentage",
+              "kilo_price_percentage",
+              "number"
+            )}
           </Grid>
+         {false && <Grid item xs={12}>
+            {renderEditableCard("status", "Status")}
+          </Grid>}
         </Grid>
       </Box>
     </Box>
