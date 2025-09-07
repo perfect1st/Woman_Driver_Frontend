@@ -92,6 +92,14 @@ const Sidebar = ({ userType = "admin", mobileOpen, onClose, onAction }) => {
               matchPath("/CommissionCategoryDetails/:id", location.pathname)) ||
             (item.key === "CommissionCategory" &&
               matchPath("/CommissionCategory/AddCommissionCategory", location.pathname)) ||
+            (item.key === "Coupons" &&
+              matchPath("/couponDetails/:id", location.pathname)) ||
+            (item.key === "Coupons" &&
+              matchPath("/Coupons/addCoupon", location.pathname)) ||
+            (item.key === "Offers" &&
+              matchPath("/offerDetails/:id", location.pathname)) ||
+            (item.key === "Offers" &&
+              matchPath("/Offers/addOffer", location.pathname)) ||
             (item.key === "Liqudation" &&
               matchPath("/LiqudationDetails/:id", location.pathname));
 

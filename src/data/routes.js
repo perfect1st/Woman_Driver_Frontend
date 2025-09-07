@@ -135,89 +135,27 @@ const routesData = {
         },
       ],
     },
-    {
-      key: "Loading",
-      label: { en: "Loading", ar: "صفحه التحميل" },
-      path: "/Loading",
-      // icon: HomeIcon,
-    },
-    {
-      key: "404",
-      label: { en: "404 page", ar: "الصفحه غير موجوده" },
-      path: "/404",
-      // icon: HomeIcon,
-    },
-    {
-      key: "Maintenance",
-      label: { en: "Maintenance", ar: "الصيانة" },
-      path: "/Maintenance",
-      // icon: HomeIcon,
-    },
     // {
-    //   key: "home",
-    //   label: { en: "home", ar: "الرئيسيه" },
-    //   path: "/home",
+    //   key: "Loading",
+    //   label: { en: "Loading", ar: "صفحه التحميل" },
+    //   path: "/Loading",
     //   // icon: HomeIcon,
     // },
-
     // {
-    //   key: "users",
-    //   label: { en: "Users", ar: "المستخدمين" },
-    //   icon: More,
-    //   children: [
-    //     {
-    //       key: "allUsers",
-    //       label: { en: "All Users", ar: "جميع المستخدمين" },
-    //       path: "/admin/users",
-    //       icon: HomeIcon,
-    //     },
-    //     {
-    //       key: "createUser",
-    //       label: { en: "Create User", ar: "إنشاء مستخدم" },
-    //       path: "/admin/users/create",
-    //       // icon: More,
-
-    //     },
-    //   ],
+    //   key: "404",
+    //   label: { en: "404 page", ar: "الصفحه غير موجوده" },
+    //   path: "/404",
+    //   // icon: HomeIcon,
     // },
     // {
-    //   key: "drivers",
-    //   label: { en: "Drivers", ar: "السائقين" },
-    //   icon: More,
-    //   children: [
-    //     {
-    //       key: "allDrivers",
-    //       label: { en: "All Drivers", ar: "جميع السائقين" },
-    //       path: "/admin/Drivers",
-    //       icon: HomeIcon,
-    //     },
-    //     {
-    //       key: "createDriver",
-    //       label: { en: "Create Driver", ar: "إنشاء سائق" },
-    //       path: "/admin/Driver/create",
-    //       icon: HomeIcon,
-    //     },
-    //   ],
+    //   key: "Maintenance",
+    //   label: { en: "Maintenance", ar: "الصيانة" },
+    //   path: "/Maintenance",
+    //   // icon: HomeIcon,
     // },
+   
   ],
-  accountant: [
-    {
-      key: "dashboard",
-      label: { en: "Dashboard", ar: "لوحة التحكم" },
-      path: "/accountantHome",
-    },
-    {
-      key: "reports",
-      label: { en: "Reports", ar: "التقارير" },
-      children: [
-        {
-          key: "monthly",
-          label: { en: "Monthly Report", ar: "تقرير شهري" },
-          path: "/accountant/reports/monthly",
-        },
-      ],
-    },
-  ],
+
 };
 
 export default routesData;

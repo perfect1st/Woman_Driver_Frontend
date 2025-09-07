@@ -94,9 +94,7 @@ const CouponsPage = () => {
     value: `${c.coupon_value} ${
       c.coupon_type == "percentage" ? "%" : t("SAR")
     }`,
-    usageCount: c.usage_count,
     maxDiscount: c.maximum_discount_value,
-    perUser: c.usage_count_per_user_value,
     startDate: formatDate(c.start_date, i18n.language),
     endDate: formatDate(c.end_date, i18n.language),
     status: c.status === "active" ? "Active" : "In Active",
@@ -106,9 +104,7 @@ const CouponsPage = () => {
     { key: "index", label: t("ID") },
     { key: "title", label: t("Coupon Title") },
     { key: "value", label: t("Value") },
-    { key: "usageCount", label: t("Usage Count") },
     { key: "maxDiscount", label: t("Max Discount") },
-    { key: "perUser", label: t("Usage/User") },
     { key: "startDate", label: t("Start Date") },
     { key: "endDate", label: t("End Date") },
     { key: "status", label: t("Status") },
@@ -150,9 +146,7 @@ const CouponsPage = () => {
           value: `${c.coupon_value} ${
             c.coupon_type == "percentage" ? "%" : t("SAR")
           }`,
-          "Usage count": c.usage_count,
           "Max Discount": c.maximum_discount_value,
-          "Usage/User": c.usage_count_per_user_value,
           "start Date": formatDate(c.start_date, "en"),
           "End Date": formatDate(c.end_date, "en"),
         };
