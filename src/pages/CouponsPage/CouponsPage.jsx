@@ -19,11 +19,14 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 import notify from "../../components/notify";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
 
 const CouponsPage = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
+  const isArabic = i18n.language == "ar";
+
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -40,6 +43,7 @@ const CouponsPage = () => {
   }
 
   const hasViewPermission = hasPermission("view");
+  const hasAddPermission = hasPermission("add");
   const hasEditPermission = hasPermission("edit");
 
   const { coupons = {}, loading } = useSelector((state) => state.coupon);
@@ -87,7 +91,9 @@ const CouponsPage = () => {
     id: c._id,
     index: (currentPage - 1) * limit + index + 1,
     title: c.title,
-    value: `${c.coupon_value} ${c.coupon_type == "percentage" ? "%" : t("SAR")}`,
+    value: `${c.coupon_value} ${
+      c.coupon_type == "percentage" ? "%" : t("SAR")
+    }`,
     usageCount: c.usage_count,
     maxDiscount: c.maximum_discount_value,
     perUser: c.usage_count_per_user_value,
@@ -125,24 +131,25 @@ const CouponsPage = () => {
     dispatch(getAllCoupons({ query }));
   };
 
-
   const fetchAndExport = async (type) => {
     try {
       const queryParts = [];
       if (keyword) queryParts.push(`keyword=${keyword}`);
       if (status !== "") queryParts.push(`user_type=${status}`);
-     ;
       const query = queryParts.join("&");
 
-      const response = await dispatch(getAllCouponsWithoutPaginations({ query })).unwrap();
-      console.log("response",response)
-      
+      const response = await dispatch(
+        getAllCouponsWithoutPaginations({ query })
+      ).unwrap();
+      console.log("response", response);
+
       const exportData = response?.data.map((c, idx) => {
-        
         return {
           ID: idx + 1,
-          "Coupon": c.title,
-          "value": `${c.coupon_value} ${c.coupon_type == "percentage" ? "%" : t("SAR")}`,
+          Coupon: c.title,
+          value: `${c.coupon_value} ${
+            c.coupon_type == "percentage" ? "%" : t("SAR")
+          }`,
           "Usage count": c.usage_count,
           "Max Discount": c.maximum_discount_value,
           "Usage/User": c.usage_count_per_user_value,
@@ -213,6 +220,9 @@ const CouponsPage = () => {
       console.error("Export error:", err);
     }
   };
+  const addCouponSubmit = () => {
+    navigate("addCoupon");
+  };
 
   return (
     <Box
@@ -234,6 +244,10 @@ const CouponsPage = () => {
         isExcel
         isPdf
         isPrinter
+        haveBtn={hasAddPermission}
+        btn={t("coupon.add_title")}
+        btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
+        onSubmit={addCouponSubmit}
         onExcel={() => fetchAndExport("excel")}
         onPdf={() => fetchAndExport("pdf")}
         onPrinter={() => fetchAndExport("print")}
@@ -255,8 +269,8 @@ const CouponsPage = () => {
         loading={loading}
         sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
         onStatusChange={onStatusChange}
-         statusKey="status"
-         isCoupon={true}
+        statusKey="status"
+        isCoupon={true}
       />
 
       <PaginationFooter

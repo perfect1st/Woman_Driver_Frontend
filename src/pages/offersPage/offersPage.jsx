@@ -19,11 +19,13 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 import notify from "../../components/notify";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
 
 const OffersPage = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
+  const isArabic = i18n.language == "ar"
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -40,6 +42,7 @@ const OffersPage = () => {
   }
 
   const hasViewPermission = hasPermission("view");
+  const hasAddPermission = hasPermission("add");
   const hasEditPermission = hasPermission("edit");
 
   const { offers = {}, loading } = useSelector((state) => state.offer);
@@ -137,10 +140,8 @@ const OffersPage = () => {
         return {
           ID: idx + 1,
           Offer: o.title,
-          Type: o.offer_type,
-          Value: o.offer_value,
+          value: `${o.offer_value} ${o.offer_type == "percentage" ? "%" : t("SAR")}`,
           "Max Discount": o.maximum_discount_value,
-          Description: o.desc || "-",
           "Start Date": formatDate(o.start_date, "en"),
           "End Date": formatDate(o.end_date, "en"),
         };
@@ -209,6 +210,10 @@ const OffersPage = () => {
     }
   };
 
+  const addOfferSubmit = ()=>{
+    navigate("addOffer")
+  }
+
   return (
     <Box
       component="main"
@@ -229,6 +234,10 @@ const OffersPage = () => {
         isExcel
         isPdf
         isPrinter
+        haveBtn={hasAddPermission}
+        btn={t("offer.add_title")}
+        btnIcon={<ControlPointIcon sx={{ [isArabic ? "mr" : "ml"]: 1 }} />}
+        onSubmit={addOfferSubmit}
         onExcel={() => fetchAndExport("excel")}
         onPdf={() => fetchAndExport("pdf")}
         onPrinter={() => fetchAndExport("print")}

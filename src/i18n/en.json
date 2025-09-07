@@ -235,7 +235,7 @@
   "Traffic Time Name": "Traffic Time Name",
   "Time From": "Time From",
   "Time To": "Time To",
-  "ID":"ID",
+  "ID": "ID",
   "Search by Traffic Time ID and Traffic Time Name": "Search by Traffic Time ID and Traffic Time Name",
   "Traffic Time Name English": "Traffic Time Name English",
   "Traffic Time Name Arabic": "Traffic Time Name Arabic",
@@ -579,7 +579,7 @@
   "Commission Driver With Car Value is required": "Commission Driver With Car Value is required",
   "Commission Driver Company Value is required": "Commission Driver Company Value is required",
   "search by liquidation number": "Search by liquidation number",
-  "something_went_wrong":"Something went wrong",
+  "something_went_wrong": "Something went wrong",
   "Coupons": "Coupons",
   "Coupons Details": "Coupons Details",
   "Coupon Title": "Coupon",
@@ -590,6 +590,106 @@
   "Usage/User": "Usage/User",
   "Active": "Active",
   "In Active": "Inactive",
-  "search by Coupon Title":"search by Coupon Title"
-
+  "search by Coupon Title": "search by Coupon Title",
+  "Offers": "Offers",
+  "Offers Details": "Offers Details",
+  "Offer Title": "Offer",
+  "offer": {
+    "breadcrumb": {
+      "offers": "Offers",
+      "details": "Offers Details",
+      "add": "Add Offer"
+    },
+    "add_title": "Add Offer",
+    "fields": {
+      "title": "Offer Name",
+      "offer_type": "Offer Type",
+      "offer_value": "Offer Value",
+      "max_discount": "Max Discount",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "desc": "Description"
+    },
+    "types": {
+      "percentage": "Percentage",
+      "fixed": "Fixed Value"
+    },
+    "placeholders": {
+      "title": "Enter the Offer Name",
+      "offer_type": "Select the Offer Type",
+      "offer_value": "Enter the Offer Value",
+      "max_discount": "Enter the Max Discount",
+      "start_date": "Enter the Start Date",
+      "end_date": "Enter the End Date",
+      "desc": "Enter the Description"
+    },
+    "validation": {
+      "title": "Offer title is required",
+      "offer_type": "Offer type is required",
+      "offer_value": "Offer value is required",
+      "offer_value_min": "Offer value cannot be negative",
+      "offer_value_max_percentage": "Percentage value cannot be greater than 100",
+      "max_discount": "Maximum discount value is required",
+      "max_discount_min": "Maximum discount value must be at least 1",
+      "start_date": "Start date is required",
+      "end_date": "End date is required",
+      "end_date_after": "End date must be after start date",
+      "desc": "Description is required"
+    },
+    "save": "Save",
+    "saving": "Saving..."
+  },
+  "coupon": {
+    "add_title": "Add Coupon",
+    "save": "Save",
+    "saving": "Saving...",
+    "breadcrumb": {
+      "coupons": "Coupons",
+      "details": "Details",
+      "add": "Add"
+    },
+    "fields": {
+      "title": "Title",
+      "coupon_type": "Coupon Type",
+      "coupon_value": "Coupon Value",
+      "max_discount": "Maximum Discount Value",
+      "usage_count": "Usage Count",
+      "usage_count_per_user": "Usage Count Per User",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "desc": "Description"
+    },
+    "placeholders": {
+      "title": "Enter coupon title",
+      "coupon_type": "Select coupon type",
+      "coupon_value": "Enter coupon value",
+      "max_discount": "Enter maximum discount value",
+      "usage_count": "Enter total usage count",
+      "usage_count_per_user": "Enter usage count per user",
+      "start_date": "Select start date",
+      "end_date": "Select end date",
+      "desc": "Enter coupon description"
+    },
+    "types": {
+      "percentage": "Percentage",
+      "fixed": "Fixed Value"
+    },
+    "validation": {
+      "title": "Title is required",
+      "coupon_type": "Coupon type is required",
+      "coupon_value": "Coupon value is required",
+      "coupon_value_min": "Coupon value cannot be negative",
+      "coupon_value_max_percentage": "Percentage coupon value cannot exceed 100%",
+      "max_discount": "Maximum discount value is required",
+      "max_discount_min": "Maximum discount must be greater than 0",
+      "usage_count": "Usage count is required",
+      "usage_count_min": "Usage count must be greater than 0",
+      "usage_count_per_user": "Usage count per user is required",
+      "usage_count_per_user_min": "Usage count per user must be greater than 0",
+      "start_date": "Start date is required",
+      "end_date": "End date is required",
+      "end_date_after": "End date must be after start date",
+      "desc": "Description is required"
+    }
+  }
 }

@@ -75,3 +75,21 @@ export const editCoupon = createAsyncThunk(
     }
   }
 );
+// add Coupon 
+export const addCoupon = createAsyncThunk(
+  "/couponSlice/addCoupon",
+  async ({ id = "", data },{ rejectWithValue }) => {
+    try {
+      const response = await useInsertData(`/coupons`, data);
+      return response;
+    } catch (error) {
+      if (error.message === "Network Error") {
+        return rejectWithValue("حدث خطأ أثناء الاتصال بالإنترنت حاول مرة أخرى");
+      } else {
+        return rejectWithValue(
+          error?.response?.data?.message || error?.response?.data?.error || "حدث خطأ أثناء تعديل بيانات التعيين"
+        );
+      }
+    }
+  }
+);

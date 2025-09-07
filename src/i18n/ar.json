@@ -26,7 +26,7 @@
   "Rider name": "اسم الراكب",
   "Rider Name": "اسم الراكب",
   "City": "المدينة",
-  "ID":"مسلسل",
+  "ID": "مسلسل",
   "Trips number": "عدد الرحلات",
   "Account status": "حالة الحساب",
   "Details": "تفاصيل",
@@ -593,7 +593,7 @@
   "Commission Driver With Car Value is required": "قيمة عمولة السائق (مع السيارة) مطلوبة",
   "Commission Driver Company Value is required": "قيمة عمولة السائق (سيارة الشركة) مطلوبة",
   "search by liquidation number": "البحث برقم التصفية",
-  "something_went_wrong":"حدث خطاء ما",
+  "something_went_wrong": "حدث خطاء ما",
   "Coupons": "الكوبونات",
   "Coupons Details": "تفاصيل الكوبونات",
   "Coupon Title": "الكوبون",
@@ -604,5 +604,106 @@
   "Usage/User": "الاستخدام/للمستخدم",
   "Active": "نشط",
   "In Active": "غير نشط",
-  "search by Coupon Title":"البحث باسم الكوبون"
+  "search by Coupon Title": "البحث باسم الكوبون",
+  "Offers": "العروض",
+  "Offers Details": "تفاصيل العروض",
+  "Offer Title": "العرض",
+  "offer": {
+    "breadcrumb": {
+      "offers": "العروض",
+      "details": "تفاصيل العروض",
+      "add": "إضافة عرض"
+    },
+    "add_title": "إضافة عرض",
+    "fields": {
+      "title": "اسم العرض",
+      "offer_type": "نوع العرض",
+      "offer_value": "قيمة العرض",
+      "max_discount": "الحد الأقصى للخصم",
+      "start_date": "تاريخ البداية",
+      "end_date": "تاريخ الانتهاء",
+      "desc": "الوصف"
+    },
+    "types": {
+      "percentage": "نسبة مئوية",
+      "fixed": "قيمة ثابتة"
+    },
+    "placeholders": {
+      "title": "أدخل اسم العرض",
+      "offer_type": "اختر نوع العرض",
+      "offer_value": "أدخل قيمة العرض",
+      "max_discount": "أدخل الحد الأقصى للخصم",
+      "start_date": "أدخل تاريخ البداية",
+      "end_date": "أدخل تاريخ الانتهاء",
+      "desc": "أدخل الوصف"
+    },
+    "validation": {
+      "title": "عنوان العرض مطلوب",
+      "offer_type": "نوع العرض مطلوب",
+      "offer_value": "قيمة العرض مطلوبة",
+      "offer_value_min": "قيمة العرض لا يمكن أن تكون سالبة",
+      "offer_value_max_percentage": "قيمة النسبة المئوية لا يمكن أن تتجاوز 100",
+      "max_discount": "الحد الأقصى للخصم مطلوب",
+      "max_discount_min": "الحد الأقصى للخصم يجب أن يكون 1 على الأقل",
+      "start_date": "تاريخ البداية مطلوب",
+      "end_date": "تاريخ الانتهاء مطلوب",
+      "end_date_after": "تاريخ الانتهاء يجب أن يكون بعد تاريخ البداية",
+      "desc": "الوصف مطلوب"
+    },
+    "save": "حفظ",
+    "saving": "جاري الحفظ..."
+  },
+  "coupon": {
+    "add_title": "إضافة كوبون",
+    "save": "حفظ",
+    "saving": "جاري الحفظ...",
+    "breadcrumb": {
+      "coupons": "الكوبونات",
+      "details": "التفاصيل",
+      "add": "إضافة"
+    },
+    "fields": {
+      "title": "العنوان",
+      "coupon_type": "نوع الكوبون",
+      "coupon_value": "قيمة الكوبون",
+      "max_discount": "أقصى قيمة خصم",
+      "usage_count": "عدد مرات الاستخدام",
+      "usage_count_per_user": "عدد مرات الاستخدام لكل مستخدم",
+      "start_date": "تاريخ البداية",
+      "end_date": "تاريخ الانتهاء",
+      "desc": "الوصف"
+    },
+    "placeholders": {
+      "title": "أدخل عنوان الكوبون",
+      "coupon_type": "اختر نوع الكوبون",
+      "coupon_value": "أدخل قيمة الكوبون",
+      "max_discount": "أدخل أقصى قيمة للخصم",
+      "usage_count": "أدخل عدد مرات الاستخدام",
+      "usage_count_per_user": "أدخل عدد مرات الاستخدام لكل مستخدم",
+      "start_date": "اختر تاريخ البداية",
+      "end_date": "اختر تاريخ الانتهاء",
+      "desc": "أدخل وصف الكوبون"
+    },
+    "types": {
+      "percentage": "نسبة مئوية",
+      "fixed": "قيمة ثابتة"
+    },
+    "validation": {
+      "title": "العنوان مطلوب",
+      "coupon_type": "نوع الكوبون مطلوب",
+      "coupon_value": "قيمة الكوبون مطلوبة",
+      "coupon_value_min": "قيمة الكوبون لا يمكن أن تكون سالبة",
+      "coupon_value_max_percentage": "قيمة الكوبون بالنسبة المئوية لا يمكن أن تتجاوز 100%",
+      "max_discount": "الحد الأقصى للخصم مطلوب",
+      "max_discount_min": "يجب أن يكون الحد الأقصى للخصم أكبر من 0",
+      "usage_count": "عدد مرات الاستخدام مطلوب",
+      "usage_count_min": "عدد مرات الاستخدام يجب أن يكون أكبر من 0",
+      "usage_count_per_user": "عدد مرات الاستخدام لكل مستخدم مطلوب",
+      "usage_count_per_user_min": "عدد مرات الاستخدام لكل مستخدم يجب أن يكون أكبر من 0",
+      "start_date": "تاريخ البداية مطلوب",
+      "end_date": "تاريخ الانتهاء مطلوب",
+      "end_date_after": "يجب أن يكون تاريخ الانتهاء بعد تاريخ البداية",
+      "desc": "الوصف مطلوب"
+    }
+  }
 }

@@ -78,17 +78,18 @@ export const editOffer = createAsyncThunk(
 // add Offer
 export const addOffer = createAsyncThunk(
   "/offerSlice/addOffer",
-  async ({ id = "", data }) => {
+  async ({ id = "", data },{ rejectWithValue }) => {
     try {
       const response = await useInsertData(`/offers`, data);
       return response;
     } catch (error) {
-      if (error.message === "Network Error")
-        return notify(
-          "حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري ",
-          "error"
+      if (error.message === "Network Error") {
+        return rejectWithValue("حدث خطأ أثناء الاتصال بالإنترنت حاول مرة أخرى");
+      } else {
+        return rejectWithValue(
+          error?.response?.data?.message || error?.response?.data?.error || "حدث خطأ أثناء تعديل بيانات التعيين"
         );
-      else return notify(error.response.data, "error");
+      }
     }
   }
 );
