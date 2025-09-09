@@ -110,6 +110,12 @@ const statusStyles = {
     borderColor: "#ABEFC6",
     // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
   },
+  paid: {
+    textColor: "#085D3A",
+    bgColor: "#ECFDF3",
+    borderColor: "#ABEFC6",
+    // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
+  },
   Accepted: {
     textColor: "#085D3A",
     bgColor: "#ECFDF3",

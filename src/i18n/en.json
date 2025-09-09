@@ -541,7 +541,7 @@
   "Liquidation Details": "Liquidation Details",
   "Liquidation ID": "Liquidation ID",
   "liquidation_now": "Liquidate Now",
-  "driver_already_liquidated": "This driver has already been liquidated.",
+  "driver_already_liquidated": "This liquidation has already been liquidated.",
   "search by driver name and email and phone number": "search by driver name and email and phone number",
   "confirm_liquidation_title": "Confirm Liquidation",
   "confirm_liquidation_message": "Are you sure you want to liquidate {{name}}?",

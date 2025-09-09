@@ -213,7 +213,7 @@ console.log("selectedTrip",selectedTrip)
         return "Accepted";
       case "pending":
         return "Pending";
-      case "rejected":
+      case "banned":
         return "Rejected";
       default:
         return "Pending";
@@ -665,7 +665,7 @@ const formatTime = (dateString) => {
         // Map UI status to API status
         let apiStatus = "pending";
         if (editableFields.accountStatus === "Accepted") apiStatus = "active";
-        if (editableFields.accountStatus === "Rejected") apiStatus = "rejected";
+        if (editableFields.accountStatus === "Rejected") apiStatus = "banned";
         formData.append("status", apiStatus);
         break;
       case "verified":

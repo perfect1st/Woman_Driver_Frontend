@@ -125,7 +125,7 @@ const DriversPage = () => {
     const driverId = id.id;
     console.log("selectedDriver",id)
     const data ={
-      status: newStatus,
+      status: newStatus == "Rejected" ? "banned" : newStatus,
       user_type: id?.user_type
     }
     
@@ -279,7 +279,7 @@ const DriversPage = () => {
         <FilterComponent
           onSearch={handleSearch}
           initialFilters={{ keyword, status }}
-          statusOptions={["active", "pending", "panned"]}
+          statusOptions={["active", "pending", "banned"]}
           carTypeOptions={allCarTypes?.data}
           isDriver={true}
         />

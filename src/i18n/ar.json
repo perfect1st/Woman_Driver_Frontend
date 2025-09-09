@@ -552,7 +552,7 @@
   "Liquidation Details": "تفاصيل التصفية",
   "Liquidation ID": "رقم التصفية",
   "liquidation_now": "تصفية الآن",
-  "driver_already_liquidated": "تمت تصفية هذا السائق مسبقًا.",
+  "driver_already_liquidated": "تمت تصفية هذه التصفية مسبقًا.",
   "search by driver name and email and phone number": "البحث حسب اسم السائق والبريد الإلكتروني ورقم الهاتف",
   "confirm_liquidation_title": "تأكيد التصفية",
   "confirm_liquidation_message": "هل أنت متأكد أنك تريد تصفية {{name}}؟",

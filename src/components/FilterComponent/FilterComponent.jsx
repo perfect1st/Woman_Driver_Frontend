@@ -132,11 +132,13 @@ const FilterComponent = ({
       keyword: "",
       city: "",
       carType: "",
+      companyCar: "",
       status: "",
       tripType: "",
       user_type: "",
       trans_type: "",
       transaction_type: "",
+      date:""
     });
   };
 

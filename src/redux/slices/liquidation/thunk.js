@@ -75,11 +75,11 @@ export const getOneLiquidationWithoutPagination = createAsyncThunk(
 );
 
 // edit Liquidation
-export const editLiquidation = createAsyncThunk(
+export const processLiquidation = createAsyncThunk(
   "/liquidationSlice/editLiquidation",
   async ({ id = "", data }, { rejectWithValue }) => {
     try {
-      const response = await useUpdateData(`/liquidations/${id}`, data);
+      const response = await useInsertData(`/liquidations/processLiquidation`, data);
       return response;
     } catch (error) {
       if (error.message === "Network Error") {

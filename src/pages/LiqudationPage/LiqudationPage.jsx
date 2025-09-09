@@ -21,7 +21,7 @@ import { useNavigate, useSearchParams, Navigate } from "react-router-dom";
 import {
   getAllLiquidations,
   getAllLiquidationsWithoutPaginations,
-  editLiquidation,
+  processLiquidation,
 } from "../../redux/slices/liquidation/thunk";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -203,7 +203,7 @@ const LiquidationPage = () => {
   };
 
   const onLiquidationClick = (e, row) => {
-    if (row?.status === "completed") {
+    if (row?.status === "paid") {
       return notify(t("driver_already_liquidated"), "warning");
     }
     setSelectedRow(row);
@@ -214,8 +214,11 @@ const LiquidationPage = () => {
     if (!selectedRow) return;
 
     try {
+      const data = {
+        liquidationId: selectedRow.id
+      }
       await dispatch(
-        editLiquidation({ id: selectedRow.id, data: { status: "completed" } })
+        processLiquidation({ data })
       ).unwrap();
       // refresh
       const query =
@@ -267,7 +270,7 @@ const LiquidationPage = () => {
         <FilterComponent
           onSearch={handleSearch}
           initialFilters={{ keyword, status, date }}
-          statusOptions={["pending", "completed"]}
+          statusOptions={["pending", "paid"]}
           isLiquidation
           DonthasStatus={true}
         />
