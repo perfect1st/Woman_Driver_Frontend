@@ -159,12 +159,12 @@ export default function ModernChatDrawer({
           <Avatar sx={{ width: 48, height: 48 }} />
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 700 }}>{t("Chat")}</Typography>
-            <Typography variant="caption" color="text.secondary">{t("Online")}</Typography>
+            {/* <Typography variant="caption" color="text.secondary">{t("Online")}</Typography> */}
           </Box>
         </Box>
 
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-          <IconButton size="small" aria-label="options"><MoreVertIcon /></IconButton>
+          {/* <IconButton size="small" aria-label="options"><MoreVertIcon /></IconButton> */}
           <IconButton size="small" onClick={onClose} aria-label="close"><CloseIcon /></IconButton>
         </Box>
       </Box>

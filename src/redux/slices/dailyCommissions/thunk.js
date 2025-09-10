@@ -44,9 +44,9 @@ export const getAllDailyCommissionsWithoutPaginations = createAsyncThunk(
 // get one  Daily Commission 
 export const getOneDailyCommission = createAsyncThunk(
   "/dailyCommissionsSlice/getOneDailyCommission",
-  async (id) => {
+  async ({id,query=''}) => {
     try {
-      const response = await useGetDataToken(`/dailyCommissions/${id}`);
+      const response = await useGetDataToken(`/dailyCommissions/${id}?${query}`);
       return response;
     } catch (error) {
       if (error.message === "Network Error") {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   Box,
@@ -13,11 +13,38 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { updateSetting } from "../../redux/slices/setting/thunk";
 
 const NotifyRadiusModal = ({ open, onClose }) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const dispatch = useDispatch();
+
+  const { setting } = useSelector((state) => state.setting);
+
+  const [radius, setRadius] = useState("");
+
+ 
+  useEffect(() => {
+    if (open && setting?.driver_search_radius !== undefined) {
+      setRadius(setting.driver_search_radius);
+    }
+  }, [open, setting]);
+  
+
+  const handleSave = () => {
+    if (!radius) return;
+
+    dispatch(
+      updateSetting({
+        id: setting._id,
+        data: { driver_search_radius: Number(radius) },
+      })
+    );
+    onClose();
+  };
 
   return (
     <Modal
@@ -65,14 +92,25 @@ const NotifyRadiusModal = ({ open, onClose }) => {
             <Typography variant="subtitle1" mb={2} fontWeight="bold">
               {t("notifyModal.label")}
             </Typography>
+
             <TextField
+              type="text"
               placeholder={t("notifyModal.placeholder")}
               variant="outlined"
               fullWidth
               size="small"
+              value={radius}
+              onChange={(e) => {
+                const value = e.target.value;
+                // regex: only positive integers
+                if (/^\d*$/.test(value)) {
+                  setRadius(value);
+                }
+              }}
               sx={{ mb: 3 }}
             />
-            <Button variant="contained" fullWidth onClick={onClose}>
+
+            <Button variant="contained" fullWidth onClick={handleSave}>
               {t("common.done")}
             </Button>
           </Box>

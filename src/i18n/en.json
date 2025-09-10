@@ -389,7 +389,9 @@
     "create": "Create Group",
     "saving": "saving",
     "saveChanges": "Save Changes",
-    "mins": "mins"
+    "mins": "mins",
+    "edit": "Edit",
+    "save": "Save"
   },
   "waitingPeriod": "Waiting Period",
 
@@ -714,5 +716,27 @@
   "percentage": "Percentage",
   "fixed": "Fixed Value",
   "kilo_price_percentage": "Kilo Price %",
-  "Chat":"Chat"
+  "Chat": "Chat",
+  "Today": "Today",
+  "cashbackModal": {
+    "title": "Cashback Percentage",
+    "label": "Enter cashback percentage",
+    "placeholder": "Enter a value between 0 and 100"
+  },
+  "privacyPolicy": {
+    "title": "Privacy Policy",
+    "ar": "Privacy Policy (Arabic)",
+    "en": "Privacy Policy (English)",
+    "current": "Current Privacy Policy"
+  },
+  "helpPage": {
+    "title": "Help & Support",
+    "ar": "Help Content (Arabic)",
+    "en": "Help Content (English)",
+    "current": "Current Help Content"
+  },
+  "Trip Number": "Trip Number",
+  "Start Time": "Start Time",
+  "End Time": "End Time",
+  "Trip Commisson": "Trip Commission"
 }

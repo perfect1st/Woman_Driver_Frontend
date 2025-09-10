@@ -133,6 +133,29 @@ const routesData = {
           // icon: More,
 
         },
+        {
+          key: "settings",
+          label: { en: "Cashback Percentage", ar: "نسبة استرداد النقود" },
+          action: "openCashbackModal",
+          path: "",
+          // icon: More,
+
+        },
+        {
+          key: "privacyPolicy",
+          label: { en: "privacy Policy", ar: "سياسة الخصوصية" },
+          path: "/privacyPolicy",
+          // icon: More,
+
+        },
+        {
+          key: "Help",
+          label: { en: "Help & Support", ar: "المساعدة والدعم" },
+          path: "/Help",
+          // icon: More,
+
+        },
+       
       ],
     },
     // {

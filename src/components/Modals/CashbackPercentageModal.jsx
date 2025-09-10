@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { updateSetting } from "../../redux/slices/setting/thunk";
 
-const TrackingFrequencyModal = ({ open, onClose }) => {
+const CashbackPercentageModal = ({ open, onClose }) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -24,22 +24,22 @@ const TrackingFrequencyModal = ({ open, onClose }) => {
 
   const { setting } = useSelector((state) => state.setting);
 
-  const [frequency, setFrequency] = useState("");
+  const [cashback, setCashback] = useState("");
 
-  // set initial value when setting changes
+  // Reset value each time modal opens with current redux state
   useEffect(() => {
-    if (setting?.trip_tracking_frequency !== undefined) {
-      setFrequency(setting.trip_tracking_frequency);
+    if (open && setting?.cashback_percentage !== undefined) {
+      setCashback(setting.cashback_percentage);
     }
   }, [open, setting]);
 
   const handleSave = () => {
-    if (!frequency) return;
+    if (!cashback) return;
 
     dispatch(
       updateSetting({
         id: setting._id,
-        data: { trip_tracking_frequency: Number(frequency) },
+        data: { cashback_percentage: Number(cashback) },
       })
     );
     onClose();
@@ -76,9 +76,13 @@ const TrackingFrequencyModal = ({ open, onClose }) => {
         }}
       >
         <Box sx={{ position: "relative", zIndex: 1 }}>
-          <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
             <Typography fontWeight="bold" variant="h6">
-              {t("trackingModal.title")}
+              {t("cashbackModal.title")}
             </Typography>
             <IconButton onClick={onClose}>
               <CloseIcon />
@@ -89,25 +93,26 @@ const TrackingFrequencyModal = ({ open, onClose }) => {
 
           <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
             <Typography variant="subtitle1" mb={2} fontWeight="bold">
-              {t("trackingModal.label")}
+              {t("cashbackModal.label")}
             </Typography>
 
             <TextField
-  type="text"
-  placeholder={t("trackingModal.placeholder")}
-  variant="outlined"
-  fullWidth
-  size="small"
-  value={frequency}
-  onChange={(e) => {
-    const value = e.target.value;
-    if (/^\d*$/.test(value)) {
-      setFrequency(value);
-    }
-  }}
-  sx={{ mb: 3 }}
-/>
-
+              type="text"
+              placeholder={t("cashbackModal.placeholder")}
+              variant="outlined"
+              fullWidth
+              size="small"
+              value={cashback}
+              onChange={(e) => {
+                const value = e.target.value;
+                // allow only positive integers up to 100
+                if (/^\d*$/.test(value) && Number(value) <= 100) {
+                  setCashback(value);
+                }
+              }}
+              sx={{ mb: 3 }}
+              inputProps={{ maxLength: 3 }} // optional: prevent more than 3 digits
+            />
 
             <Button variant="contained" fullWidth onClick={handleSave}>
               {t("common.done")}
@@ -119,4 +124,4 @@ const TrackingFrequencyModal = ({ open, onClose }) => {
   );
 };
 
-export default TrackingFrequencyModal;
+export default CashbackPercentageModal;

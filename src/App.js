@@ -61,6 +61,11 @@ import OffersPage from "./pages/OffersPage/OffersPage";
 import AddCouponPage from "./pages/CouponsPage/AddCoupon";
 import CouponDetailsPage from "./pages/CouponsPage/CouponDetailsPage";
 import OfferDetailsPage from "./pages/OffersPage/OfferDetails";
+import { getAllSetting } from "./redux/slices/setting/thunk";
+import { useDispatch } from "react-redux";
+import CashbackPercentageModal from "./components/Modals/CashbackPercentageModal";
+import PrivacyPolicyPage from "./pages/settings/PrivacyPolicyPage";
+import HelpPage from "./pages/settings/HelpPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -72,7 +77,10 @@ import OfferDetailsPage from "./pages/OffersPage/OfferDetails";
     const [mode, setMode] = useState("light");
     const { i18n } = useTranslation();
     const location = useLocation();
-
+    const dispatch = useDispatch();
+useEffect(() => {
+  dispatch(getAllSetting());
+},[])
     // Update direction and language in localStorage
     useEffect(() => {
       const storedMode = localStorage.getItem("theme-mode");
@@ -278,10 +286,12 @@ import OfferDetailsPage from "./pages/OffersPage/OfferDetails";
     
     const [openTracking, setOpenTracking] = useState(false);
     const [openNotify, setOpenNotify] = useState(false);
+    const [openCashback, setOpenCashback] = useState(false);
   
     const handleSidebarAction = (action) => {
       if (action === "openTrackingModal") setOpenTracking(true);
       if (action === "openNotifyRadiusModal") setOpenNotify(true);
+      if (action === "openCashbackModal") setOpenCashback(true);
     };
     const user = getUserCookie();
     const hideHeader = location.pathname != '/login';
@@ -769,6 +779,26 @@ import OfferDetailsPage from "./pages/OffersPage/OfferDetails";
     }
   />
   <Route
+    path="/Help"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <HelpPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/PrivacyPolicy"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <PrivacyPolicyPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
     path="/admin/users"
     element={
       // <ProtectedRoute>
@@ -797,6 +827,7 @@ import OfferDetailsPage from "./pages/OffersPage/OfferDetails";
           </div>
           <TrackingFrequencyModal open={openTracking} onClose={() => setOpenTracking(false)} />
           <NotifyRadiusModal open={openNotify} onClose={() => setOpenNotify(false)} />
+          <CashbackPercentageModal open={openCashback} onClose={() => setOpenCashback(false)} />
           
           <ToastContainer
             position="top-right"
