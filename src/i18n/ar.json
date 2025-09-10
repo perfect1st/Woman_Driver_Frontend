@@ -727,5 +727,7 @@
   },
   "percentage": "نسبة مئوية",
   "fixed": "قيمة ثابتة",
-  "kilo_price_percentage": " سعر الكيلو % "
+  "kilo_price_percentage": " سعر الكيلو % ",
+  "Chat":"الدردشة"
+
 }

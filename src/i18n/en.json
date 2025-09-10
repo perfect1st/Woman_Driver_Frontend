@@ -713,5 +713,6 @@
   },
   "percentage": "Percentage",
   "fixed": "Fixed Value",
-  "kilo_price_percentage": "Kilo Price %"
+  "kilo_price_percentage": "Kilo Price %",
+  "Chat":"Chat"
 }

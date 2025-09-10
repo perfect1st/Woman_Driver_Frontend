@@ -56,13 +56,14 @@ import { ReactComponent as LeftCar } from "../../assets/leftCar.svg";
 import { ReactComponent as RigthCar } from "../../assets/rigthCar.svg";
 import { getOneDriver, editDriver } from "../../redux/slices/driver/thunk";
 import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
-import { getAllDriverTrips } from "../../redux/slices/trip/thunk";
+import { getAllDriverTrips, getTripChat } from "../../redux/slices/trip/thunk";
 import { useDispatch, useSelector } from "react-redux";
 import useBaseImageUrlForDriver from "../../hooks/useBaseImageUrlForDriver";
 import LoadingPage from "../../components/LoadingComponent";
 import PaginationFooter from "../../components/PaginationFooter/PaginationFooter"
 import DriverTrips from "./DriverTrips";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
+import ModernChatDrawer from "./ModernChatDrawer";
 // Mock assets for trips and transactions since real data doesn't include them
 const statusStyles = {
   Available: {
@@ -155,6 +156,10 @@ export default function DriverDetailsPage() {
   const [imageField, setImageField] = useState("");
   const [imageTitle, setImageTitle] = useState("");
   const [imageUploadLoading, setImageUploadLoading] = useState(false);
+  const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatInput, setChatInput] = useState("");
+
   const fileInputRef = useRef(null);
  
   const baseImageUrl = useBaseImageUrlForDriver();
@@ -168,7 +173,7 @@ export default function DriverDetailsPage() {
   const hasEditPermission = hasPermission("edit")
   const hasDeletePermission = hasPermission("delete")
 
-const {allDriverTrips} = useSelector((state) => state.trip);
+const {allDriverTrips, chat} = useSelector((state) => state.trip);
   // Get the actual driver data from Redux store
   const driverState = useSelector((state) => state.driver);
   const driverData = driverState.driver;
@@ -406,18 +411,19 @@ const formatTime = (dateString) => {
   const handleOpenDrawer = (trip) => {
     // Map API data to drawer structure
     const drawerTrip = {
+      id:trip?._id,
       driver: {
         name: trip.driver_id?.fullname || t("Unknown Driver"),
         rating: 4.9, // Placeholder since rating doesn't exist in API
         image: trip.driver_id?.profile_image 
-          ? getImageUrl(trip.driver_id.profile_image) 
+          ? `${baseImageUrl}${trip.driver_id.profile_image}`
           : DomiDriverImage
       },
       car: {
         plate: trip.car_snapshot?.plate_number || t("Not assigned"),
         color: trip.car_snapshot?.car_color || t("Not assigned"),
         brand: trip.car_snapshot?.car_model || t("Not assigned"),
-        image: DomiCar // Placeholder
+        image: `${baseImageUrl}${trip?.car_snapshot?.car_images[0]?.front}` || DomiCar 
       },
       timeline: [
         {
@@ -1059,6 +1065,46 @@ const formatTime = (dateString) => {
     </Card>
   );
 
+
+
+
+    // ------------------ Chat Drawer Implementation ------------------
+  const chatListRef = useRef(null);
+
+  // messages array (support chat or chat.data)
+  const messages = Array.isArray(chat) ? chat : chat?.data || [];
+
+  const getSenderImage = (sender) => {
+    if (!sender) return DomiDriverImage;
+    const img = sender.profile_image || sender.profileImage || "";
+    if (!img) return DomiDriverImage;
+    // if img looks like a full URL, return it directly; otherwise prefix baseImageUrl
+    if (img.startsWith("http") || img.startsWith("uploads/")) return img.startsWith("http") ? img : `${baseImageUrl}${img}`;
+    return `${baseImageUrl}${img}`;
+  };
+
+  // helper: return audio src for voice messages
+  const getAudioSrc = (msg) => {
+    const t = msg.text_voice_message || msg.text || "";
+    if (!t) return null;
+    // already a data URI
+    if (t.startsWith("data:audio")) return t;
+    // if it looks like a file path to uploads -> prefix baseImageUrl
+    if (t.startsWith("uploads/") || t.startsWith("/uploads/")) return `${baseImageUrl}${t}`;
+    // otherwise assume raw base64 and use audio/mpeg
+    return `data:audio/mpeg;base64,${t}`;
+  };
+
+  useEffect(() => {
+    if (chatListRef.current) {
+      chatListRef.current.scrollTop = chatListRef.current.scrollHeight;
+    }
+  }, [messages.length]);
+
+
+
+
+  // ------------------ End of Chat Drawer Implementation ------------------
   if (apiLoading) {
     return <LoadingPage />;
   }
@@ -1791,9 +1837,18 @@ const formatTime = (dateString) => {
                       display="flex"
                       justifyContent={isMobile ? "flex-start" : "flex-end"}
                     >
-                      <Button variant="outlined" color="primary" size="small">
-                        {t("Open Chat")}
-                      </Button>
+                      <Button variant="outlined" color="primary" size="small"
+                       onClick={async ()=>{
+                        setChatLoading(true)
+                        console.log("selectedTrip",selectedTrip)
+                        await dispatch(getTripChat(selectedTrip.id))
+                        setChatLoading(false)
+                        setChatDrawerOpen(true)
+                                                
+                                              }}
+                      >
+                        {chatLoading ? <CircularProgress size={20} /> : t("Open Chat")}
+                        </Button>
                     </Box>
                   </Grid>
                 </Grid>
@@ -1971,6 +2026,19 @@ const formatTime = (dateString) => {
           </Box>
         )}
       </Drawer>
+
+      <ModernChatDrawer
+  open={chatDrawerOpen}
+  onClose={() => setChatDrawerOpen(false)}
+  messages={messages}
+  currentUserId={driverData?._id}
+  isArabic={isArabic}
+  isMobile={isMobile}
+  chatLoading={chatLoading}
+  getAudioSrc={getAudioSrc}
+  getSenderImage={getSenderImage}
+  t={t}
+/>
 
       {/* Image Modal */}
       <Dialog

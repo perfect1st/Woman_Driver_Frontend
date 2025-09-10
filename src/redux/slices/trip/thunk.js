@@ -86,6 +86,21 @@ export const getOneTrip = createAsyncThunk(
     }
   }
 );
+export const getTripChat = createAsyncThunk(
+  "/tripSlice/getTripChat",
+  async (id = '') => {
+    try {
+      const response = await useGetDataToken(`/trip-chats/trip/${id}`);
+      return response;
+    } catch (error) {
+      if (error.message === "Network Error") {
+        return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري", "error");
+      } else {
+        return notify(error.response?.data, "error");
+      }
+    }
+  }
+);
 
 // Edit trip
 export const editTrip = createAsyncThunk(

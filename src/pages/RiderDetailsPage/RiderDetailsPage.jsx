@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import {
   Box,
   Typography,
@@ -43,10 +43,12 @@ import {
 } from "../../redux/slices/passenger/thunk";
 import LoadingPage from "../../components/LoadingComponent";
 import useBaseImageUrl from "../../hooks/useBaseImageUrl";
-import { getAllPassengerTrips } from "../../redux/slices/trip/thunk";
+import useBaseImageUrlForDriver from "../../hooks/useBaseImageUrlForDriver";
+import { getAllPassengerTrips, getTripChat } from "../../redux/slices/trip/thunk";
 import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
 import { format } from "date-fns";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
+import ModernChatDrawer from "../DriverDetailsPage/ModernChatDrawer";
 
 const statusStyles = {
   active: {
@@ -71,7 +73,7 @@ export default function RiderDetailsPage() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { passenger, loading } = useSelector((s) => s.passenger);
-  const { allPassengerTrips, loading: tripsLoading } = useSelector(
+  const { allPassengerTrips,chat, loading: tripsLoading } = useSelector(
     (state) => state.trip
   );
 
@@ -90,6 +92,7 @@ export default function RiderDetailsPage() {
   const hasEditPermission = hasPermission("edit")
   const hasDeletePermission = hasPermission("delete")
 
+
   // EDITABLE STATE HOOKS
   const [editable, setEditable] = useState({
     fullname: "",
@@ -104,6 +107,9 @@ export default function RiderDetailsPage() {
   const [saving, setSaving] = useState({});
   // DRAWER
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatInput, setChatInput] = useState("");
   const [selectedTrip, setSelectedTrip] = useState(null);
 
   // FETCH passenger ON MOUNT
@@ -144,6 +150,7 @@ export default function RiderDetailsPage() {
   };
   
   const baseImageUrl = useBaseImageUrl();
+  const baseImageUrlForDriver = useBaseImageUrlForDriver();
 
   // Transform API trip data to component format
   const transformTrips = (trips) => {
@@ -163,7 +170,7 @@ export default function RiderDetailsPage() {
         plate: trip.car_snapshot?.plate_number || "",
         color: trip.car_snapshot?.car_color || "",
         brand: trip.car_snapshot?.car_model || "",
-        image: DomiCar,
+        image: `${baseImageUrlForDriver}${trip.car_snapshot?.car_images[0]?.front}` ||  DomiCar,
       },
       timeline: [
         {
@@ -233,6 +240,44 @@ export default function RiderDetailsPage() {
   const handleLimitChange = (newLimit) => {
     setSearchParams({ page: "1", limit: String(Number(newLimit)) });
   };
+
+
+
+
+  // ------------------ Chat Drawer Implementation ------------------
+  const chatListRef = useRef(null);
+
+  // messages array (support chat or chat.data)
+  const messages = Array.isArray(chat) ? chat : chat?.data || [];
+
+  const getSenderImage = (sender) => {
+    if (!sender) return DomiDriverImage;
+    const img = sender.profile_image || sender.profileImage || "";
+    if (!img) return DomiDriverImage;
+    // if img looks like a full URL, return it directly; otherwise prefix baseImageUrl
+    if (img.startsWith("http") || img.startsWith("uploads/")) return img.startsWith("http") ? img : `${baseImageUrl}${img}`;
+    return `${baseImageUrl}${img}`;
+  };
+
+  // helper: return audio src for voice messages
+  const getAudioSrc = (msg) => {
+    const t = msg.text_voice_message || msg.text || "";
+    if (!t) return null;
+    // already a data URI
+    if (t.startsWith("data:audio")) return t;
+    // if it looks like a file path to uploads -> prefix baseImageUrl
+    if (t.startsWith("uploads/") || t.startsWith("/uploads/")) return `${baseImageUrl}${t}`;
+    // otherwise assume raw base64 and use audio/mpeg
+    return `data:audio/mpeg;base64,${t}`;
+  };
+
+  useEffect(() => {
+    if (chatListRef.current) {
+      chatListRef.current.scrollTop = chatListRef.current.scrollHeight;
+    }
+  }, [messages.length]);
+
+
 
   // EARLY RETURN SPINNER
   if (loading || !passenger) {
@@ -704,8 +749,15 @@ export default function RiderDetailsPage() {
                       display="flex"
                       justifyContent={isMobile ? "flex-start" : "flex-end"}
                     >
-                      <Button variant="outlined" size="small">
-                        {t("Open Chat")}
+                      <Button variant="outlined" size="small" onClick={async ()=>{
+setChatLoading(true)
+console.log("selectedTrip",selectedTrip)
+await dispatch(getTripChat(selectedTrip.id))
+setChatLoading(false)
+setChatDrawerOpen(true)
+                        
+                      }}>
+                        {chatLoading ? <CircularProgress size={20} /> : t("Open Chat")}
                       </Button>
                     </Box>
                   </Grid>
@@ -879,6 +931,22 @@ export default function RiderDetailsPage() {
           </Box>
         )}
       </Drawer>
+        {/* ----------------- Chat Drawer ----------------- */}
+
+
+        <ModernChatDrawer
+  open={chatDrawerOpen}
+  onClose={() => setChatDrawerOpen(false)}
+  messages={messages}
+  currentUserId={passenger?._id}        
+  isArabic={isArabic}
+  isMobile={isMobile}
+  chatLoading={chatLoading}
+  getAudioSrc={getAudioSrc}
+  getSenderImage={getSenderImage}
+  t={t}
+/>
+
     </Box>
   );
 }

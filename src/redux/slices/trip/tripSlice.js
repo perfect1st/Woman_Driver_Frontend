@@ -7,15 +7,16 @@ import {
   getOneTrip,
   editTrip,
   addTrip,
+  getTripChat,
 } from "./thunk";
 
 const initialState = {
   allTrips: [],
   trips: [],
   allDriverTrips: [],
-  allPassengerTrips:[],
+  allPassengerTrips: [],
   trip: null,
-
+  chat: [],
   loading: false,
   error: null,
 };
@@ -26,6 +27,20 @@ const tripSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     // Get All Trips (without pagination)
+    builder
+      .addCase(getTripChat.pending, (state) => {
+        state.loading = true;
+        state.chat = [];
+      })
+      .addCase(getTripChat.fulfilled, (state, action) => {
+        state.loading = false;
+        state.chat = action.payload;
+      })
+      .addCase(getTripChat.rejected, (state, action) => {
+        state.loading = false;
+        state.chat = [];
+        state.error = action.error.message;
+      });
     builder
       .addCase(getAllTripsWithoutPaginations.pending, (state) => {
         state.loading = true;
