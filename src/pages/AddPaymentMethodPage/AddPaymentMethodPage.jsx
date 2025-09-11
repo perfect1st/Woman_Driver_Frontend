@@ -7,6 +7,7 @@ import {
   useTheme,
   CircularProgress,
   Divider,
+  MenuItem,
 } from "@mui/material";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -41,18 +42,23 @@ export default function AddPaymentMethodPage() {
     nameAr: Yup.string()
       .required(t("Payment Method Name Arabic is required"))
       .min(2, t("Name must be at least 2 characters")),
+      type: Yup.string()
+      .required(t("Payment Method Type is required")),
   });
 
   const formik = useFormik({
     initialValues: {
       nameEn: "",
       nameAr: "",
+          type: "", 
+
     },
     validationSchema,
     onSubmit:async  (values) => {
       const data ={
         name_ar:values?.nameAr,
         name_en:values?.nameEn,
+        type: values?.type,
         status:true
       }
       try {
@@ -142,6 +148,36 @@ export default function AddPaymentMethodPage() {
         helperText={formik.touched.nameAr && formik.errors.nameAr}
         sx={{ mb: 3 }}
       />
+
+<Typography variant="h6" gutterBottom>
+  {t("Payment Method Type")}{" "}
+  <Typography component="span" color="error.main">*</Typography>
+</Typography>
+<TextField
+  select
+  fullWidth
+  name="type"
+  variant="standard"
+  value={formik.values.type}
+  onChange={formik.handleChange}
+  onBlur={formik.handleBlur}
+  error={formik.touched.type && Boolean(formik.errors.type)}
+  helperText={formik.touched.type && formik.errors.type}
+  InputProps={{
+    disableUnderline: true,
+    sx: {
+      backgroundColor: theme.palette.secondary.sec,
+      borderRadius: 1,
+      p: "10px 12px",
+    },
+  }}
+  sx={{ mb: 3 }}
+>
+  <MenuItem value="">{t("Select Payment Method Type")}</MenuItem>
+  <MenuItem value="cash">{t("Cash")}</MenuItem>
+  <MenuItem value="visa">{t("Visa")}</MenuItem>
+  <MenuItem value="cash_wallet">{t("Cash Wallet")}</MenuItem>
+</TextField>
 
       <Divider sx={{ my: 3 }} />
 

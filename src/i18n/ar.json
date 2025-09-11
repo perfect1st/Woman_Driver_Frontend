@@ -753,7 +753,13 @@
   "Start Time": "وقت البداية",
   "End Time": "وقت النهاية",
   "Trip Commisson": "عمولة الرحلة",
-  "nationalIdExpDate":"انتهاء الهويه"
+  "nationalIdExpDate":"انتهاء الهويه",
+  "Payment Method Type": "نوع وسيلة الدفع",
+  "Payment Method Type is required": "نوع وسيلة الدفع مطلوب",
+  "Select Payment Method Type": "اختر نوع وسيلة الدفع",
+  "Cash": "نقدي",
+  "Visa": "فيزا",
+  "Cash Wallet": "محفظة نقدية"
 
 
 }

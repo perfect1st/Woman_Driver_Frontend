@@ -8,6 +8,7 @@ import {
   TextField,
   CircularProgress,
   useTheme,
+  MenuItem,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -50,16 +51,21 @@ const PaymentMethodsDetailsPage = () => {
   const [editableFields, setEditableFields] = useState({
     name_en: paymentMethod?.name_en,
     name_ar: paymentMethod?.name_ar,
+    type: paymentMethod?.type, 
+
   });
 
   const [editMode, setEditMode] = useState({
     name_en: false,
     name_ar: false,
+    type: false, 
+
   });
 
   const [loading, setLoading] = useState({
     name_en: false,
     name_ar: false,
+    type: false,
   });
 
   useEffect(() => {
@@ -67,6 +73,7 @@ const PaymentMethodsDetailsPage = () => {
       setEditableFields({
         name_en: paymentMethod.name_en || "",
         name_ar: paymentMethod.name_ar || "",
+        type: paymentMethod.type || "",
       });
     }
   }, [paymentMethod]);
@@ -148,6 +155,74 @@ const PaymentMethodsDetailsPage = () => {
     </Card>
   );
 
+  const renderEditableSelectCard = (field, label, options) => (
+  <Card
+    sx={{
+      background: theme.palette.secondary.sec,
+      p: 2,
+      mb: 2,
+      display: "flex",
+      flexDirection: "column",
+    }}
+  >
+    <Typography variant="subtitle1" fontWeight="bold">
+      {t(label)}
+    </Typography>
+
+    {editMode[field] ? (
+      <Box display="flex" alignItems="center" mt={1} gap={1}>
+        <TextField
+          select
+          value={editableFields[field]}
+          onChange={(e) => handleFieldChange(field, e.target.value)}
+          fullWidth
+          size="small"
+        >
+          {options.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value}>
+              {t(opt.label)}
+            </MenuItem>
+          ))}
+        </TextField>
+        <IconButton
+          onClick={() => handleSave(field)}
+          disabled={loading[field]}
+        >
+          {loading[field] ? <CircularProgress size={24} /> : <SaveIcon />}
+        </IconButton>
+      </Box>
+    ) : (
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        mt={1}
+      >
+        <Typography
+          variant="body1"
+          sx={{ color: theme.palette.text.primary }}
+        >
+          {t(
+            editableFields[field] === "cash"
+              ? "Cash"
+              : editableFields[field] === "visa"
+              ? "Visa"
+              : editableFields[field] === "cash_wallet"
+              ? "Cash Wallet"
+              : ""
+          )}
+        </Typography>
+        {hasEditPermission && (
+          <IconButton onClick={() => toggleEditMode(field)}>
+            <EditIcon />
+          </IconButton>
+        )}
+      </Box>
+    )}
+  </Card>
+);
+
+
   if (!hasViewPermission) return <Navigate to="/profile" />;
 
   return (
@@ -190,6 +265,13 @@ const PaymentMethodsDetailsPage = () => {
           <Grid item xs={12}>
             {renderEditableCard("name_ar", "Payment Method Name Arabic")}
           </Grid>
+          <Grid item xs={12}>
+  {renderEditableSelectCard("type", "Payment Method Type", [
+    { value: "cash", label: "Cash" },
+    { value: "visa", label: "Visa" },
+    { value: "cash_wallet", label: "Cash Wallet" },
+  ])}
+</Grid>
         </Grid>
       </Box>
     </Box>

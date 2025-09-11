@@ -739,6 +739,12 @@
   "Start Time": "Start Time",
   "End Time": "End Time",
   "Trip Commisson": "Trip Commission",
-  "nationalIdExpDate":"National ID expiry"
+  "nationalIdExpDate":"National ID expiry",
+  "Payment Method Type": "Payment Method Type",
+  "Payment Method Type is required": "Payment Method Type is required",
+  "Select Payment Method Type": "Select Payment Method Type",
+  "Cash": "Cash",
+  "Visa": "Visa",
+  "Cash Wallet": "Cash Wallet"
 
 }
