@@ -91,13 +91,13 @@ const LiquidationPage = () => {
   const handlePageChange = (_, value) => updateParams({ page: value });
 
   const formatDate = (dateStr, lang) => {
-  if (!dateStr) return "-";
-  return new Date(dateStr).toLocaleDateString(lang, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
+    if (!dateStr) return "-";
+    return new Date(dateStr).toLocaleDateString(lang, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
   // prepare rows
   const rows = data.map((l) => ({
     id: l._id,
@@ -125,7 +125,7 @@ const LiquidationPage = () => {
       const response = await dispatch(
         getAllLiquidationsWithoutPaginations({ query })
       ).unwrap();
-      
+
       const allLiquidations = response || [];
 
       const exportData = allLiquidations.map((l) => ({
@@ -133,7 +133,11 @@ const LiquidationPage = () => {
         "Start Date": formatDate(l.start_date, "en"),
         "End Date": formatDate(l.end_date, "en"),
         Status: l.status,
-        "Created At": new Date(l.createdAt).toLocaleDateString(),
+        "Created At": new Date(l.createdAt).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
       }));
 
       if (type === "excel") {
@@ -215,11 +219,9 @@ const LiquidationPage = () => {
 
     try {
       const data = {
-        liquidationId: selectedRow.id
-      }
-      await dispatch(
-        processLiquidation({ data })
-      ).unwrap();
+        liquidationId: selectedRow.id,
+      };
+      await dispatch(processLiquidation({ data })).unwrap();
       // refresh
       const query =
         `page=${page}&limit=${limit}` +
@@ -276,17 +278,17 @@ const LiquidationPage = () => {
         />
       </Box>
 
-        <TableComponent
-          columns={columns}
-          data={rows}
-          actionIconType="details"
-          actionIconType2="liqudation_now"
-          showStatusChange={false}
-          onActionClick={onRowClick}
-          liqudationClick={onLiquidationClick}
-                  statusKey="status"
-                  sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
-        />
+      <TableComponent
+        columns={columns}
+        data={rows}
+        actionIconType="details"
+        actionIconType2="liqudation_now"
+        showStatusChange={false}
+        onActionClick={onRowClick}
+        liqudationClick={onLiquidationClick}
+        statusKey="status"
+        sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
+      />
 
       <PaginationFooter
         currentPage={currentPage}

@@ -61,7 +61,7 @@ const PassengersPage = () => {
         ? `&status=pending`
         : status == "Rejected"
         ? `&status=banned`
-        : "");
+        :`&status=${status}` );
     dispatch(getAllPassengers({ query }));
   }, [dispatch, page, limit, status, keyword]);
 
@@ -84,8 +84,7 @@ const PassengersPage = () => {
     riderId: (currentPage - 1) * limit + index + 1,
     name: u.fullname,
     phone: u.phone_number,
-    rate: u.rate || "5",
-    trips: u.trips || 0,
+    rate: u?.ratings?.average || 0,
     accountStatus:
       u.status === "active"
         ? "Available"
@@ -100,7 +99,6 @@ const PassengersPage = () => {
     { key: "name", label: t("Rider name") },
     { key: "phone", label: t("Phone Number") },
     { key: "rate", label: t("Rate") },
-    { key: "trips", label: t("Trips number") },
     { key: "accountStatus", label: t("Account Status") },
   ];
 
@@ -150,9 +148,10 @@ const PassengersPage = () => {
 
   const fetchAndExport = async (type) => {
     try {
+      console.log("status",status)
       const query =
         (keyword ? `&keyword=${keyword}` : "") +
-        (status ? `&status=${status}` : "");
+        (status ? `&status=${status?.toLocaleLowerCase()}` : "");
 
       const response = await dispatch(
         getAllPassengersWithoutPaginations({ query })
@@ -171,7 +170,11 @@ const PassengersPage = () => {
             : user.status === "pending"
             ? "Pending"
             : "Rejected",
-        "Created At": new Date(user.createdAt).toLocaleDateString(),
+"Created At": new Date(user.createdAt).toLocaleDateString("en-GB", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+}),
       }));
 
       if (type === "excel") {

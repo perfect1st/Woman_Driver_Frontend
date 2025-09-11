@@ -26,6 +26,7 @@ import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const CarTypeDetailsPage = () => {
   const { t, i18n } = useTranslation();
+  const isArabic = i18n.language == "ar"
   const theme = useTheme();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -245,10 +246,10 @@ const CarTypeDetailsPage = () => {
         >
           {t("Car Types Details")}
         </Typography>  <Typography mx={1}>{`<`}</Typography>
-        <Typography>{fields.nameEn}</Typography>    </Box>
+        <Typography>{isArabic ? fields.nameAr : fields.nameEn}</Typography>    </Box>
 
       <Typography variant="h5" fontWeight="bold" mb={3}>
-        {fields.nameEn} 
+        {isArabic ? fields.nameAr : fields.nameEn} 
       </Typography>
 
       {/* Image Section */}

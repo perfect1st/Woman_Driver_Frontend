@@ -184,6 +184,7 @@ const handleExport = (type) => {
       </Box>
 
       {/* Filter Date */}
+     {false && <>
       <Typography fontWeight="bold" color="primary" mb={1}>
         {t("Filter Date")}
       </Typography>
@@ -220,13 +221,14 @@ const handleExport = (type) => {
           {t("filter")}
         </Box>
       </Box>
+      </>}
 
       {/* Driver Card */}
       {driver && (
         <Card
           sx={{
             background: theme.palette.secondary.sec,
-            mb: 3,
+            my: 4,
             boxShadow: "none",
           }}
         >

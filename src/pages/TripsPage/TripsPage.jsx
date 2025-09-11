@@ -64,11 +64,28 @@ const TripsPage = () => {
   // fetch trips whenever params change
   useEffect(() => {
     const q =
-      `page=${page}&limit=${limit}` +
-      (keyword ? `&keyword=${keyword}` : "") +
-      (car_types_id ? `&car_types_id=${car_types_id}` : "") +
-      (is_scheduled ? `&is_scheduled=${is_scheduled == 'Scheduled' ? 'true' : 'false'}` : "") +
-      (statusFilter ? `&status=${statusFilter}` : "");
+  `page=${page}&limit=${limit}` +
+  (keyword ? `&keyword=${keyword}` : "") +
+  (car_types_id ? `&car_types_id=${car_types_id}` : "") +
+  (is_scheduled
+    ? `&is_scheduled=${is_scheduled === "Scheduled" ? "true" : "false"}`
+    : "") +
+  (statusFilter
+    ? `&trips_status=${
+        statusFilter === "OnRequest"
+          ? "requested"
+          : statusFilter === "Approved"
+          ? "accepted"
+          : statusFilter === "Cancelled"
+          ? "cancelled"
+          : statusFilter === "Complete"
+          ? "completed"
+          : statusFilter === "Start"
+          ? "started"
+          : statusFilter
+      }`
+    : "");
+
     dispatch(getAllTrips({ query: q }));
   }, [dispatch, page, limit, keyword, statusFilter, car_types_id, is_scheduled]);
 
@@ -129,7 +146,21 @@ const TripsPage = () => {
     try {
       const q =
         (keyword ? `&keyword=${keyword}` : "") +
-        (statusFilter ? `&status=${statusFilter}` : "");
+        (statusFilter
+          ? `&trips_status=${
+              statusFilter === "OnRequest"
+                ? "requested"
+                : statusFilter === "Approved"
+                ? "accepted"
+                : statusFilter === "Cancelled"
+                ? "cancelled"
+                : statusFilter === "Complete"
+                ? "completed"
+                : statusFilter === "Start"
+                ? "started"
+                : statusFilter
+            }`
+          : "");
       const response = await dispatch(
         getAllTripsWithoutPaginations({ query: q })
       ).unwrap();
@@ -143,7 +174,11 @@ const TripsPage = () => {
         Type: trip.car_types_id.name_en,
         Status: statusMap[trip.trips_status] || trip.trips_status,
         Cost: trip.cost,
-        "Created At": new Date(trip.createdAt).toLocaleDateString(),
+        "Created At": new Date(trip.createdAt).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
       }));
 
       if (type === "excel") {

@@ -599,6 +599,7 @@ const formatTime = (dateString) => {
       setNewImages([]);
       setImagePreviews([]);
       setUploadError("");
+      setImageModalOpen(false)
     } catch (error) {
       setUploadError(t("Failed to upload images. Please try again."));
     } finally {
@@ -2173,7 +2174,7 @@ const formatTime = (dateString) => {
             </>
           ) : (
             <>
-             {hasDeletePermission && <Button
+             {false && <Button
                 variant="outlined"
                 color="error"
                 onClick={handleDeleteImage}

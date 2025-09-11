@@ -83,8 +83,16 @@ const CarDriverPage = () => {
     id: (currentPage - 1) * limit + index + 1,
     driverName: item?.driver_id?.fullname || "-",
     carModel: item?.cars_id?.car_model || "-",
-    assignDate: new Date(item?.assign_datetime).toLocaleDateString(),
-    releaseDate: item?.release_date ? new Date(item?.release_date).toLocaleDateString() : t("notReleased"),
+    assignDate: new Date(item?.assign_datetime).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
+    releaseDate: item?.release_date ? new Date(item?.release_date).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }) : t("notReleased"),
     // status: item?.driver_id?.status || "Unknown",
   }));
 
@@ -111,10 +119,16 @@ const CarDriverPage = () => {
         [t("Cars-drivers ID")]: i + 1,
         [t("Driver Name")]: item?.driver_id?.fullname || "-",
         [t("Car Model")]: item?.cars_id?.car_model || "-",
-        [t("Assign Date")]: new Date(item?.assign_datetime).toLocaleDateString(),
-        [t("Release Date")]: item?.release_date
-          ? new Date(item?.release_date).toLocaleDateString()
-          : t("notReleased"),
+        [t("Assign Date")]: new Date(item.assign_datetime).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+        [t("Release Date")]:item?.release_date ?  new Date(item.release_date).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }) : t("notReleased"),
       }));
   
       if (type === "excel") {

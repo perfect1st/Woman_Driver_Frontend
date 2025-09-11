@@ -37,6 +37,7 @@ const CarsPage = () => {
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const keyword = searchParams.get("keyword") || "";
   const car_types_id = searchParams.get("carType") || "";
+  const companyCar = searchParams.get("companyCar") || "";
   const status = searchParams.get("status") || "";
   const currentStatusFilter = status;
 
@@ -58,10 +59,20 @@ const CarsPage = () => {
     const q =
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
-      (status ? `&status=${status}` : "") +
+      (status
+        ? `&status=${
+            status === "Available"
+              ? "available"
+              : status === "Rejected"
+              ? "unavailable"
+              : status
+          }`
+        : "")
+       +
+      (companyCar ? `&is_company_car=${companyCar == "Company Car" ? true : false}` : "") +
       (car_types_id ? `&car_types_id=${car_types_id}` : "");
     dispatch(getAllCars({ query: q }));
-  }, [dispatch, page, limit, keyword, car_types_id]);
+  }, [dispatch, page, limit, keyword, car_types_id, companyCar, status]);
 
   const updateParams = (upd) => {
     const next = Object.fromEntries(searchParams);
@@ -90,7 +101,11 @@ const CarsPage = () => {
         : car?.car_types_id?.name_en
     ) || '-',
     companyCar: car.is_company_car ? "Company Car" : "User Car",
-    licenseExpiry: new Date(car.createdAt).toLocaleDateString(),
+    licenseExpiry: new Date(car.createdAt).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
     status: car.status, // تحتاج API توفر الحالة الفعلية
 
   }));
@@ -106,7 +121,21 @@ const CarsPage = () => {
 
   const fetchAndExport = async (type) => {
     try {
-      const q = keyword ? `&keyword=${keyword}` : "";
+      const q =
+      (keyword ? `&keyword=${keyword}` : "") +
+      (status
+        ? `&status=${
+            status === "Available"
+              ? "available"
+              : status === "Rejected"
+              ? "unavailable"
+              : status
+          }`
+        : "")
+       +
+      (companyCar ? `&is_company_car=${companyCar == "Company Car" ? true : false}` : "") +
+      (car_types_id ? `&car_types_id=${car_types_id}` : "");
+
       const response = await dispatch(
         getAllCarsWithoutPaginations({ query: q })
       ).unwrap();
@@ -116,7 +145,20 @@ const CarsPage = () => {
         "Car ID":  i + 1,
         Model: car.car_model,
         "Company Car": car.is_company_car ? "Company Car" : "User Car",
-        "Created At": new Date(car.createdAt).toLocaleDateString(),
+          "car Type": 
+       car?.car_types_id?.name_en
+     || '-',
+    "license Expiry": new Date(car.createdAt).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
+    "status": car.status, 
+        "Created At": new Date(car.createdAt).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
       }));
 
       if (type === "excel") {

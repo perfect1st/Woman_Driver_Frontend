@@ -738,5 +738,7 @@
   "Trip Number": "Trip Number",
   "Start Time": "Start Time",
   "End Time": "End Time",
-  "Trip Commisson": "Trip Commission"
+  "Trip Commisson": "Trip Commission",
+  "nationalIdExpDate":"National ID expiry"
+
 }

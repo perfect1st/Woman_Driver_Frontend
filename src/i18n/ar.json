@@ -752,6 +752,8 @@
   "Trip Number": "رقم الرحلة",
   "Start Time": "وقت البداية",
   "End Time": "وقت النهاية",
-  "Trip Commisson": "عمولة الرحلة"
+  "Trip Commisson": "عمولة الرحلة",
+  "nationalIdExpDate":"انتهاء الهويه"
+
 
 }

@@ -9,7 +9,11 @@ import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { useTranslation } from "react-i18next";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllWallets, getAllWalletsWithoutPaginations, updateTransation } from "../../redux/slices/wallet/thunk";
+import {
+  getAllWallets,
+  getAllWalletsWithoutPaginations,
+  updateTransation,
+} from "../../redux/slices/wallet/thunk";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -40,24 +44,40 @@ const WalletPage = () => {
     return permissions ? permissions[permissionType] === true : false;
   }
 
-  const hasViewPermission = hasPermission("view")
-  const hasAddPermission = hasPermission("add")
-  const hasEditPermission = hasPermission("edit")
-  const hasDeletePermission = hasPermission("delete")
+  const hasViewPermission = hasPermission("view");
+  const hasAddPermission = hasPermission("add");
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete");
 
-  const { wallets: walletsData = {}, loading } = useSelector((state) => state.wallet);
-  const { wallets: data = [], total = 0, currentPage = 1, totalPages = 1 } = walletsData;
+  const { wallets: walletsData = {}, loading } = useSelector(
+    (state) => state.wallet
+  );
+  const {
+    wallets: data = [],
+    total = 0,
+    currentPage = 1,
+    totalPages = 1,
+  } = walletsData;
 
   useEffect(() => {
     const q =
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
-      (status ? `&status=${status}` : "")+
-      (user_type ? `&user_type=${user_type}` : "")+
-      (trans_type ? `&trans_type=${trans_type}` : "")+
+      (status ? `&status=${status}` : "") +
+      (user_type ? `&user_type=${user_type}` : "") +
+      (trans_type ? `&trans_type=${trans_type}` : "") +
       (transaction_type ? `&transaction_type=${transaction_type}` : "");
     dispatch(getAllWallets({ query: q }));
-  }, [dispatch, page, limit, keyword, status, user_type, trans_type, transaction_type]);
+  }, [
+    dispatch,
+    page,
+    limit,
+    keyword,
+    status,
+    user_type,
+    trans_type,
+    transaction_type,
+  ]);
 
   const updateParams = (upd) => {
     const next = Object.fromEntries(searchParams);
@@ -80,9 +100,9 @@ const WalletPage = () => {
     id: (currentPage - 1) * limit + index + 1,
     userName: wallet.user_id?.fullname || "-",
     userType: t(wallet.user_id?.user_type) || "-",
-    dashboardUser: "System", 
+    dashboardUser: "System",
     transactionType: wallet.trans_type,
-    transactionReason: t(wallet.transaction_type), 
+    transactionReason: t(wallet.transaction_type),
     status: wallet.status,
     amount: wallet.amount,
     notes: wallet.notes,
@@ -100,27 +120,31 @@ const WalletPage = () => {
 
   const fetchAndExport = async (type) => {
     try {
-     const q = `` +
-      (keyword ? `&keyword=${keyword}` : "") +
-      (status ? `&status=${status}` : "")+
-      (user_type ? `&user_type=${user_type}` : "")+
-      (trans_type ? `&trans_type=${trans_type}` : "")+
-      (transaction_type ? `&transaction_type=${transaction_type}` : "");
-;
+      const q =
+        `` +
+        (keyword ? `&keyword=${keyword}` : "") +
+        (status ? `&status=${status}` : "") +
+        (user_type ? `&user_type=${user_type}` : "") +
+        (trans_type ? `&trans_type=${trans_type}` : "") +
+        (transaction_type ? `&transaction_type=${transaction_type}` : "");
       const response = await dispatch(
         getAllWalletsWithoutPaginations({ query: q })
       ).unwrap();
 
       const exportData = response.wallets.map((wallet, i) => ({
-        "ID": i + 1,
+        ID: i + 1,
         "User Name": wallet.user_id?.fullname || "-",
         "User Type": wallet.user_id?.user_type || "-",
-        dashboardUser: "System", 
+        dashboardUser: "System",
         "Transaction Type": wallet.trans_type,
-        "Amount": wallet.amount,
-        "Status": wallet.status,
-        "Date": new Date(wallet.createdAt).toLocaleDateString(),
-        "Notes": wallet.notes,
+        Amount: wallet.amount,
+        Status: wallet.status,
+        Date: new Date(wallet.createdAt).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+        Notes: wallet.notes,
       }));
 
       if (type === "excel") {
@@ -189,19 +213,21 @@ const WalletPage = () => {
   }, []);
 
   const onStatusChange = async (id, status) => {
-    if(!hasEditPermission){
+    if (!hasEditPermission) {
       return notify("noPermissionToUpdateStatus", "warning");
     }
     console.log("id", id, "status", status);
     const walletId = id?.mainId;
     const accountStatus =
       status == "Accepted"
-        ? "accepted" :
-      status == "Available"
+        ? "accepted"
+        : status == "Available"
         ? "accepted"
         : status == "Rejected"
         ? "refused"
-        : status == "Pending" ? "pending" : status;
+        : status == "Pending"
+        ? "pending"
+        : status;
     await dispatch(
       updateTransation({ id: walletId, data: { status: accountStatus } })
     );
@@ -212,7 +238,6 @@ const WalletPage = () => {
 
     dispatch(getAllWallets({ query }));
   };
-
 
   if (loading) return <LoadingPage />;
   if (!hasViewPermission) return <Navigate to="/profile" />;
@@ -248,7 +273,13 @@ const WalletPage = () => {
       <Box sx={{ my: 2 }}>
         <FilterComponent
           onSearch={handleSearch}
-          initialFilters={{ keyword, status, user_type, trans_type, transaction_type }}
+          initialFilters={{
+            keyword,
+            status,
+            user_type,
+            trans_type,
+            transaction_type,
+          }}
           statusOptions={statusOptions}
           isWallet
         />
@@ -262,7 +293,6 @@ const WalletPage = () => {
         showStatusChange={true}
         isWallet
         onStatusChange={onStatusChange}
-
         sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
       />
 

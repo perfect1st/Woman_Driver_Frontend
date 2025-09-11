@@ -38,6 +38,12 @@ const TrafficTimePage = () => {
   const status = searchParams.get("status") || "";
   const currentStatusFilter = status;
 
+  const formatTime = (time) => {
+    const [hours, minutes] = time.split(":").map(Number);
+    const suffix = hours >= 12 ? "PM" : "AM";
+    const adjustedHours = hours % 12 || 12; // 0 -> 12
+    return `${adjustedHours}:${minutes.toString().padStart(2, "0")} ${suffix}`;
+  };
   function hasPermission(permissionType) {
     const permissions = getPermissionsByScreen("TrafficTimes");
     return permissions ? permissions[permissionType] === true : false;
@@ -87,8 +93,8 @@ const TrafficTimePage = () => {
     index: (currentPage - 1) * limit + index + 1,
     title: i18n.language === "ar" ? tTime.title_ar : tTime.title_en,
     kiloPrice: `${tTime.kilo_price_percentage}`,
-    timeFrom: tTime.time_from,
-    timeTo: tTime.time_to,
+    timeFrom: formatTime(tTime.time_from),
+    timeTo: formatTime(tTime.time_to),
     status: tTime.status === "active" ? "active" : "inactive",
   }));
 
@@ -136,8 +142,8 @@ const TrafficTimePage = () => {
           ID: idx + 1,
           Title: `${tTime.title_en}`,
           "Kilo Price": tTime.kilo_price_percentage,
-          "Time From": tTime.time_from,
-          "Time To": tTime.time_to,
+          "Time From":formatTime(tTime.time_from),
+          "Time To": formatTime(tTime.time_to),
           Status: tTime.status,
         };
       });

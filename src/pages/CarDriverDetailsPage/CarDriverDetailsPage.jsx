@@ -423,7 +423,7 @@ console.log("user",user)
         <Typography variant="h6" fontWeight="bold" color="primary">
           {t("Other Details")}
         </Typography>
-        <Chip
+        {false && <Chip
           label={t(status)}
           sx={{
             color: styles.textColor,
@@ -433,7 +433,7 @@ console.log("user",user)
             px: 1.5,
             py: 0.5,
           }}
-        />
+        />}
       </Box>
       <Divider sx={{ mb: 2 }} />
 

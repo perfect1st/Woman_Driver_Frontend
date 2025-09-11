@@ -8,9 +8,9 @@ import { useTranslation } from "react-i18next";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  getAllCommissionsCategory, 
-  getAllCommissionsCategoryWithoutPaginations, 
-  editCommissionCategory, 
+  getAllCommissionsCategory,
+  getAllCommissionsCategoryWithoutPaginations,
+  editCommissionCategory,
 } from "../../redux/slices/commissionCategory/thunk";
 import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
 import LoadingPage from "../../components/LoadingComponent";
@@ -21,9 +21,7 @@ import autoTable from "jspdf-autotable";
 import { ControlPoint } from "@mui/icons-material";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 import notify from "../../components/notify";
-import {
-  getAllCarTypesWithoutPaginations,
-} from "../../redux/slices/carType/thunk";
+import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
 
 const CommissionCategoryPage = () => {
   const theme = useTheme();
@@ -34,10 +32,10 @@ const CommissionCategoryPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-    const { allCarTypes } = useSelector((state) => state.carType);
-    const { categories = {}, loading } = useSelector(
-      (state) => state.commissionCategory
-    );
+  const { allCarTypes } = useSelector((state) => state.carType);
+  const { categories = {}, loading } = useSelector(
+    (state) => state.commissionCategory
+  );
 
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
@@ -116,7 +114,7 @@ const CommissionCategoryPage = () => {
 
   useEffect(() => {
     dispatch(getAllCarTypesWithoutPaginations({ query: "" }));
-  
+
     // keep layout stable (same as your other pages)
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
@@ -139,7 +137,7 @@ const CommissionCategoryPage = () => {
       const response = await dispatch(
         getAllCommissionsCategoryWithoutPaginations({ query })
       ).unwrap();
-      const allCategories = response?.data || [];
+      const allCategories = response || [];
 
       const exportData = allCategories.map((c, index) => ({
         ID: index + 1,
@@ -152,9 +150,12 @@ const CommissionCategoryPage = () => {
         "Amount From": c.amount_from,
         "Amount To": c.amount_to,
         Status: c.status === true ? "Available" : "Rejected",
-        "Created At": c.createdAt
-          ? new Date(c.createdAt).toLocaleDateString()
-          : "",
+        "Created At":
+          new Date(c.createdAt).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }) || "",
       }));
 
       if (type === "excel") {
@@ -165,7 +166,10 @@ const CommissionCategoryPage = () => {
         const dataBlob = new Blob([excelBuffer], {
           type: "application/octet-stream",
         });
-        saveAs(dataBlob, `CommissionCategories_${new Date().toISOString()}.xlsx`);
+        saveAs(
+          dataBlob,
+          `CommissionCategories_${new Date().toISOString()}.xlsx`
+        );
       } else if (type === "pdf") {
         if (!exportData.length) return;
         const doc = new jsPDF();

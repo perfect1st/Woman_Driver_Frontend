@@ -599,7 +599,7 @@ const FilterComponent = ({
               <MenuItem value="">{t("All")}</MenuItem>
               {carTypeOptions.map((carType) => (
                 <MenuItem key={carType._id} value={carType._id}>
-                  {carType.name_ar}
+                  {isArabic ? carType.name_ar : carType.name_en }
                 </MenuItem>
               ))}
             </CustomTextField>

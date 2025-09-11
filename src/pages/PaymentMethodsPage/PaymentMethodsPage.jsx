@@ -65,7 +65,7 @@ const PaymentMethodsPage = () => {
     const query =
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
-      (statusMap[status] ? `&status=${statusMap[status]}` : "");
+      (status ? `&status=${status == "Available" ? "true" : "false" }` : "");
 
     dispatch(getAllPaymentMethods({ query }));
   }, [dispatch, page, limit, keyword, status]);
@@ -124,13 +124,13 @@ const PaymentMethodsPage = () => {
   };
 
   const handleStatusChange = async (id, status) => {
-    if(!hasEditPermission){
+    if (!hasEditPermission) {
       return notify("noPermissionToUpdateStatus", "warning");
     }
 
     const PaymentMethodId = id?.id;
     const accountStatus =
-      status == "Accepted"
+      status == "Available"
         ? true
         : status == "active"
         ? true
@@ -146,7 +146,7 @@ const PaymentMethodsPage = () => {
     const query =
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
-      (currentStatusFilter ? `&status=${currentStatusFilter}` : "");
+      (currentStatusFilter ? `&status=${  currentStatusFilter == "Available" ? "true" : "false" }` : "");
 
     dispatch(getAllPaymentMethods({ query }));
   };
@@ -170,7 +170,11 @@ const PaymentMethodsPage = () => {
         "Payment Method (EN)": pm.name_en,
         "Payment Method (AR)": pm.name_ar,
         Status: pm.status ? "Available" : "Rejected",
-        "Created At": new Date(pm.createdAt).toLocaleDateString(),
+        "Created At": new Date(pm.createdAt).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
       }));
 
       if (type === "excel") {

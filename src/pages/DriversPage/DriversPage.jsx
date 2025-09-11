@@ -62,7 +62,7 @@ const DriversPage = () => {
     const query =
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
-      (carType ? `&carType=${carType}` : "") +
+      (carType ? `&car_types_id=${carType}` : "") +
       (status ? `&status=${status}` : "") 
      ;
         
@@ -93,13 +93,28 @@ const DriversPage = () => {
     name: driver.fullname,
     phone: driver.phone_number,
     carType: isArabic ? driver.car?.car_types_id?.name_ar : driver.car?.car_types_id?.name_en || "N/A",
-    nationalId: driver.national_id_number || "N/A",
+    nationalId: driver.national_id_expired_date 
+    ? new Date(driver.national_id_expired_date).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }) 
+    : "",
+
     driverLicenseExpiry: driver.driver_license_expired_date 
-      ? new Date(driver.driver_license_expired_date).toLocaleDateString() 
-      : "N/A",
+      ? new Date(driver.driver_license_expired_date).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+      : "",
     carLicenseExpiry: driver.car?.car_license_expired_date 
-      ? new Date(driver.car.car_license_expired_date).toLocaleDateString() 
-      : "N/A",
+      ? new Date(driver.car.car_license_expired_date).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+      : "",
     accountStatus: 
       driver.status 
   }));
@@ -110,7 +125,7 @@ const DriversPage = () => {
     { key: "name", label: t("Driver name") },
     { key: "phone", label: t("phone number") },
     { key: "carType", label: t("Car type") },
-    { key: "nationalId", label: t("National ID") },
+    { key: "nationalId", label: t("nationalIdExpDate") },
     { key: "driverLicenseExpiry", label: t("Driver license expiry") },
     { key: "carLicenseExpiry", label: t("Car license expiry") },
     { key: "accountStatus", label: t("Account status") },
@@ -171,7 +186,12 @@ const DriversPage = () => {
         "Car License Expiry": driver.car?.car_license_expired_date 
           ? new Date(driver.car.car_license_expired_date).toLocaleDateString() 
           : "N/A",
-        "Account Status": driver.status
+        "Account Status": driver.status,
+        "Created At": new Date(driver.createdAt).toLocaleDateString("en-GB", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+}),
       }));
 
       if (type === "excel") {

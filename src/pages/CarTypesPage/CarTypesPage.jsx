@@ -61,9 +61,9 @@ const CarTypesPage = () => {
       `page=${page}&limit=${limit}` +
       (keyword ? `&keyword=${keyword}` : "") +
       (status === "Available"
-        ? `&status=active`
+        ? `&status=true`
         : status === "Rejected"
-        ? `&status=banned`
+        ? `&status=false`
         : "");
     dispatch(getAllCarTypes({ query }));
   }, [dispatch, page, limit, status, keyword]);
@@ -109,9 +109,9 @@ const CarTypesPage = () => {
       const query =
         (keyword ? `&keyword=${keyword}` : "") +
         (status === "Available"
-          ? `&status=active`
+          ? `&status=true`
           : status === "Rejected"
-          ? `&status=banned`
+          ? `&status=false`
           : "");
 
       const response = await dispatch(
@@ -124,7 +124,11 @@ const CarTypesPage = () => {
         ID: index + 1,
         "Car Type Name": i18n.language === "ar" ? c.name_ar : c.name_en,
         Status: c.status === true ? "Available" : "Rejected",
-        "Created At": new Date(c.createdAt).toLocaleDateString(),
+        "Created At": new Date(c.createdAt).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
       }));
 
       if (type === "excel") {
@@ -201,9 +205,9 @@ const CarTypesPage = () => {
     `page=${page}&limit=${limit}` +
     (keyword ? `&keyword=${keyword}` : "") +
     (status === "Available"
-      ? `&status=active`
+      ? `&status=true`
       : status === "Rejected"
-      ? `&status=banned`
+      ? `&status=false`
       : "");
   await dispatch(getAllCarTypes({ query }));
   };
@@ -248,6 +252,7 @@ const CarTypesPage = () => {
           onSearch={handleSearch}
           initialFilters={{ keyword, status }}
           statusOptions={["Available", "Rejected"]}
+          isCarType={true}
         />
       </Box>
 
