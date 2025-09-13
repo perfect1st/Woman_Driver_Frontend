@@ -207,6 +207,9 @@ const LiquidationPage = () => {
   };
 
   const onLiquidationClick = (e, row) => {
+    if (!hasEditPermission) {
+      return notify("noPermissionToUpdateStatus", "warning");
+    }
     if (row?.status === "paid") {
       return notify(t("driver_already_liquidated"), "warning");
     }

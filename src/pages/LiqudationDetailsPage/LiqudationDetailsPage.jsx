@@ -8,13 +8,14 @@ import PaginationFooter from "../../components/PaginationFooter/PaginationFooter
 import LoadingPage from "../../components/LoadingComponent";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams, Navigate } from "react-router-dom";
 import { getOneLiquidation, getOneLiquidationWithoutPagination } from "../../redux/slices/liquidation/thunk";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 
 const LiquidationDetailsPage = () => {
   const theme = useTheme();
@@ -24,6 +25,14 @@ const LiquidationDetailsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
+
+    function hasPermission(permissionType) {
+      const permissions = getPermissionsByScreen("Liquidations");
+      return permissions ? permissions[permissionType] === true : false;
+    }
+  
+    const hasViewPermission = hasPermission("view");
+    const hasEditPermission = hasPermission("edit");
 
   // query params
   const page = parseInt(searchParams.get("page") || "1", 10);
@@ -224,6 +233,7 @@ const LiquidationDetailsPage = () => {
 
 
   if (loading) return <LoadingPage />;
+  if (!hasViewPermission) return <Navigate to="/profile" />;
 
   return (
     <Box
