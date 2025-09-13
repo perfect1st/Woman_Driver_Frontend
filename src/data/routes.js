@@ -114,6 +114,12 @@ const routesData = {
       // icon: HomeIcon,
     },
     {
+      key: "ContactUs",
+      label: { en: "Contact Us", ar: "تواصل معنا" },
+      path: "/ContactUs",
+      // icon: HomeIcon,
+    },
+    {
       key: "settings",
       label: { en: "settings", ar: "الاعدادات" },
       icon: setting,

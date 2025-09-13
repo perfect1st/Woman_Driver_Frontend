@@ -53,7 +53,7 @@ const WalletPage = () => {
     (state) => state.wallet
   );
   const {
-    wallets: data = [],
+    data = [],
     total = 0,
     currentPage = 1,
     totalPages = 1,
@@ -98,8 +98,8 @@ const WalletPage = () => {
   const rows = data.map((wallet, index) => ({
     mainId: wallet?._id,
     id: (currentPage - 1) * limit + index + 1,
-    userName: wallet.user_id?.fullname || "-",
-    userType: t(wallet.user_id?.user_type) || "-",
+    userName: wallet.user?.fullname || "-",
+    userType: t(wallet.user?.user_type) || "-",
     dashboardUser: "System",
     transactionType: wallet.trans_type,
     transactionReason: t(wallet.transaction_type),
@@ -131,10 +131,10 @@ const WalletPage = () => {
         getAllWalletsWithoutPaginations({ query: q })
       ).unwrap();
 
-      const exportData = response.wallets.map((wallet, i) => ({
+      const exportData = response.data.map((wallet, i) => ({
         ID: i + 1,
-        "User Name": wallet.user_id?.fullname || "-",
-        "User Type": wallet.user_id?.user_type || "-",
+        "User Name": wallet.user?.fullname || "-",
+        "User Type": wallet.user?.user_type || "-",
         dashboardUser: "System",
         "Transaction Type": wallet.trans_type,
         Amount: wallet.amount,

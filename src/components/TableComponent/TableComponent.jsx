@@ -164,6 +164,24 @@ const statusStyles = {
     borderColor: "#B2DDFF",
     // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#1849A9" }} />
   },
+  "in-progress": {
+    textColor: "#93370D", // برتقالي غامق
+    bgColor: "#FFFAEB",   // أصفر فاتح
+    borderColor: "#FEDF89",
+    // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#93370D" }} />
+  },
+  resolved: {
+    textColor: "#085D3A", // أخضر غامق
+    bgColor: "#ECFDF3",   // أخضر فاتح
+    borderColor: "#ABEFC6",
+    // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
+  },
+  closed: {
+    textColor: "#1F2A37", // رمادي غامق
+    bgColor: "#F9FAFB",   // رمادي فاتح
+    borderColor: "#E5E7EB",
+    // icon: <BlockIcon fontSize="small" sx={{ color: "#1F2A37" }} />
+  },
 };
 
 const TableComponent = ({
@@ -190,6 +208,7 @@ const TableComponent = ({
   releasedClick,
   isUsers=false,
   isCoupon=false,
+  isContactUs=false,
 }) => {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
@@ -283,7 +302,7 @@ const TableComponent = ({
                     }}
                   >
                     {column.label}
-                    {column.label !== t("Account status") &&
+                    {false && column.label !== t("Account status") &&
                       column.label !== t("Trip status") && (
                         <IconButton
                           size="small"
@@ -529,6 +548,7 @@ const TableComponent = ({
             ) : (
               <>
                 {/* Available */}
+               {!isContactUs && <>
                 {isWallet ? (
                   <MenuItem
                     onClick={() => handleStatusSelect("Available")}
@@ -574,9 +594,11 @@ const TableComponent = ({
                     </Box>
                   </MenuItem>
                 )}{" "}
+                </>}
                 {/* pending */}
                 
                 { !isUsers &&
+                  !isContactUs &&
                   !isCar &&
                   !isCarType &&
                   !isTrafficTime &&
@@ -606,6 +628,98 @@ const TableComponent = ({
                       </Box>
                     </MenuItem>
                   )}
+               {isContactUs && (
+  <>
+    <MenuItem
+      onClick={() => handleStatusSelect("pending")}
+      sx={{
+        color: statusStyles.pending.textColor,
+        borderLeft: isArabic
+          ? ""
+          : `4px solid ${statusStyles.pending.borderColor}`,
+        borderRight: isArabic
+          ? `4px solid ${statusStyles.pending.borderColor}`
+          : "",
+        pl: 2,
+        py: 1,
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      {statusStyles.pending.icon}
+      <Box component="span" sx={{ ml: 1 }}>
+        {t("Pending")}
+      </Box>
+    </MenuItem>
+
+    <MenuItem
+      onClick={() => handleStatusSelect("in-progress")}
+      sx={{
+        color: statusStyles["in-progress"].textColor,
+        borderLeft: isArabic
+          ? ""
+          : `4px solid ${statusStyles["in-progress"].borderColor}`,
+        borderRight: isArabic
+          ? `4px solid ${statusStyles["in-progress"].borderColor}`
+          : "",
+        pl: 2,
+        py: 1,
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      {statusStyles["in-progress"].icon}
+      <Box component="span" sx={{ ml: 1 }}>
+        {t("In Progress")}
+      </Box>
+    </MenuItem>
+
+    <MenuItem
+      onClick={() => handleStatusSelect("resolved")}
+      sx={{
+        color: statusStyles.resolved.textColor,
+        borderLeft: isArabic
+          ? ""
+          : `4px solid ${statusStyles.resolved.borderColor}`,
+        borderRight: isArabic
+          ? `4px solid ${statusStyles.resolved.borderColor}`
+          : "",
+        pl: 2,
+        py: 1,
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      {statusStyles.resolved.icon}
+      <Box component="span" sx={{ ml: 1 }}>
+        {t("Resolved")}
+      </Box>
+    </MenuItem>
+
+    <MenuItem
+      onClick={() => handleStatusSelect("closed")}
+      sx={{
+        color: statusStyles.closed.textColor,
+        borderLeft: isArabic
+          ? ""
+          : `4px solid ${statusStyles.closed.borderColor}`,
+        borderRight: isArabic
+          ? `4px solid ${statusStyles.closed.borderColor}`
+          : "",
+        pl: 2,
+        py: 1,
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      {statusStyles.closed.icon}
+      <Box component="span" sx={{ ml: 1 }}>
+        {t("Closed")}
+      </Box>
+    </MenuItem>
+  </>
+)}
+
                 { isCar &&
                    (
                     <MenuItem
@@ -631,7 +745,7 @@ const TableComponent = ({
                     </MenuItem>
                   )}
                 {/* Rejected */}
-                <MenuItem
+               {!isContactUs && <MenuItem
                   onClick={() => handleStatusSelect("Rejected")}
                   sx={{
                     color: statusStyles.banned.textColor,
@@ -651,7 +765,7 @@ const TableComponent = ({
                   <Box component="span" sx={{ ml: 1 }}>
                     {t("banned")}
                   </Box>
-                </MenuItem>
+                </MenuItem>}
               </>
             )}
           </>

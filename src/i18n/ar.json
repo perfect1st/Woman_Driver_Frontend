@@ -532,7 +532,11 @@
     "Commission": "العمولة",
     "CommissionCategory": "فئات العمولة",
     "Permissions": "الصلاحيات",
-    "Settings": "الإعدادات"
+    "Settings": "الإعدادات",
+    "Liqudation": "تصفية",
+    "coupons": "قسائم",
+    "Offers": "العروض",
+    "ContactUs": "اتصل بنا"
   },
   "Permission Groups": "مجموعات الصلاحيات",
   "User has administrator privileges": "المستخدم لديه صلاحيات المدير",
@@ -730,14 +734,14 @@
   "percentage": "نسبة مئوية",
   "fixed": "قيمة ثابتة",
   "kilo_price_percentage": " سعر الكيلو % ",
-  "Chat":"الدردشة",
-  "Today":"اليوم",
+  "Chat": "الدردشة",
+  "Today": "اليوم",
   "cashbackModal": {
     "title": "نسبة الاسترداد النقدي",
     "label": "أدخل نسبة الاسترداد النقدي",
     "placeholder": "أدخل قيمة بين 0 و 100"
   },
-    "privacyPolicy": {
+  "privacyPolicy": {
     "title": "سياسة الخصوصية",
     "ar": "سياسة الخصوصية (عربي)",
     "en": "سياسة الخصوصية (إنجليزي)",
@@ -753,13 +757,26 @@
   "Start Time": "وقت البداية",
   "End Time": "وقت النهاية",
   "Trip Commisson": "عمولة الرحلة",
-  "nationalIdExpDate":"انتهاء الهويه",
+  "nationalIdExpDate": "انتهاء الهويه",
   "Payment Method Type": "نوع وسيلة الدفع",
   "Payment Method Type is required": "نوع وسيلة الدفع مطلوب",
   "Select Payment Method Type": "اختر نوع وسيلة الدفع",
   "Cash": "نقدي",
   "Visa": "فيزا",
-  "Cash Wallet": "محفظة نقدية"
-
-
+  "Cash Wallet": "محفظة نقدية",
+  "In Progress": "قيد التنفيذ",
+  "Resolved": "تم الحل",
+  "Closed": "مغلق",
+  "Search by Serial Number": "ابحث بالرقم التسلسلي",
+  "Contact Us": "تواصل معنا",
+  "Contact Us Details": "تفاصيل تواصل معنا",
+  "Title": "العنوان",
+  "Phone": "الهاتف",
+  "Comment": "التعليق",
+  "No details available": "لا توجد تفاصيل متاحة",
+  "in-progress": "قيد المعالجة",
+  "resolved": "تم الحل",
+  "closed": "مغلق",
+  "statusUpdatedSuccessfully": "تم تحديث الحالة بنجاح",
+  "errorUpdatingStatus": "حدث خطأ أثناء تحديث الحالة"
 }

@@ -17,6 +17,7 @@ import couponSlice from "./slices/coupon/couponSlice";
 import offerSlice from "./slices/offer/offerSlice";
 import trafficTimeSlice from "./slices/trafficTime/trafficTimeSlice";
 import settingSlice from "./slices/setting/settingSlice";
+import contactUsSlice from "./slices/contactUs/contactUsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -38,5 +39,6 @@ export const store = configureStore({
     offer: offerSlice,
     trafficTime: trafficTimeSlice,
     setting: settingSlice,
+    contactUs: contactUsSlice,
   },
 });

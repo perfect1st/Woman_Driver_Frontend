@@ -33,7 +33,7 @@ const LoadingPage = () => {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        backgroundColor: theme.palette.background.default,
+        // backgroundColor: theme.palette.background.default,
         p: 2,
       }}
     >

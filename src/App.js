@@ -66,6 +66,7 @@ import { useDispatch } from "react-redux";
 import CashbackPercentageModal from "./components/Modals/CashbackPercentageModal";
 import PrivacyPolicyPage from "./pages/settings/PrivacyPolicyPage";
 import HelpPage from "./pages/settings/HelpPage";
+import ContactUsPage from "./pages/ContactUsPage/ContactUsPage";
 
   export const ColorModeContext = React.createContext({
     toggleColorMode: () => {},
@@ -544,6 +545,16 @@ useEffect(() => {
       // <ProtectedRoute>
         <MainLayout>
           <AddPaymentMethodPage />
+        </MainLayout>
+      // </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/ContactUs"
+    element={
+      // <ProtectedRoute>
+        <MainLayout>
+          <ContactUsPage />
         </MainLayout>
       // </ProtectedRoute>
     }
