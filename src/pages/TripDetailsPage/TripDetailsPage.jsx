@@ -113,17 +113,44 @@ export default function TripDetailsPage() {
   const statusKey = trip.trips_status?.toLowerCase();
   const styles = tripStatusStyles[statusKey] || {};
 
+  let totalWaitingMs = 0;
+
+if (trip.waitings && trip.waitings.length > 0) {
+  trip.waitings.forEach((w) => {
+    const start = new Date(w.waitings_start);
+    const end = new Date(w.waitings_end);
+    totalWaitingMs += (end - start);
+  });
+}
+
+const totalMinutes = Math.floor(totalWaitingMs / 1000 / 60);
   // Build details object
+  const timeOptions = {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true, // خليها true لو عايز AM/PM
+  numberingSystem: "latn", // دا اللي بيخلي الأرقام تطلع 123456
+
+};
+
   const details = {
     date: new Date(trip.createdAt).toLocaleDateString(),
-    time: `${new Date(trip.createdAt).toLocaleTimeString()} - ${new Date(
-      trip.updatedAt
-    ).toLocaleTimeString()}`,
-    distance: `${trip.kilos_number} km`,
+    time: `${new Date(trip.createdAt).toLocaleTimeString(
+      isArabic ? "ar-EG-u-nu-latn" : "en-US",
+      timeOptions
+    )} - ${new Date(trip.updatedAt).toLocaleTimeString(
+      isArabic ? "ar-EG-u-nu-latn" : "en-US",
+      timeOptions
+    )}`,
+    distance: `${trip.kilos_number} ${t("km")}`,
     carType: isArabic ? trip.car_types_id?.name_ar :trip.car_types_id?.name_en || t("N/A"),
-    fare: `${trip.cost}`,
-    waiting: `${trip.total_waiting_minutes_cost}`,
-    waitingTime: `${trip.waitings?.length} ${t("stops")}`,
+    fare: `${trip.cost} ${t("SAR")}`,
+    offer_value: `${trip.offer_value} ${t("SAR")}`,
+    coupon_value: `${trip.coupon_value} ${t("SAR")}`,
+    wallet_value: `${trip.wallet_value} ${t("SAR")}`,
+    fare_after_discount: `${trip.cost - trip.offer_value - trip.coupon_value} ${t("SAR")}`,
+    waiting: `${trip.total_waiting_minutes_cost} ${t("SAR")}`,
+    waitingTime: `${totalMinutes} ${t("min")} `,
     tripType: trip.is_scheduled ? t("Scheduled") : t("On Demand"),
     payment: isArabic ? trip.payment_method_id?.name_ar : trip.payment_method_id?.name_en || t("N/A"),
   };

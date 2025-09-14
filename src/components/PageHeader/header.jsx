@@ -9,6 +9,7 @@ import { useTheme } from '@mui/material/styles';
 import { ReactComponent as ExcelIcon } from "../../assets/xsl-02.svg";
 import { ReactComponent as PdfIcon } from "../../assets/pdf-02.svg";
 import { ReactComponent as PrinterIcon } from "../../assets/printer.svg";
+import { getUserCookie } from '../../hooks/authCookies';
 
 const Header = ({
   title,
@@ -27,7 +28,8 @@ const Header = ({
 }) => {
   const theme = useTheme();
   const isRtl = i18n.language === 'ar';
-
+const user = getUserCookie()
+console.log("user",user)
   return (
     <Box
       component="header"
@@ -68,7 +70,7 @@ const Header = ({
               {btn}
             </Button>
           )}
-
+{(user?.super_admin ||user?.has_report_actions) && <>
           {isExcel && (
             <IconButton color="primary" onClick={onExcel} sx={{ p: 0.25 }}>
               <ExcelIcon width={25} height={25} />
@@ -84,6 +86,7 @@ const Header = ({
               <PrinterIcon width={25} height={25} />
             </IconButton>
           )}
+</>}
         </Box>
       </Box>
     </Box>

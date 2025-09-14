@@ -135,6 +135,7 @@ const UsersPage = () => {
   
 
   if (!hasViewPermission) return <Navigate to="/profile" />;
+  if (loading) return <LoadingPage />;
 
   const fetchAndExport = async (type) => {
     try {

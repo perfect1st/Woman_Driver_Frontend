@@ -92,10 +92,12 @@ const LiquidationPage = () => {
 
   const formatDate = (dateStr, lang) => {
     if (!dateStr) return "-";
-    return new Date(dateStr).toLocaleDateString(lang, {
+
+    return new Date(dateStr).toLocaleDateString( i18n.language === "ar" ? "ar-EG" : "en-GB", {
       year: "numeric",
-      month: "long",
+       month: "short",
       day: "numeric",
+      numberingSystem: "latn",
     });
   };
   // prepare rows

@@ -764,6 +764,15 @@
   "resolved": "Resolved",
   "closed": "Closed",
   "statusUpdatedSuccessfully": "Status updated successfully",
-  "errorUpdatingStatus": "Error updating status"
-  
+  "errorUpdatingStatus": "Error updating status",
+  "fare_after_discount": "Fare After Discount",
+  "wallet_value": "Paid from Wallet",
+  "coupon_value": "Coupon Value",
+  "offer_value": "Offer Value",
+  "min": "Min",
+  "km":"Km",
+  "User":"User",
+  "PM":"PM",
+  "AM":"AM",
+  "System":"System"
 }

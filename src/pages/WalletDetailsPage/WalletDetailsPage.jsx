@@ -120,13 +120,21 @@ const WalletDetailsPage = () => {
     "Transaction Type": trx.transaction_type,
     "Transaction Reason": trx.notes,
     Status: trx.status,
-    Amount: `${trx.amount} SAR`,
-    "Created At": new Date(trx.createdAt).toLocaleString(),
-    Notes: trx.notes,
+    Amount: `${trx.amount} ${t("SAR")}`,
+    "Created At": new Intl.DateTimeFormat(
+      i18n.language === "ar" ? "ar-EG" : "en-US",
+      {
+        day: "numeric",
+         month: "short",
+        year: "numeric",
+        numberingSystem: "latn",
+      }
+    ).format(new Date(trx.createdAt)), 
+       Notes: trx.notes,
   }));
 
   const tableColumns = [
-    { key: "_id", label: t("Transaction ID") },
+    { key: "id", label: t("Transaction ID") },
     { key: "trans_type", label: t("Transaction Type") },
     { key: "transaction_type", label: t("Transaction Reason") },
     { key: "amount", label: t("Amount") },
@@ -236,7 +244,7 @@ const WalletDetailsPage = () => {
           <Card sx={{ mb: 3, background: theme.palette.secondary.sec }}>
             <CardContent>
               <Typography variant="h5" fontWeight="bold">
-                {t("Wallet")}: SAR {balance.toFixed(2)}
+                {t("Wallet")}: {balance.toFixed(2)}  {t("SAR")}
               </Typography>
               <Paper
                 elevation={1}
@@ -244,7 +252,7 @@ const WalletDetailsPage = () => {
               >
                 <CreditCardIcon sx={{ mr: 1 }} />
                 <Typography>
-                  {t("Your Cash")}: SAR {balance.toFixed(2)}
+                  {t("Your Cash")}: {balance.toFixed(2)}  {t("SAR")}
                 </Typography>
               </Paper>
             </CardContent>
@@ -337,20 +345,34 @@ const WalletDetailsPage = () => {
                   if (!trx) return null;
 
                   const rows = [
-                    {
+                    trx?.admin_id?._id && {
                       key: "Dashboard User",
-                      value: trx?.user_id?.fullname || "-",
+                      value: trx?.admin_id?.name || "-",
                       clickable: true,
-                      onClick: () =>
-                        navigate(`/userDetails/${trx?.user_id?._id}`),
+                      onClick: () => navigate(`/userDetails/${trx?.admin_id?._id}`),
                     },
                     {
                       key: "Time",
-                      value: new Date(trx.createdAt).toLocaleTimeString(),
+                      value: new Intl.DateTimeFormat(
+                        i18n.language === "ar" ? "ar-EG" : "en-US",
+                        {
+                          hour: "numeric",
+                          minute: "numeric",
+                          numberingSystem: "latn",
+                        }
+                      ).format(new Date(trx.createdAt)),
                     },
                     {
                       key: "Date",
-                      value: new Date(trx.createdAt).toLocaleDateString(),
+                      value: new Intl.DateTimeFormat(
+                        i18n.language === "ar" ? "ar-EG" : "en-US",
+                        {
+                          day: "numeric",
+                           month: "short",
+                          year: "numeric",
+                          numberingSystem: "latn",
+                        }
+                      ).format(new Date(trx.createdAt)),
                     },
                     { key: "Transaction Type", value: trx.trans_type },
                     { key: "Transaction Reason", value: trx.transaction_type },
@@ -359,7 +381,7 @@ const WalletDetailsPage = () => {
                       value: trx.status,
                       render: () => renderStatusChip(trx.status),
                     },
-                    { key: "Amount", value: `${trx.amount} SAR` },
+                    { key: "Amount", value: `${trx.amount} ${t("SAR")}` },
                     trx.trips_id?._id && {
                       key: "Trip",
                       value: trx.trips_id?.trip_number || "-",
@@ -462,7 +484,15 @@ const WalletDetailsPage = () => {
                     : trx[key];
                 return acc;
               }, {}),
-              createdAt: new Date(trx.createdAt).toLocaleDateString(),
+              createdAt: new Intl.DateTimeFormat(
+                i18n.language === "ar" ? "ar-EG" : "en-US",
+                {
+                  day: "numeric",
+                   month: "short",
+                  year: "numeric",
+                  numberingSystem: "latn",
+                }
+              ).format(new Date(trx.createdAt)),
             }))}
             statusKey="status"
             customCellRenderer={{ status: renderStatusChip }}

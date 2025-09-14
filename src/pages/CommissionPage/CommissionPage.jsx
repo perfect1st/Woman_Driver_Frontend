@@ -66,11 +66,12 @@ const CommissionPage = () => {
 const formatDate = (dateStr, lang) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
-  const locale = lang === "ar" ? "ar-EG" : "en-US";
+  const locale = lang === "ar" ? "ar-EG" : "en-GB";
   return date.toLocaleDateString(locale, {
     year: "numeric",
-    month: "long",
+     month: "short",
     day: "numeric",
+    numberingSystem: "latn",
   });
 };
 

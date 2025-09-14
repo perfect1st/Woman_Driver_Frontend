@@ -103,7 +103,7 @@ const routesData = {
     },
     {
       key: "Coupons",
-      label: { en: "Coupons", ar: "كوبونات" },
+      label: { en: "Coupons", ar: "القسائم" },
       path: "/Coupons",
       // icon: HomeIcon,
     },

@@ -20,6 +20,7 @@ import { getAllUsersLookups, getAllTripsLookups } from "../../redux/slices/looku
 import { createTransaction } from "../../redux/slices/wallet/thunk";
 import { useSelector, useDispatch } from "react-redux";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
+import { getUserCookie } from "../../hooks/authCookies";
 
 export default function AddTransactionPage() {
   const theme = useTheme();
@@ -27,7 +28,7 @@ export default function AddTransactionPage() {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
-
+  const user = getUserCookie();
   const [loading, setLoading] = useState(false);
   const [usersLoading, setUsersLoading] = useState(false);
   const [tripsLoading, setTripsLoading] = useState(false);
@@ -103,6 +104,7 @@ export default function AddTransactionPage() {
           notes: values.notes || "",
           transaction_type: values.transactionReason,
           user_id: values.userName?._id, // user object or id
+          admin_id: user?.id, 
           // trips_id should be omitted if not provided
           ...(values.tripId ? { trips_id: values.tripId._id || values.tripId } : {}),
         };

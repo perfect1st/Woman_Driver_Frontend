@@ -40,7 +40,7 @@ const TrafficTimePage = () => {
 
   const formatTime = (time) => {
     const [hours, minutes] = time.split(":").map(Number);
-    const suffix = hours >= 12 ? "PM" : "AM";
+    const suffix = hours >= 12 ? t("PM") : t("AM");
     const adjustedHours = hours % 12 || 12; // 0 -> 12
     return `${adjustedHours}:${minutes.toString().padStart(2, "0")} ${suffix}`;
   };

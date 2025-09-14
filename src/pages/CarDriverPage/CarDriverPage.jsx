@@ -83,15 +83,17 @@ const CarDriverPage = () => {
     id: (currentPage - 1) * limit + index + 1,
     driverName: item?.driver_id?.fullname || "-",
     carModel: item?.cars_id?.car_model || "-",
-    assignDate: new Date(item?.assign_datetime).toLocaleDateString("en-GB", {
+    assignDate: new Date(item?.assign_datetime).toLocaleDateString( i18n.language === "ar" ? "ar-EG" : "en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
+      numberingSystem: "latn",
     }),
-    releaseDate: item?.release_date ? new Date(item?.release_date).toLocaleDateString("en-GB", {
+    releaseDate: item?.release_date ? new Date(item?.release_date).toLocaleDateString( i18n.language === "ar" ? "ar-EG" : "en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
+      numberingSystem: "latn",
     }) : t("notReleased"),
     // status: item?.driver_id?.status || "Unknown",
   }));

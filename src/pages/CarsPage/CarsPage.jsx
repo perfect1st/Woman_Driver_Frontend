@@ -101,10 +101,11 @@ const CarsPage = () => {
         : car?.car_types_id?.name_en
     ) || '-',
     companyCar: car.is_company_car ? "Company Car" : "User Car",
-    licenseExpiry: new Date(car.createdAt).toLocaleDateString("en-GB", {
+    licenseExpiry: new Date(car.createdAt).toLocaleDateString( i18n.language === "ar" ? "ar-EG" : "en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
+      numberingSystem: "latn",
     }),
     status: car.status, // تحتاج API توفر الحالة الفعلية
 

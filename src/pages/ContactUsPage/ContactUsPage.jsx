@@ -136,7 +136,7 @@ const ContactUsPage = () => {
     title: item.title,
     phone: item.user?.phone_number || "-",
     // comment: item.comment,
-    createdAt: new Date(item.createdAt).toLocaleDateString(i18n.language, {
+    createdAt: new Date(item.createdAt).toLocaleDateString( i18n.language === "ar" ? "ar-EG" : "en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",

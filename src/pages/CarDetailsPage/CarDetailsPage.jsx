@@ -355,7 +355,7 @@ export default function CarDetailsPage() {
     const date = new Date(dateString);
     return date.toLocaleDateString(i18n.language, {
       year: "numeric",
-      month: "long",
+       month: "short",
       day: "numeric",
     });
   };

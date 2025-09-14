@@ -98,10 +98,10 @@ const WalletPage = () => {
   const rows = data.map((wallet, index) => ({
     mainId: wallet?._id,
     id: (currentPage - 1) * limit + index + 1,
-    userName: wallet.user?.fullname || "-",
-    userType: t(wallet.user?.user_type) || "-",
-    dashboardUser: "System",
-    transactionType: wallet.trans_type,
+    userName: wallet.user_id?.fullname || "-",
+    userType: t(wallet.user_id?.user_type) || "-",
+    dashboardUser: wallet.admin_id?.name ?  wallet.admin_id?.name : t("System"),
+    transactionType: t(wallet.trans_type),
     transactionReason: t(wallet.transaction_type),
     status: wallet.status,
     amount: wallet.amount,
@@ -133,9 +133,9 @@ const WalletPage = () => {
 
       const exportData = response.data.map((wallet, i) => ({
         ID: i + 1,
-        "User Name": wallet.user?.fullname || "-",
-        "User Type": wallet.user?.user_type || "-",
-        dashboardUser: "System",
+        "User Name": wallet.user_id?.fullname || "-",
+        "User Type": wallet.user_id?.user_type || "-",
+        dashboardUser:  wallet.admin_id?.name ?  wallet.admin_id?.name : "System",
         "Transaction Type": wallet.trans_type,
         Amount: wallet.amount,
         Status: wallet.status,

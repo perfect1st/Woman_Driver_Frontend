@@ -94,25 +94,28 @@ const DriversPage = () => {
     phone: driver.phone_number,
     carType: isArabic ? driver.car?.car_types_id?.name_ar : driver.car?.car_types_id?.name_en || "N/A",
     nationalId: driver.national_id_expired_date 
-    ? new Date(driver.national_id_expired_date).toLocaleDateString("en-GB", {
+    ? new Date(driver.national_id_expired_date).toLocaleDateString( i18n.language === "ar" ? "ar-EG" : "en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
+      numberingSystem: "latn",
     }) 
     : "",
 
     driverLicenseExpiry: driver.driver_license_expired_date 
-      ? new Date(driver.driver_license_expired_date).toLocaleDateString("en-GB", {
+      ? new Date(driver.driver_license_expired_date).toLocaleDateString( i18n.language === "ar" ? "ar-EG" : "en-GB", {
         day: "2-digit",
         month: "short",
         year: "numeric",
+        numberingSystem: "latn",
       })
       : "",
     carLicenseExpiry: driver.car?.car_license_expired_date 
-      ? new Date(driver.car.car_license_expired_date).toLocaleDateString("en-GB", {
+      ? new Date(driver.car.car_license_expired_date).toLocaleDateString( i18n.language === "ar" ? "ar-EG" : "en-GB", {
         day: "2-digit",
         month: "short",
         year: "numeric",
+        numberingSystem: "latn",
       })
       : "",
     accountStatus: 
@@ -187,7 +190,7 @@ const DriversPage = () => {
           ? new Date(driver.car.car_license_expired_date).toLocaleDateString() 
           : "N/A",
         "Account Status": driver.status,
-        "Created At": new Date(driver.createdAt).toLocaleDateString("en-GB", {
+        "Created At": new Date(driver.createdAt).toLocaleDateString("en-US", {
   day: "2-digit",
   month: "short",
   year: "numeric",
