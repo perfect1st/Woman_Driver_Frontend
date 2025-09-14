@@ -90,7 +90,7 @@ const CommissionCategoryPage = () => {
   // map API data to table rows
   const rows = data.map((c, index) => ({
     id: c._id,
-    categoryId: (currentPage - 1) * limit + index + 1,
+    categoryId: c?.serial_num,
     carType:
       i18n.language === "ar"
         ? c.car_types_id?.name_ar || ""
@@ -140,7 +140,7 @@ const CommissionCategoryPage = () => {
       const allCategories = response || [];
 
       const exportData = allCategories.map((c, index) => ({
-        ID: index + 1,
+        ID: c?.serial_num,
         "Car Type":
           i18n.language === "ar"
             ? c.car_types_id?.name_ar

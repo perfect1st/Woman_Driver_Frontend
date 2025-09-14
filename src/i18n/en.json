@@ -775,5 +775,6 @@
   "User":"User",
   "PM":"PM",
   "AM":"AM",
-  "System":"System"
+  "System":"System",
+  "mark_all_as_read": "تحديد الكل كمقروء"
 }

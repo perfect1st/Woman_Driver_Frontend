@@ -67,21 +67,22 @@ export const editUser = createAsyncThunk(
     }
   });
 
-export const register = createAsyncThunk(
-  "/userSlice/register",
-  async ({data}) => {
-    try {
-      const response = await useInsertData(`/admins/register`,data);
-      return response;
-    } catch (error) {
-      if (error.message === "Network Error") {
-        return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري", "error");
-      } else {
-        return notify(error.response?.data, "error");
+  export const register = createAsyncThunk(
+    "/userSlice/register",
+    async ({ data }, { rejectWithValue }) => {
+      try {
+        const response = await useInsertData("/admins/register", data);
+        return response;
+      } catch (error) {
+        if (error.message === "Network Error") {
+          return rejectWithValue("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري");
+        } else {
+          notify(error.response?.data?.message,"error")
+          return rejectWithValue(error.response?.data  || error.response?.data?.message || error.response?.data?.error || "حدث خطأ");
+        }
       }
     }
-  }
-);
+  );
 export const login = createAsyncThunk(
   "/userSlice/login",
   async ({data}) => {

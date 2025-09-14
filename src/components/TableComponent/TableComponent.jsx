@@ -36,6 +36,12 @@ const statusStyles = {
     borderColor: "#ABEFC6",
     // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
   },
+  active: {
+    textColor: "#085D3A",
+    bgColor: "#ECFDF3",
+    borderColor: "#ABEFC6",
+    // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />
+  },
   Available: {
     textColor: "#085D3A",
     bgColor: "#ECFDF3",

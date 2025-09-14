@@ -97,7 +97,7 @@ const WalletPage = () => {
 
   const rows = data.map((wallet, index) => ({
     mainId: wallet?._id,
-    id: (currentPage - 1) * limit + index + 1,
+    id: wallet?.serial_num,
     userName: wallet.user_id?.fullname || "-",
     userType: t(wallet.user_id?.user_type) || "-",
     dashboardUser: wallet.admin_id?.name ?  wallet.admin_id?.name : t("System"),
@@ -132,7 +132,7 @@ const WalletPage = () => {
       ).unwrap();
 
       const exportData = response.data.map((wallet, i) => ({
-        ID: i + 1,
+        ID: wallet?.serial_num,
         "User Name": wallet.user_id?.fullname || "-",
         "User Type": wallet.user_id?.user_type || "-",
         dashboardUser:  wallet.admin_id?.name ?  wallet.admin_id?.name : "System",

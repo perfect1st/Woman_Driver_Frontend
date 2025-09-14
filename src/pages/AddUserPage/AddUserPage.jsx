@@ -119,7 +119,7 @@ export default function AddUserPage() {
     password: Yup.string()
       .min(8, t("Password must be at least 8 characters"))
       .required(t("Password is required")),
-      permissionGroup: Yup.array().min(1, t("Permission group is required")), // changed to array
+      // permissionGroup: Yup.array().min(1, t("Permission group is required")), // changed to array
     });
 
   const formik = useFormik({
@@ -336,7 +336,7 @@ export default function AddUserPage() {
               helperText={formik.touched.password && formik.errors.password}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12}>
             <FormControl fullWidth variant="filled" error={formik.touched.permissionGroup && Boolean(formik.errors.permissionGroup)}>
               <Typography sx={{ mb: 1 }}>{t("Permission Group")} *</Typography>
               <Select

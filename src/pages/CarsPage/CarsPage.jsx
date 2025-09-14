@@ -93,7 +93,7 @@ const CarsPage = () => {
 
   const rows = data.map((car, index) => ({
     mainId:car?._id,
-    id: (currentPage - 1) * limit + index + 1,
+    id: car?.serial_num,
     model: car.car_model,
     carType: (
       isArabic
@@ -143,7 +143,7 @@ const CarsPage = () => {
 
       const exportData = response.data.map((car, i) => ({
         // ID: i + 1,
-        "Car ID":  i + 1,
+        "Car ID":  car?.serial_num,
         Model: car.car_model,
         "Company Car": car.is_company_car ? "Company Car" : "User Car",
           "car Type": 

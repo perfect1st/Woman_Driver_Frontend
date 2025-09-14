@@ -80,7 +80,7 @@ const CarDriverPage = () => {
 
   const rows = data.map((item, index) => ({
     mainId: item._id,
-    id: (currentPage - 1) * limit + index + 1,
+    id: item?.serial_num,
     driverName: item?.driver_id?.fullname || "-",
     carModel: item?.cars_id?.car_model || "-",
     assignDate: new Date(item?.assign_datetime).toLocaleDateString( i18n.language === "ar" ? "ar-EG" : "en-GB", {
@@ -118,7 +118,7 @@ const CarDriverPage = () => {
       const response = await dispatch(getAllCarAssignmentsWithoutPaginations({ query: q })).unwrap();
   
       const exportData = response.data.map((item, i) => ({
-        [t("Cars-drivers ID")]: i + 1,
+        [t("Cars-drivers ID")]: item?.serial_num,
         [t("Driver Name")]: item?.driver_id?.fullname || "-",
         [t("Car Model")]: item?.cars_id?.car_model || "-",
         [t("Assign Date")]: new Date(item.assign_datetime).toLocaleDateString("en-GB", {

@@ -59,10 +59,17 @@ console.log("allCarTypes",allCarTypes)
     },
     validationSchema,
     onSubmit: async (values) => {
-      setLoading(true);
-      await dispatch(addCommissionCategory({data:values}))
-      console.log("Commission Category Submitted:", values);
-      setLoading(false);
+      try{
+        setLoading(true);
+        await dispatch(addCommissionCategory({data:values})).unwrap()
+        navigate("/CommissionCategory")
+        console.log("Commission Category Submitted:", values);
+      }catch(error){
+console.log("error",error)
+      }finally{
+        setLoading(false);
+      }
+
     },
   });
 

@@ -134,7 +134,7 @@ const WalletDetailsPage = () => {
   }));
 
   const tableColumns = [
-    { key: "id", label: t("Transaction ID") },
+    { key: "serial_num", label: t("Transaction ID") },
     { key: "trans_type", label: t("Transaction Type") },
     { key: "transaction_type", label: t("Transaction Reason") },
     { key: "amount", label: t("Amount") },

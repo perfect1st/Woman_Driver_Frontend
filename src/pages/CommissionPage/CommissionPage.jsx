@@ -91,7 +91,7 @@ const formatDate = (dateStr, lang) => {
     const is_user_type = c.driver_id?.user_type === "driver_company";
     return {
       id: c._id,
-      commissionId: (currentPage - 1) * limit + index + 1,
+      commissionId: c?.serial_num,
       driverName:c.driver_id?.fullname,
       is_user_type,
       date: formatDate(c.day || c.createdAt, i18n.language),
@@ -147,7 +147,7 @@ const formatDate = (dateStr, lang) => {
         
         const is_user_type = c.driver_id?.user_type === "driver_company";
         return {
-          ID: idx + 1,
+          ID: c?.serial_num,
           "Driver Name": c.driver_id?.fullname,
           "App Vehicle": is_user_type ? "Yes" : "No",
           Date: formatDate(c.day || c.createdAt, "en"),

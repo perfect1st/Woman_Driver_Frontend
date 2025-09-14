@@ -84,7 +84,7 @@ const UsersPage = () => {
     name: u.name,
     phone: u.phone_number,
     email: u.email,
-    status: u.status === "active" ? t("Available") : t("Rejected"),
+    status: u.status,
     superAdmin: u.super_admin ? t("Yes") : t("No"),
   }));
 
@@ -150,7 +150,7 @@ const UsersPage = () => {
         Name: user.name,
         "Phone Number": user.phone_number,
         Email: user.email,
-        Status: user.status === "active" ? t("Available") : t("Rejected"),
+        Status: user.status,
         "Super Admin": user.super_admin ? "Yes" : "No",
         "Created At": new Date(user.createdAt).toLocaleDateString(),
       }));
@@ -237,6 +237,7 @@ const UsersPage = () => {
         onViewDetails={(r) => navigate(`/userDetails/${r.id}`)}
         loading={loading}
         isUsers={true}
+        statusKey="status"
         sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
         onStatusChange={onStatusChange}
       />

@@ -115,14 +115,17 @@ export default function ProfilePage() {
       status: oneUser?.status,
       super_admin: oneUser?.super_admin,
       has_report_actions: oneUser?.has_report_actions,
-      groups: currentUser?.groups,
+      groups: oneUser?.groups || [],
     }),
     [oneUser, avatarImage]
   );
 
 
 
-
+  const userGroupsWithNames = oneUser?.groups?.map(groupId =>
+    allPermissionGroups?.find(g => g._id === groupId)
+  ).filter(Boolean);
+  
   // HANDLERS
   const handleFieldChange = (f, v) => setEditable((e) => ({ ...e, [f]: v }));
   const toggleEdit = (f) => setEditMode((m) => ({ ...m, [f]: !m[f] }));
@@ -452,10 +455,10 @@ console.log("oneUser",oneUser)
                 <Box mt={1}>
                 {user && (
   <Typography>
-    {user.groups && user.groups.length > 0 
-      ? user.groups.map(group => group.name).join(", ")
-      : t("No permission groups assigned")
-    }
+  {userGroupsWithNames.length > 0 
+  ? userGroupsWithNames.map(group => group.name).join(", ")
+  : t("No permission groups assigned")
+}
   </Typography>
 )}
 

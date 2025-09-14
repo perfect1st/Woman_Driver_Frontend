@@ -47,8 +47,19 @@ import { ReactComponent as SettingIcon } from "../assets/setting.svg";
 import useBaseImageUrl from "../hooks/useBaseImageUrl";
 import getAccessibleRoutes from '../hooks/getAccessibleRoutes';
 import { clearAllCookies, getUserCookie } from '../hooks/authCookies';
+import PersonIcon from "@mui/icons-material/Person";
+import LogoutIcon from "@mui/icons-material/Logout";
+const notifications = [
+  { id: 1, type: "user", textKey: "new_user_registered", read: false, time: "2 min ago" },
+  { id: 2, type: "driver", textKey: "driver_completed_trip", read: true, time: "1 hr ago" },
+  { id: 3, type: "payment", textKey: "payment_received", read: false, time: "3 hr ago" },
+];
 
-
+const typeColors = {
+  user: "#4caf50",
+  driver: "#2196f3",
+  payment: "#ff9800",
+};
 const Header = ({ onAction }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language
@@ -62,6 +73,7 @@ const Header = ({ onAction }) => {
 const [settingAnchor, setSettingAnchor] = useState(null);
 const [settingMenuOpen, setSettingMenuOpen] = useState(false);
 const [settingMenuAnchor, setSettingMenuAnchor] = useState(null);
+
 const baseImageUrl = useBaseImageUrl();
 const navigate = useNavigate();
 
@@ -95,7 +107,6 @@ const handleSettingMenuClose = () => {
   };
 
   const handleUserMenuClose = () => {
-    navigate("/profile")
     setUserMenuAnchor(null);
   };
 
@@ -315,16 +326,102 @@ const drawerContent = (
   </ListItemButton>
 
   <Menu
-    anchorEl={notificationAnchor}
-    open={Boolean(notificationAnchor)}
-    onClose={() => setNotificationAnchor(null)}
-    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-    transformOrigin={{ vertical: "top", horizontal: "right" }}
-  >
-    <MenuItem>{t("new_user_registered")}</MenuItem>
-    <MenuItem>{t("driver_completed_trip")}</MenuItem>
-    <MenuItem>{t("payment_received")}</MenuItem>
-  </Menu>
+        anchorEl={notificationAnchor}
+        open={Boolean(notificationAnchor)}
+        onClose={() => setNotificationAnchor(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        PaperProps={{
+          sx: {
+            width: 400,
+            maxHeight: 450,
+            p: 1,
+            borderRadius: 3,
+            boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+            overflow: "hidden",
+          },
+        }}
+      >
+        <Typography sx={{ px: 3, py: 1, fontWeight: "bold", fontSize: 16 }}>
+          {t("notifications")}
+        </Typography>
+        <Divider sx={{ mb: 1 }} />
+
+        <Box sx={{ maxHeight: 350, overflowY: "auto" }}>
+          {notifications.map((notif) => (
+            <MenuItem
+              key={notif.id}
+              sx={{
+                px: 2,
+                py: 1,
+                mb: 1,
+                borderRadius: 2,
+                // background: notif.read
+                //   ? "transparent"
+                //   : `linear-gradient(90deg, rgba(255,235,59,0.1), rgba(255,235,59,0))`,
+                "&:hover": {
+                  background: `linear-gradient(90deg, ${theme.palette.primary.light}20, ${theme.palette.primary.light}10)`,
+                  boxShadow: "0px 2px 10px rgba(0,0,0,0.05)",
+                },
+              }}
+            >
+              <Stack direction="row" alignItems="center" spacing={2} sx={{ width: "100%" ,display:"flex", gap:2}}>
+                {/* Avatar Icon */}
+                <Avatar
+                  sx={{
+                    bgcolor: typeColors[notif.type] || theme.palette.primary.main,
+                    width: 36,
+                    height: 36,
+                    fontSize: 16,
+                  }}
+                >
+                  {notif.type.charAt(0).toUpperCase()}
+                </Avatar>
+
+                {/* Text + timestamp */}
+                <Box sx={{ flex: 1 }}>
+                  <Typography
+                    sx={{
+                      fontWeight: notif.read ? "normal" : "bold",
+                      fontSize: 14,
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {t(notif.textKey)}
+                  </Typography>
+                  <Typography sx={{ fontSize: 11, color: theme.palette.text.secondary }}>
+                    {notif.time}
+                  </Typography>
+                </Box>
+
+                {/* Unread dot */}
+                {!notif.read && (
+                  <Box
+                    sx={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: "50%",
+                      bgcolor: "error.main",
+                    }}
+                  />
+                )}
+              </Stack>
+            </MenuItem>
+          ))}
+        </Box>
+
+        <Divider sx={{ my: 1 }} />
+        <MenuItem
+          sx={{
+            justifyContent: "center",
+            color: theme.palette.primary.main,
+            fontWeight: "bold",
+          }}
+          onClick={() => console.log("Mark all as read")}
+        >
+          {t("mark_all_as_read")}
+        </MenuItem>
+      </Menu>
 
   {/* Language Selector */}
   <ListItemButton onClick={handleLangMenuOpen}>
@@ -487,17 +584,7 @@ const drawerContent = (
 
     {notificationAnchor ? <ArrowDropUp /> : <ArrowDropDown />}
   </Button>
-  <Menu
-    anchorEl={notificationAnchor}
-    open={Boolean(notificationAnchor)}
-    onClose={() => setNotificationAnchor(null)}
-    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-  >
-    <MenuItem>{t("new_user_registered")}</MenuItem>
-    <MenuItem>{t("driver_completed_trip")}</MenuItem>
-    <MenuItem>{t("payment_received")}</MenuItem>
-  </Menu>
+
 </Box>
 <Divider 
             orientation="vertical" 
@@ -583,36 +670,61 @@ const drawerContent = (
           
           {/* Language Menu Dropdown */}
           <Menu
-            anchorEl={langMenuAnchor}
-            open={Boolean(langMenuAnchor)}
-            onClose={handleLangMenuClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: i18n.language === 'ar' ? 'right' : 'left',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: i18n.language === 'ar' ? 'right' : 'left',
-            }}
-            sx={{
-              '& .MuiPaper-root': {
-                backgroundColor: theme.palette.background.paper,
-                color:theme.palette.primary.main,
-                minWidth: 120
-              }
-            }}
-          >
-            <MenuItem onClick={() => changeLanguage('en')}>
-              <Typography fontWeight={i18n.language === 'en' ? 'bold' : 'normal'}>
-                English
-              </Typography>
-            </MenuItem>
-            <MenuItem onClick={() => changeLanguage('ar')}>
-              <Typography fontWeight={i18n.language === 'ar' ? 'bold' : 'normal'}>
-                العربية
-              </Typography>
-            </MenuItem>
-          </Menu>
+  anchorEl={langMenuAnchor}
+  open={Boolean(langMenuAnchor)}
+  onClose={handleLangMenuClose}
+  anchorOrigin={{
+    vertical: "bottom",
+    horizontal: i18n.language === "ar" ? "right" : "left",
+  }}
+  transformOrigin={{
+    vertical: "top",
+    horizontal: i18n.language === "ar" ? "right" : "left",
+  }}
+  PaperProps={{
+    sx: {
+      minWidth: 140,
+      borderRadius: 1,
+      boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+      overflow: "hidden",
+      p: 0.5,
+      backgroundColor: theme.palette.background.paper,
+    },
+  }}
+>
+  {["en", "ar"].map((lang) => (
+    <MenuItem
+      key={lang}
+      onClick={() => changeLanguage(lang)}
+      sx={{
+        px: 2,
+        py: 1,
+        borderRadius: 1,
+        mb: 0.5,
+        backgroundColor:
+          i18n.language === lang
+            ? theme.palette.action.selected
+            : "transparent",
+        color:
+          i18n.language === lang
+            ? theme.palette.primary.main
+            : "#000",
+        "&:hover": {
+          backgroundColor: theme.palette.action.hover,
+        },
+      }}
+    >
+      <Typography
+        fontWeight={i18n.language === lang ? "bold" : "normal"}
+        fontSize={14}
+      >
+        {lang === "en" ? "English" : "العربية"}
+      </Typography>
+    </MenuItem>
+  ))}
+</Menu>
+
+
 
           {/* Dark/Light Mode Toggle */}
           {/* <IconButton 
@@ -681,36 +793,104 @@ const drawerContent = (
 
           {/* User Menu */}
           <Menu
-            anchorEl={userMenuAnchor}
-            open={Boolean(userMenuAnchor)}
-            onClose={handleUserMenuClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: i18n.language === 'ar' ? 'right' : 'left',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: i18n.language === 'ar' ? 'right' : 'left',
-            }}
-            sx={{
-              '& .MuiPaper-root': {
-                backgroundColor: theme.palette.background.paper,
-                color: theme.palette.primary.main,
-                minWidth: 140
-              }
-            }}
-          >
-            <MenuItem onClick={handleUserMenuClose}>
-              <Typography fontWeight="medium">
-                {i18n.t('profile')}
-              </Typography>
-            </MenuItem>
-            <MenuItem onClick={handleLogout}>
-              <Typography fontWeight="medium">
-                {i18n.t('logout')}
-              </Typography>
-            </MenuItem>
-          </Menu>
+  anchorEl={userMenuAnchor}
+  open={Boolean(userMenuAnchor)}
+  onClose={handleUserMenuClose}
+  anchorOrigin={{
+    vertical: "bottom",
+    horizontal: i18n.language === "ar" ? "right" : "left",
+  }}
+  transformOrigin={{
+    vertical: "top",
+    horizontal: i18n.language === "ar" ? "right" : "left",
+  }}
+  PaperProps={{
+    sx: {
+      minWidth: 220,
+      borderRadius: 3,
+      boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
+      overflow: "hidden",
+      p: 1,
+      backgroundColor: theme.palette.background.paper,
+    },
+  }}
+>
+  {/* User Info */}
+  <Box
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      px: 2,
+      py: 1.5,
+      mb: 1,
+      borderRadius: 2,
+      background: "rgba(0,0,0,0.03)",
+    }}
+  >
+    <Avatar
+      src={`${baseImageUrl}${user?.profile_image}`}
+      sx={{ width: 50, height: 50, border: `2px solid ${theme.palette.primary.main}` }}
+    />
+    <Box sx={{ ml: 2, textAlign: i18n.language === "ar" ? "right" : "left" }}>
+      <Typography fontWeight="bold" fontSize={16}>
+        {user?.name}
+      </Typography>
+      <Typography fontSize={13} color="text.secondary">
+        {user?.type}
+      </Typography>
+    </Box>
+  </Box>
+
+  <Divider sx={{ my: 0.5 }} />
+
+  {/* Menu Actions */}
+  <MenuItem
+    onClick={(e) => {
+      e.stopPropagation();
+      navigate("/profile");
+      handleUserMenuClose();
+    }}
+    sx={{
+      px: 2,
+      py: 1,
+      borderRadius: 2,
+      mb: 0.5,
+      display: "flex",
+      alignItems: "center",
+      gap: 1.5,
+      "&:hover": {
+        backgroundColor: theme.palette.action.hover,
+      },
+    }}
+  >
+    <PersonIcon fontSize="small" />
+    <Typography fontWeight="medium" fontSize={14}>
+      {i18n.t("profile")}
+    </Typography>
+  </MenuItem>
+
+  <MenuItem
+    onClick={handleLogout}
+    sx={{
+      px: 2,
+      py: 1,
+      borderRadius: 2,
+      display: "flex",
+      alignItems: "center",
+      gap: 1.5,
+      "&:hover": {
+        backgroundColor: theme.palette.action.hover,
+      },
+    }}
+  >
+    <LogoutIcon fontSize="small" color="error" />
+    <Typography fontWeight="medium" fontSize={14} color="error">
+      {i18n.t("logout")}
+    </Typography>
+  </MenuItem>
+</Menu>
+
+
         </Hidden>
       </Toolbar>
 
@@ -734,37 +914,7 @@ const drawerContent = (
       </Drawer>
 
       {/* Language Menu for Mobile */}
-      <Menu
-        anchorEl={langMenuAnchor}
-        open={Boolean(langMenuAnchor)}
-        onClose={handleLangMenuClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: i18n.language === 'ar' ? 'right' : 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: i18n.language === 'ar' ? 'right' : 'left',
-        }}
-        sx={{
-          '& .MuiPaper-root': {
-            backgroundColor: theme.palette.background.paper,
-            color: theme.palette.primary.main,
-            minWidth: 120
-          }
-        }}
-      >
-        <MenuItem onClick={() => changeLanguage('en')}>
-          <Typography fontWeight={i18n.language === 'en' ? 'bold' : 'normal'}>
-            English
-          </Typography>
-        </MenuItem>
-        <MenuItem onClick={() => changeLanguage('ar')}>
-          <Typography fontWeight={i18n.language === 'ar' ? 'bold' : 'normal'}>
-            العربية
-          </Typography>
-        </MenuItem>
-      </Menu>
+  
     </AppBar>
   );
 };
