@@ -316,7 +316,7 @@ const ContactUsPage = () => {
     >
       <Header
         title={t("Contact Us")}
-        subtitle={t("")}
+        subtitle={t("Contact Us Details")}
         i18n={i18n}
         isExcel
         isPdf

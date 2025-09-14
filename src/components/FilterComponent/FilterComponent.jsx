@@ -38,6 +38,7 @@ const FilterComponent = ({
   hasDriversType = false,
   DonthasStatus = false,
   isCoupon = false,
+  isOffer = false,
   isContactUs = false,
 }) => {
   const theme = useTheme();
@@ -196,6 +197,8 @@ const FilterComponent = ({
               placeholder={
                 isCoupon
                   ? t("search by Coupon Title")
+                  : isOffer
+                  ? t("search by Offer Title")
                   : isContactUs
                   ? t("Search by Serial Number")
                   : isLiquidation
