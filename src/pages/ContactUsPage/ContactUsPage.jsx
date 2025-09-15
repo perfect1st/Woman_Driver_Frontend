@@ -23,7 +23,7 @@ import PaginationFooter from "../../components/PaginationFooter/PaginationFooter
 import LoadingPage from "../../components/LoadingComponent";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { useTranslation } from "react-i18next";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAllContactUs,
@@ -86,12 +86,12 @@ const ContactUsPage = () => {
   const status = searchParams.get("status") || "";
   const date = searchParams.get("date") || "";
   const currentStatusFilter = status;
-
+const location = useLocation()
   function hasPermission(permissionType) {
     const permissions = getPermissionsByScreen("contactUs");
     return permissions ? permissions[permissionType] === true : false;
   }
-
+console.log("location.state",location.state)
   const hasViewPermission = hasPermission("view");
   const hasEditPermission = hasPermission("edit");
 
@@ -232,6 +232,22 @@ const ContactUsPage = () => {
   const [openDetails, setOpenDetails] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [localStatus, setLocalStatus] = useState("");
+
+
+  useEffect(() => {
+    if (location.state?.openModal && location.state?.related_id && data.length) {
+      const item = data.find((d) => d._id === location.state.related_id);
+      if (item) {
+        setSelectedItem(item);
+        setLocalStatus(item.status || "");
+        setOpenDetails(true);
+  
+        // مسح الـ state بعد الفتح
+        navigate(location.pathname, { replace: true });
+      }
+    }
+  }, [location.state, data, navigate, location.pathname]);
+  
 
   const handleOpenDetails = (row) => {
     // find the full item from data by _id (we stored it as mainId in the rows)

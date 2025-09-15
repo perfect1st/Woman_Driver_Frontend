@@ -174,6 +174,20 @@ export default function DriverDetailsPage() {
   const hasDeletePermission = hasPermission("delete")
 
 const {allDriverTrips, chat} = useSelector((state) => state.trip);
+const pageParam = searchParams.get("page");
+const limitParam = searchParams.get("limit");
+
+const page = pageParam && !isNaN(pageParam) ? parseInt(pageParam, 10) : 1;
+const limit = limitParam && !isNaN(limitParam) ? parseInt(limitParam, 10) : 10;
+
+useEffect(() => {
+  // Ensure parameters are valid before fetching
+  if (!isNaN(page) && !isNaN(limit)) {
+    const query = `page=${page}&limit=${limit}`;
+    dispatch(getAllDriverTrips({ id, query }));
+  }
+}, [dispatch, id, page, limit]);
+
   // Get the actual driver data from Redux store
   const driverState = useSelector((state) => state.driver);
   const driverData = driverState.driver;
@@ -1205,7 +1219,7 @@ const formatTime = (dateString) => {
         </Box>
 
         <Typography mt={1}>
-          {t("Total Trip")}: {hasDriverData ? "2" : "2"}
+          {t("Total Trip")}: {hasDriverData ? allDriverTrips.total : "0"}
         </Typography>
 
         <Box display="flex" alignItems="center" mt={0.5}>

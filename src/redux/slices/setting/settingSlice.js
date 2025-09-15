@@ -1,8 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getAllSetting, updateSetting } from "./thunk";
+import { getAllSetting, updateSetting, getAllNotifications } from "./thunk";
 
 const initialState = {
   setting: null,
+  Notifications:[],
   loading: false,
   error: null,
   message: null, // add message for success feedback
@@ -17,6 +18,20 @@ const settingSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder
+      // Get all
+      .addCase(getAllNotifications.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllNotifications.fulfilled, (state, action) => {
+        state.loading = false;
+        state.Notifications = action.payload; // API returns setting object directly
+      })
+      .addCase(getAllNotifications.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
     builder
       // Get all
       .addCase(getAllSetting.pending, (state) => {

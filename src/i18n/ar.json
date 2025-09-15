@@ -790,5 +790,9 @@
   "PM": "م",
   "AM": "ص",
   "System":"النظام",
-  "mark_all_as_read": "Mark all as read"
+  "notifications":"الاشعارات",
+  "mark_all_as_read": "تحديد الكل كمقروء",
+  "noNotifications": "لا توجد إشعارات"
+
+
 }

@@ -776,5 +776,9 @@
   "PM":"PM",
   "AM":"AM",
   "System":"System",
-  "mark_all_as_read": "تحديد الكل كمقروء"
+   "notifications":"Notifications",
+  "mark_all_as_read": "Mark all as read",
+  "noNotifications": "No notifications available"
+
+
 }

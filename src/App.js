@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -61,8 +61,8 @@ import OffersPage from "./pages/OffersPage/OffersPage";
 import AddCouponPage from "./pages/CouponsPage/AddCoupon";
 import CouponDetailsPage from "./pages/CouponsPage/CouponDetailsPage";
 import OfferDetailsPage from "./pages/OffersPage/OfferDetails";
-import { getAllSetting } from "./redux/slices/setting/thunk";
-import { useDispatch } from "react-redux";
+import { getAllNotifications, getAllSetting } from "./redux/slices/setting/thunk";
+import { useDispatch, useSelector } from "react-redux";
 import CashbackPercentageModal from "./components/Modals/CashbackPercentageModal";
 import PrivacyPolicyPage from "./pages/settings/PrivacyPolicyPage";
 import HelpPage from "./pages/settings/HelpPage";
@@ -293,6 +293,29 @@ function App() {
     if (action === "openCashbackModal") setOpenCashback(true);
   };
   const user = getUserCookie();
+
+ // ======= Replace the old polling block with this =======
+
+// read cookie once at mount to avoid unstable deps
+const initialUser = useMemo(() => getUserCookie(), []);
+const isLoggedIn = Boolean(initialUser?.id); 
+
+
+
+
+useEffect(() => {
+  if (!isLoggedIn) return; 
+
+  dispatch(getAllNotifications());
+
+  const interval = setInterval(() => {
+    dispatch(getAllNotifications());
+  }, 60000); 
+
+  return () => clearInterval(interval);
+}, [dispatch, isLoggedIn]);
+
+
   const hideHeader = location.pathname != "/login";
 
   return (

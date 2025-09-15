@@ -135,3 +135,21 @@ export const addTrip = createAsyncThunk(
     }
   }
 );
+
+// get Dashboard Stats
+export const getDashboardStats = createAsyncThunk(
+  "tripSlice/getDashboardStats",
+  async ({filter}) => {
+    try {
+        const response = await useGetDataToken(`/trips/admin/dashboard-stats?filter=${filter}`);
+        return response;
+      
+    } catch (error) {
+      if (error.message === "Network Error") {
+        return notify("حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري", "error");
+      } else {
+        return notify(error.response?.data, "error");
+      }
+        }
+  }
+);
