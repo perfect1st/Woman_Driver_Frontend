@@ -56,7 +56,6 @@ const DriversPage = () => {
     totalDrivers = 0,
   } = drivers;
 
-  console.log("allCarTypes",allCarTypes)
   // Fetch drivers when parameters change
   useEffect(() => {
     const query =
@@ -89,7 +88,7 @@ const DriversPage = () => {
   const rows = driverList.map((driver, index) => ({
     id: driver._id,
     user_type: driver.user_type,
-    driverId: (currentPage - 1) * limit + index + 1,
+    driverId: driver?.serial_num,
     name: driver.fullname,
     phone: driver.phone_number,
     carType: isArabic ? driver.car?.car_types_id?.name_ar : driver.car?.car_types_id?.name_en || "N/A",
@@ -141,7 +140,6 @@ const DriversPage = () => {
       return notify("noPermissionToUpdateStatus", "warning");
     }
     const driverId = id.id;
-    console.log("selectedDriver",id)
     const data ={
       status: newStatus == "Rejected" ? "banned" : newStatus,
       user_type: id?.user_type
@@ -176,9 +174,8 @@ const DriversPage = () => {
         getAllDriversWithoutPaginations({ query })
       ).unwrap();
 
-      console.log("response",response)
       const exportData = response?.drivers?.map((driver, index) => ({
-        "Driver ID": index + 1,
+        "Driver ID": driver?.serial_num || "",
         "Full Name": driver.fullname,
         "Phone Number": driver.phone_number,
         "Car Type": driver.car?.car_types_id?.name_en || "N/A",

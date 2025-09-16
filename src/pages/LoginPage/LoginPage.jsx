@@ -48,7 +48,6 @@ const LoginPage = () => {
       try {
         setIsLoading(true);
         const response = await dispatch(login({ data }));
-        console.log("response", response);
         if (response?.payload?.token && response?.payload?.admin) {
           const { groups } = response.payload.admin;
 

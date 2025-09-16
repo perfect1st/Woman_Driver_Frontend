@@ -298,7 +298,6 @@ export default function ProfilePage() {
     
     return allPermissions.sort();
   };
-console.log("oneUser",oneUser)
   // EARLY RETURN SPINNER
   if (loading || !oneUser) {
     return <LoadingPage />;

@@ -439,7 +439,7 @@
   "Approved": "موافق",
   "panned": "مرفوض",
   "Scheduled": "مجدول",
-  "On Demand": "عند الطلب",
+  "On Demand": "فوريه",
   "tripType": "نوع الرحله",
   "Unassigned": "غير معين",
   "NoDriverTrips": "لم يتم العثور على رحلات لهذا السائق",
@@ -791,8 +791,9 @@
   "AM": "ص",
   "System":"النظام",
   "notifications":"الاشعارات",
-  "mark_all_as_read": "تحديد الكل كمقروء",
+  "mark_all_as_read": "مسح كل الإشعارات",
   "noNotifications": "لا توجد إشعارات"
+
 
 
 }

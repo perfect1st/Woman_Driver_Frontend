@@ -141,8 +141,12 @@ export default function AddUserPage() {
       formData.append("phone_number", values.phone_number);
       formData.append("email", values.email);
       formData.append("password", values.password);
-      formData.append("groups", JSON.stringify(values.permissionGroup)); // ✅ Send as a single array
-            formData.append("super_admin", values.is_admin);
+      if (Array.isArray(values.permissionGroup)) {
+        values.permissionGroup.forEach((groupId) => {
+          formData.append("groups[]", groupId); // ✅ array instead of string
+        });
+      }
+      formData.append("super_admin", values.is_admin);
       formData.append("has_report_actions", values.hasReportActions);
       
       // Avatar image

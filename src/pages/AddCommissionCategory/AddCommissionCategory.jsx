@@ -28,7 +28,6 @@ export default function AddCommissionCategory() {
   const [loading, setLoading] = useState(false);
 
   const { allCarTypes } = useSelector((state) => state.carType);
-console.log("allCarTypes",allCarTypes)
   useEffect(()=>{
     dispatch(getAllCarTypesWithoutPaginations({query:""}))
   },[])
@@ -63,9 +62,8 @@ console.log("allCarTypes",allCarTypes)
         setLoading(true);
         await dispatch(addCommissionCategory({data:values})).unwrap()
         navigate("/CommissionCategory")
-        console.log("Commission Category Submitted:", values);
       }catch(error){
-console.log("error",error)
+console.error("error",error)
       }finally{
         setLoading(false);
       }

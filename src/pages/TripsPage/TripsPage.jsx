@@ -110,8 +110,10 @@ const TripsPage = () => {
     tripId: trip.trip_number.toUpperCase(), // or any custom formatting
     riderName: trip.user_id.fullname,
     driverName: trip.driver_id?.fullname || t("Unassigned"),
+    fare: trip.cost || "",
+    payment: isArabic ? trip.payment_method_snapshot?.name_ar : trip.payment_method_snapshot?.name_en || "",
     tripType: trip.is_scheduled ? t("Scheduled") : t("On Demand"),
-    carType: isArabic ?trip.car_types_id.name_ar :trip.car_types_id.name_en,
+    carType: isArabic ? trip.car_types_id.name_ar : trip.car_types_id.name_en,
     tripStatus: statusMap[trip.trips_status] || trip.trips_status,
   }));
 
@@ -119,6 +121,9 @@ const TripsPage = () => {
   const columns = [
     { key: "tripId", label: t("Trip ID") },
     { key: "riderName", label: t("Rider name") },
+    { key: "driverName", label: t("Driver name") },
+    { key: "fare", label: t("fare") },
+    { key: "payment", label: t("payment") },
     { key: "driverName", label: t("Driver name") },
     { key: "tripType", label: t("Trip Type") },
     { key: "carType", label: t("Car Type") },
@@ -165,7 +170,6 @@ const TripsPage = () => {
         getAllTripsWithoutPaginations({ query: q })
       ).unwrap();
 
-      console.log("response", response);
       const exportData = response.data.map((trip, idx) => ({
         ID: idx + 1,
         "Trip ID": trip.trip_number.toUpperCase(),

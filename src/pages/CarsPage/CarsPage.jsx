@@ -223,7 +223,6 @@ const CarsPage = () => {
     if(!hasEditPermission){
       return notify("noPermissionToUpdateStatus", "warning");
     }
-    console.log("id", id, "status", status);
     const carId = id?.mainId;
     const accountStatus =
       status == "active"

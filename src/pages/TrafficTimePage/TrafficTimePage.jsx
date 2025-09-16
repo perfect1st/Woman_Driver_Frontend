@@ -90,7 +90,7 @@ const TrafficTimePage = () => {
   // rows mapping for traffic times
   const rows = data.map((tTime, index) => ({
     id: tTime._id,
-    index: (currentPage - 1) * limit + index + 1,
+    index: tTime?.serial_num,
     title: i18n.language === "ar" ? tTime.title_ar : tTime.title_en,
     kiloPrice: `${tTime.kilo_price_percentage}`,
     timeFrom: formatTime(tTime.time_from),
@@ -139,7 +139,7 @@ const TrafficTimePage = () => {
 
       const exportData = response?.data.map((tTime, idx) => {
         return {
-          ID: idx + 1,
+          ID: tTime?.serial_num || "",
           Title: `${tTime.title_en}`,
           "Kilo Price": tTime.kilo_price_percentage,
           "Time From":formatTime(tTime.time_from),

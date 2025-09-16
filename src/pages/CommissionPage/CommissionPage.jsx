@@ -41,7 +41,6 @@ const CommissionPage = () => {
     totalPages = 1,
   } = dailyCommissions;
 
-  console.log("dailyCommissions",dailyCommissions)
   useEffect(() => {
     // build query string for API
     const queryParts = [`page=${page}`, `limit=${limit}`];
@@ -63,17 +62,21 @@ const CommissionPage = () => {
   };
 
   // helper function
-const formatDate = (dateStr, lang) => {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  const locale = lang === "ar" ? "ar-EG" : "en-GB";
-  return date.toLocaleDateString(locale, {
-    year: "numeric",
-     month: "short",
-    day: "numeric",
-    numberingSystem: "latn",
-  });
-};
+  const formatDate = (dateStr, lang) => {
+    if (!dateStr) return "";
+  
+    const [year, month, day] = dateStr.split("T")[0].split("-");
+  
+    const date = new Date(year, month - 1, day); 
+    const locale = lang === "ar" ? "ar-EG" : "en-GB";
+    return date.toLocaleDateString(locale, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      numberingSystem: "latn",
+    });
+  };
+  
 
 
 

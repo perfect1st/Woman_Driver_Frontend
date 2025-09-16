@@ -45,7 +45,6 @@ const CarTypeDetailsPage = () => {
   const hasDeletePermission = hasPermission("delete")
 
   const { carType } = useSelector((state) => state.carType);
-  console.log("carType",carType)
   const [fields, setFields] = useState({
     nameEn: "",
     nameAr: "",

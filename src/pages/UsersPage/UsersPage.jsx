@@ -80,7 +80,7 @@ const UsersPage = () => {
 
   const rows = admins.map((u, index) => ({
     id: u._id,
-    userId: (currentPage - 1) * limit + index + 1,
+    userId: u.serial_num,
     name: u.name,
     phone: u.phone_number,
     email: u.email,
@@ -112,7 +112,6 @@ const UsersPage = () => {
   };
 
   const onStatusChange = async (id, status) => {
-    console.log("id", id, "status", status);
     const userId = id?.id;
     const accountStatus =
       status == "Accepted"
@@ -146,7 +145,7 @@ const UsersPage = () => {
       const fullUsers = response || [];
 
       const exportData = fullUsers.map((user, index) => ({
-        userId: index + 1,
+        userId: user.serial_num,
         Name: user.name,
         "Phone Number": user.phone_number,
         Email: user.email,

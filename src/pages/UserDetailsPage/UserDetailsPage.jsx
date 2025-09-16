@@ -135,12 +135,20 @@ export default function UserDetailsPage() {
     setSaving((s) => ({ ...s, [field]: true }));
 
     try {
-      let updatedField = { [field]: editable[field] };
+      // let updatedField = { [field]: editable[field] };
+      let updatedField;
 
       // For groups, we need to send an array of IDs
       if (field === "groups") {
-        updatedField = { groups: editable.groups };
+        const formData = new FormData();
+        editable.groups.forEach((groupId) => {
+          formData.append("groups[]", groupId); // ✅ يرسلهم Array
+        });
+        updatedField = formData;
+      } else {
+        updatedField = { [field]: editable[field] };
       }
+  
 
       await dispatch(editUser({ id, data: updatedField }));
       setEditMode((m) => ({ ...m, [field]: false }));

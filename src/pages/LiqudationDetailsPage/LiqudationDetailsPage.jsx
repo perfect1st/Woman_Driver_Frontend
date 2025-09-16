@@ -123,7 +123,6 @@ const LiquidationDetailsPage = () => {
     // fetch the liquidation (full data)
     const response = await dispatch(getOneLiquidationWithoutPagination({ id, query })).unwrap();
 
-    console.log("response",response)
     // normalize response shape (handle possible shapes)
     const payload = response?.liquidation || {};
     const allDetails = response?.details || [];

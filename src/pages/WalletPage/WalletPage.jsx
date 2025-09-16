@@ -216,7 +216,6 @@ const WalletPage = () => {
     if (!hasEditPermission) {
       return notify("noPermissionToUpdateStatus", "warning");
     }
-    console.log("id", id, "status", status);
     const walletId = id?.mainId;
     const accountStatus =
       status == "Accepted"

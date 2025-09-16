@@ -31,7 +31,6 @@ export const removeToken = () => {
 export const clearAllCookies = () => {
   const all = Cookies.get();
   if (Object.keys(all).length === 0) {
-    console.log("لا توجد كوكيز للمسح");
     return;
   }
 

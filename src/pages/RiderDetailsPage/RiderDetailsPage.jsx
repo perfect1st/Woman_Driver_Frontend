@@ -751,7 +751,6 @@ export default function RiderDetailsPage() {
                     >
                       <Button variant="outlined" size="small" onClick={async ()=>{
 setChatLoading(true)
-console.log("selectedTrip",selectedTrip)
 await dispatch(getTripChat(selectedTrip.id))
 setChatLoading(false)
 setChatDrawerOpen(true)

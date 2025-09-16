@@ -50,22 +50,24 @@ import getAccessibleRoutes from "../hooks/getAccessibleRoutes";
 import { clearAllCookies, getUserCookie } from "../hooks/authCookies";
 import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { getAllNotifications, MarkAllasRead, MarkRead } from "../redux/slices/setting/thunk";
+import {
+  getAllNotifications,
+  MarkAllasRead,
+  MarkRead,
+} from "../redux/slices/setting/thunk";
 import { useDispatch, useSelector } from "react-redux";
 
-
 const typeColors = {
-  new_driver: "#81C784",       
-  contact_us: "#64B5F6",      
-  withdraw_request: "#FFB74D", 
-  driver_profile_update: "#BA68C8", 
+  new_driver: "#81C784",
+  contact_us: "#64B5F6",
+  withdraw_request: "#FFB74D",
+  driver_profile_update: "#BA68C8",
 };
-
-
 
 const Header = ({ onAction }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
+  const isArabic = i18n.language == "ar";
   const colorMode = useContext(ColorModeContext);
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -78,7 +80,7 @@ const Header = ({ onAction }) => {
   const [settingMenuOpen, setSettingMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [settingMenuAnchor, setSettingMenuAnchor] = useState(null);
-  const { Notifications , loading } = useSelector((state) => state.setting);
+  const { Notifications, loading } = useSelector((state) => state.setting);
   const baseImageUrl = useBaseImageUrl();
   const navigate = useNavigate();
 
@@ -165,7 +167,6 @@ const Header = ({ onAction }) => {
   }, [location.pathname, menuItems]);
   const toggleOpen = (key) =>
     setOpenKeys((prev) => ({ ...prev, [key]: !prev[key] }));
-  console.log("menuItems", menuItems);
   const drawerContent = (
     <Box
       sx={{
@@ -345,171 +346,209 @@ const Header = ({ onAction }) => {
         </ListItemButton>
 
         <Menu
-  anchorEl={notificationAnchor}
-  open={Boolean(notificationAnchor)}
-  onClose={() => setNotificationAnchor(null)}
-  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-  transformOrigin={{ vertical: "top", horizontal: "right" }}
-  PaperProps={{
-    sx: {
-      width: 400,
-      maxHeight: 450,
-      p: 1,
-      borderRadius: 3,
-      boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-      display: "flex",
-      flexDirection: "column" // مهم جداً عشان نثبت الزرار تحت
+          anchorEl={notificationAnchor}
+          open={Boolean(notificationAnchor)}
+          onClose={() => setNotificationAnchor(null)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+          PaperProps={{
+            sx: {
+              width: 400,
+              maxHeight: 450,
+              p: 1,
+              borderRadius: 3,
+              boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+              display: "flex",
+              flexDirection: "column", // مهم جداً عشان نثبت الزرار تحت
+            },
+          }}
+        >
+          <Typography sx={{ px: 3, py: 1, fontWeight: "bold", fontSize: 16 }}>
+            {t("notifications")}
+          </Typography>
+          <Divider sx={{ mb: 1 }} />
+
+          {/* Notifications list with scroll */}
+          <Box sx={{ flex: 1, overflowY: "auto", pr: 1 }}>
+            {loading ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: 350,
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            ) : (Notifications || []).length === 0 ? (
+              <Box sx={{ py: 4, textAlign: "center" }}>
+                <Typography variant="body2" color="text.secondary">
+                  {t("noNotifications")}
+                </Typography>
+              </Box>
+            ) : (
+              (Notifications || []).map((notif) => {
+                const isRead = !!notif.is_read;
+
+                const timeAgo = (iso) => {
+                  if (!iso) return "";
+                  const then = new Date(iso).getTime();
+                  const now = Date.now();
+                  const diffSec = Math.floor((now - then) / 1000);
+
+                  if (diffSec < 60) return `${diffSec}s`;
+                  const diffMin = Math.floor(diffSec / 60);
+                  if (diffMin < 60) return `${diffMin}m`;
+                  const diffH = Math.floor(diffMin / 60);
+                  if (diffH < 24) return `${diffH}h`;
+                  const diffDays = Math.floor(diffH / 24);
+                  if (diffDays === 1) return "yesterday";
+                  if (diffDays < 7) return `${diffDays}d`;
+
+                  return new Intl.DateTimeFormat(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  }).format(new Date(iso));
+                };
+
+                const handleClick = () => {
+                  setNotificationAnchor(null);
+                  if (!isRead) dispatch(MarkRead({ id: notif?._id }));
+
+                  switch (notif?.type) {
+                    case "new_driver":
+                    case "driver_profile_update":
+                      navigate(`/DriverDetails/${notif?.related_id}`);
+                      break;
+                    case "contact_us":
+                      navigate("/ContactUs", {
+                        state: {
+                          openModal: true,
+                          related_id: notif?.related_id,
+                        },
+                      });
+                      break;
+                    case "withdraw_request":
+                      navigate(`/walletDetails/${notif?.related_id}`);
+                      break;
+                    default:
+                      break;
+                  }
+                };
+
+                return (
+                  <MenuItem
+  key={notif?._id || notif?.id}
+  onClick={handleClick}
+  sx={{
+    px: 2,
+    py: 1,
+    mb: 1,
+    borderRadius: 2,
+    display: "flex",
+    alignItems: "center",
+    gap: 2,
+    bgcolor: isRead ? "background.paper" : "action.hover",
+    "&:hover": {
+      background: `linear-gradient(90deg, ${theme.palette.primary.light}20, ${theme.palette.primary.light}10)`,
+      boxShadow: "0px 2px 10px rgba(0,0,0,0.05)",
     },
   }}
 >
-  <Typography sx={{ px: 3, py: 1, fontWeight: "bold", fontSize: 16 }}>
-    {t("notifications")}
-  </Typography>
-  <Divider sx={{ mb: 1 }} />
+  {/* Avatar */}
+  <Avatar
+    sx={{
+      bgcolor: typeColors[notif.type] || theme.palette.primary.main,
+      width: 40,
+      height: 40,
+      fontSize: 16,
+    }}
+  >
+    {(notif.type || "·").charAt(0).toUpperCase()}
+  </Avatar>
 
-  {/* Notifications list with scroll */}
-  <Box sx={{ flex: 1, overflowY: "auto", pr: 1 }}>
-    {loading ? (
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: 350,
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    ) : (Notifications || []).length === 0 ? (
-      <Box sx={{ py: 4, textAlign: "center" }}>
-        <Typography variant="body2" color="text.secondary">
-          {t("noNotifications")}
-        </Typography>
-      </Box>
-    ) : (
-      (Notifications || []).map((notif) => {
-        const isRead = !!notif.is_read;
-
-        const timeAgo = (iso) => {
-          if (!iso) return "";
-          const then = new Date(iso).getTime();
-          const now = Date.now();
-          const diffSec = Math.floor((now - then) / 1000);
-
-          if (diffSec < 60) return `${diffSec}s`;
-          const diffMin = Math.floor(diffSec / 60);
-          if (diffMin < 60) return `${diffMin}m`;
-          const diffH = Math.floor(diffMin / 60);
-          if (diffH < 24) return `${diffH}h`;
-          const diffDays = Math.floor(diffH / 24);
-          if (diffDays === 1) return "yesterday";
-          if (diffDays < 7) return `${diffDays}d`;
-
-          return new Intl.DateTimeFormat(undefined, {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          }).format(new Date(iso));
-        };
-
-        const handleClick = () => {
-          setNotificationAnchor(null);
-          if (!isRead) dispatch(MarkRead({ id: notif?._id }));
-
-          switch (notif?.type) {
-            case "new_driver":
-            case "driver_profile_update":
-              navigate(`/DriverDetails/${notif?.related_id}`);
-              break;
-            case "contact_us":
-              navigate("/ContactUs", {
-                state: { openModal: true, related_id: notif?.related_id },
-              });
-              break;
-            case "withdraw_request":
-              navigate(`/walletDetails/${notif?.related_id}`);
-              break;
-            default:
-              break;
-          }
-        };
-
-        return (
-          <MenuItem
-            key={notif?._id || notif?.id}
-            onClick={handleClick}
-            sx={{
-              px: 2,
-              py: 1,
-              mb: 1,
-              borderRadius: 2,
-              "&:hover": {
-                background: `linear-gradient(90deg, ${theme.palette.primary.light}20, ${theme.palette.primary.light}10)`,
-                boxShadow: "0px 2px 10px rgba(0,0,0,0.05)",
-              },
-            }}
-          >
-            <Stack direction="row" spacing={2} alignItems="center" sx={{ flex: 1 }}>
-              <Avatar
-                sx={{
-                  bgcolor: typeColors[notif.type] || theme.palette.primary.main,
-                  width: 36,
-                  height: 36,
-                  fontSize: 16,
-                }}
-              >
-                {(notif.type || "·").charAt(0).toUpperCase()}
-              </Avatar>
-
-              <Box sx={{ flex: 1 }}>
-                <Typography
-                  sx={{ fontWeight: isRead ? "normal" : "bold", fontSize: 14 }}
-                >
-                  {notif.title}
-                </Typography>
-                <Typography sx={{ fontSize: 11, color: "text.secondary" }}>
-                  {timeAgo(notif.createdAt)}
-                </Typography>
-              </Box>
-
-              {!isRead && (
-                <Box
-                  sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "error.main" }}
-                />
-              )}
-            </Stack>
-          </MenuItem>
-        );
-      })
-    )}
-  </Box>
-
-  {/* Fixed button at bottom */}
-  <Divider sx={{ my: 1 }} />
-  <Box sx={{ p: 1 }}>
-    <MenuItem
+  {/* Text */}
+  <Box sx={{ flex: 1, minWidth: 0 }}>
+    <Typography
       sx={{
-        justifyContent: "center",
-        color: theme.palette.primary.main,
-        fontWeight: "bold",
-      }}
-      onClick={async () => {
-        setIsLoading(true);
-        try {
-          await dispatch(MarkAllasRead()).unwrap();
-          setNotificationAnchor(null);
-        } catch (error) {
-          console.error("Error marking all as read:", error);
-        } finally {
-          setIsLoading(false);
-        }
+        fontWeight: isRead ? "normal" : "bold",
+        fontSize: 14,
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
       }}
     >
-      {isLoading ? <CircularProgress size={20} /> : t("mark_all_as_read")}
-    </MenuItem>
-  </Box>
-</Menu>
+      {isArabic ? notif.title?.ar : notif.title?.en}
+    </Typography>
 
+    <Typography
+      variant="body2"
+      sx={{
+        fontSize: 13,
+        color: "text.secondary",
+        display: "-webkit-box",
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: "vertical",
+        overflow: "hidden",
+      }}
+    >
+      {isArabic ? notif.message?.ar : notif.message?.en}
+    </Typography>
+
+    <Typography sx={{ fontSize: 11, color: "text.disabled", mt: 0.5 }}>
+      {timeAgo(notif.createdAt)}
+    </Typography>
+  </Box>
+
+  {/* Unread Dot */}
+  {!isRead && (
+    <Box
+      sx={{
+        width: 10,
+        height: 10,
+        borderRadius: "50%",
+        bgcolor: "error.main",
+      }}
+    />
+  )}
+</MenuItem>
+
+                );
+              })
+            )}
+          </Box>
+
+          {/* Fixed button at bottom */}
+          <Divider sx={{ my: 1 }} />
+          <Box sx={{ p: 1 }}>
+            <MenuItem
+              sx={{
+                justifyContent: "center",
+                color: theme.palette.primary.main,
+                fontWeight: "bold",
+              }}
+              onClick={async () => {
+                setIsLoading(true);
+                try {
+                  await dispatch(MarkAllasRead()).unwrap();
+                  setNotificationAnchor(null);
+                } catch (error) {
+                  console.error("Error marking all as read:", error);
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+            >
+              {isLoading ? (
+                <CircularProgress size={20} />
+              ) : (
+                t("mark_all_as_read")
+              )}
+            </MenuItem>
+          </Box>
+        </Menu>
 
         {/* Language Selector */}
         <ListItemButton onClick={handleLangMenuOpen}>
@@ -703,7 +742,10 @@ const Header = ({ onAction }) => {
               }}
               sx={{ color: theme.palette.primary.main }}
             >
-              <Badge badgeContent={Notifications?.filter((n) => !n.is_read)?.length} color="primary">
+              <Badge
+                badgeContent={Notifications?.filter((n) => !n.is_read)?.length}
+                color="primary"
+              >
                 <NotificationIcon
                   style={{
                     width: 28,

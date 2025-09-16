@@ -70,7 +70,6 @@ export function CarDriverDetailsPage() {
   const dispatch = useDispatch();
   const imageUrl = useBaseImageUrlForDriver();
   const user = getUserCookie();
-console.log("user",user)
   const { assignment, availableCars, loading, updating } = useSelector(
     (state) => state.carAssignment
   );
@@ -470,6 +469,9 @@ console.log("user",user)
                       color: theme.palette.primary.main,
                     },
                   }}
+                   inputProps={{
+    max: new Date().toISOString().split("T")[0],
+  }}
                   sx={{ mt: 1 }}
                 />
               ) : (
@@ -517,25 +519,28 @@ console.log("user",user)
                 {t("Release Date")}
               </Typography>
               {editingRelease ? (
-                <TextField
-                  size="small"
-                  type="date"
-                  value={releaseDate}
-                  disabled={!user?.super_admin}
-                  onChange={(e) => {
-                    setReleaseDate(e.target.value);
-                    setHasChanges(true);
-                  }}
-                  onBlur={() => setEditingRelease(false)}
-                  autoFocus
-                  InputProps={{
-                    sx: {
-                      fontWeight: "bold",
-                      color: theme.palette.primary.main,
-                    },
-                  }}
-                  sx={{ mt: 1 }}
-                />
+               <TextField
+               size="small"
+               type="date"
+               value={releaseDate}
+               disabled={!user?.super_admin}
+               onChange={(e) => {
+                 setReleaseDate(e.target.value);
+                 setHasChanges(true);
+               }}
+               onBlur={() => setEditingRelease(false)}
+               autoFocus
+               InputProps={{
+                 sx: {
+                   fontWeight: "bold",
+                   color: theme.palette.primary.main,
+                 },
+               }}
+               inputProps={{
+                 max: new Date().toISOString().split("T")[0], // disable future dates
+               }}
+               sx={{ mt: 1 }}
+             />             
               ) : (
                 <Typography
                   fontWeight="bold"

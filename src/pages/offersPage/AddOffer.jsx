@@ -154,7 +154,7 @@ export default function AddOfferPage() {
       >
         <MenuItem value="">{t("offer.placeholders.offer_type")}</MenuItem>
         <MenuItem value="percentage">{t("offer.types.percentage")}</MenuItem>
-        <MenuItem value="fixed">{t("offer.types.fixed")}</MenuItem>
+        <MenuItem value="value">{t("offer.types.fixed")}</MenuItem>
       </TextField>
 
       {/* Offer Value */}

@@ -90,7 +90,7 @@ const OffersPage = () => {
   // rows mapping for offers
   const rows = data.map((o, index) => ({
     id: o._id,
-    index: (currentPage - 1) * limit + index + 1,
+    index: o.serial_num,
     title: o.title,
     value: `${o.offer_value} ${o.offer_type == "percentage" ? "%" : t("SAR")}`,
     maxDiscount: o.maximum_discount_value,
@@ -139,7 +139,7 @@ const OffersPage = () => {
 
       const exportData = response?.data.map((o, idx) => {
         return {
-          ID: idx + 1,
+          ID: o?.serial_num || "",
           Offer: o.title,
           value: `${o.offer_value} ${o.offer_type == "percentage" ? "%" : t("SAR")}`,
           "Max Discount": o.maximum_discount_value,

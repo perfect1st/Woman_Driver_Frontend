@@ -50,7 +50,6 @@ const PassengersPage = () => {
     totalUsers = 0,
   } = passengers;
 
-  console.log("loading", loading);
   useEffect(() => {
     const query =
       `page=${page}&limit=${limit}` +
@@ -81,7 +80,7 @@ const PassengersPage = () => {
 
   const rows = users.map((u, index) => ({
     id: u._id,
-    riderId: (currentPage - 1) * limit + index + 1,
+    riderId: u.serial_num,
     name: u.fullname,
     phone: u.phone_number,
     rate: u?.ratings?.average || 0,
@@ -127,7 +126,6 @@ const PassengersPage = () => {
     if(!hasEditPermission){
       return notify("noPermissionToUpdateStatus", "warning");
     }
-    console.log("id", id, "status", status);
     const PassengerId = id?.id;
     const accountStatus =
       status == "Accepted"
@@ -148,7 +146,6 @@ const PassengersPage = () => {
 
   const fetchAndExport = async (type) => {
     try {
-      console.log("status",status)
       const query =
         (keyword ? `&keyword=${keyword}` : "") +
         (status ? `&status=${status?.toLocaleLowerCase()}` : "");
@@ -160,7 +157,7 @@ const PassengersPage = () => {
       const fullUsers = response || [];
 
       const exportData = fullUsers.map((user, index) => ({
-        riderId: index + 1, 
+        riderId: user.serial_num || "", 
         "Full Name": user.fullname,
         "Phone Number": user.phone_number,
         Email: user.email,
@@ -239,7 +236,6 @@ const PassengersPage = () => {
   };
 
   const handleSortClick = (column) => {
-    console.log("Coloum Clicked", column.key);
     // نفّذ عملية الفرز هنا حسب العمود
   };
 

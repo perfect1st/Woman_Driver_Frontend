@@ -8,7 +8,6 @@ import { ReactComponent as setting } from '../assets/setting.svg'
 import { getUserCookie } from '../hooks/authCookies';
 const user = getUserCookie();
 
-console.log("user",user)
 const routesData = {
   admin: [
     {

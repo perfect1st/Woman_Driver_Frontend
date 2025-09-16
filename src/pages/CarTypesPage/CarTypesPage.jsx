@@ -84,7 +84,7 @@ const CarTypesPage = () => {
 
   const rows = data.map((c, index) => ({
     id: c._id,
-    typeId: (currentPage - 1) * limit + index + 1,
+    typeId: c?.serial_num,
     name: i18n.language === "ar" ? c.name_ar : c.name_en,
     status: c.status === true ? "Available" : "Rejected",
   }));
@@ -119,9 +119,8 @@ const CarTypesPage = () => {
       ).unwrap();
       const allCarTypes = response?.data || [];
 
-      console.log("allCarTypes", allCarTypes);
       const exportData = allCarTypes?.map((c, index) => ({
-        ID: index + 1,
+        ID: c.serial_num || "",
         "Car Type Name": i18n.language === "ar" ? c.name_ar : c.name_en,
         Status: c.status === true ? "Available" : "Rejected",
         "Created At": new Date(c.createdAt).toLocaleDateString("en-GB", {

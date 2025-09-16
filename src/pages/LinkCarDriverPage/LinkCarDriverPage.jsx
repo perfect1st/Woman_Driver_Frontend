@@ -109,7 +109,6 @@ export default function LinkCarDriverPage() {
     try {
       // unwrap() will throw if the thunk was rejected
       const response = await dispatch(addCarAssignment({ data })).unwrap();
-  console.log("response",response)
       notify(t("LinkedSuccessfully"), "success");
       navigate("/CarDriver");
     } catch (error) {

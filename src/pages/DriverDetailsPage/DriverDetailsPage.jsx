@@ -201,12 +201,10 @@ useEffect(() => {
   const currentTab =
     tabParam && tabOptions.includes(tabParam) ? tabParam : defaultTab;
     
-  console.log("driverData",driverData)
   const apiLoading = driverState.loading;
   // Determine if we have valid driver data
   const hasDriverData = driverData && driverData._id;
   const { allCarTypes } = useSelector((state) => state.carType);
-console.log("selectedTrip",selectedTrip)
   // Format dates for display
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -623,7 +621,6 @@ const formatTime = (dateString) => {
 
   const handleDeleteImage = () => {
     // In a real app, you would delete the image from your server
-    console.log("Image deleted:", imageType);
     handleCloseImageModal();
   };
 
@@ -742,12 +739,11 @@ const formatTime = (dateString) => {
         await dispatch(getOneDriver({ id }));
       }
     } catch (error) {
-      console.log("error");
+      console.error("error");
     } finally {
       // Dispatch with formData
       setLoading((prev) => ({ ...prev, [field]: false }));
       setEditMode((prev) => ({ ...prev, [field]: false }));
-      console.log(`Saved ${field}:`, editableFields[field]);
     }
   };
 
@@ -963,7 +959,6 @@ const formatTime = (dateString) => {
     const fileName = `${fieldName}_${driverData?._id || "mock"}.jpg`;
   
     // 3) ديباغ للطباعة
-    console.log("renderDownloadLink:", { title, fieldName, fileName, imageSrc, images });
   
     return (
       <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -1855,7 +1850,6 @@ const formatTime = (dateString) => {
                       <Button variant="outlined" color="primary" size="small"
                        onClick={async ()=>{
                         setChatLoading(true)
-                        console.log("selectedTrip",selectedTrip)
                         await dispatch(getTripChat(selectedTrip.id))
                         setChatLoading(false)
                         setChatDrawerOpen(true)

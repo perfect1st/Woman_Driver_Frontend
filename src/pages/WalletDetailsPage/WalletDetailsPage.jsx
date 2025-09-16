@@ -69,7 +69,6 @@ const WalletDetailsPage = () => {
   const dispatch = useDispatch();
   const walletId = id;
   const { wallet, loading } = useSelector((state) => state.wallet);
-  console.log("wallet", wallet);
   // Load wallet data
   useEffect(() => {
     if (id) {
@@ -179,7 +178,6 @@ const WalletDetailsPage = () => {
     if (!hasEditPermission) {
       return notify("noPermissionToUpdateStatus", "warning");
     }
-    console.log("iiiiiiid", id, "status", status);
     const walletId = id?._id;
     const accountStatus =
       status == "Accepted"

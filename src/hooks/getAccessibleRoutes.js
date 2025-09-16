@@ -3,7 +3,6 @@ import { getUserCookie } from "./authCookies";
 
 const getAccessibleRoutes = (userType = "admin") => {
   const user = getUserCookie();
-  console.log("user",user)
   if (!user) return [];
 
   if (user?.super_admin) return routesData[userType] || [];
@@ -37,7 +36,6 @@ const getAccessibleRoutes = (userType = "admin") => {
     })
     .filter(Boolean);
 
-    console.log("filteredRoutes",filteredRoutes)
   return filteredRoutes;
 };
 

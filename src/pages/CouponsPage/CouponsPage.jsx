@@ -90,7 +90,7 @@ const CouponsPage = () => {
   // rows mapping for coupons
   const rows = data.map((c, index) => ({
     id: c._id,
-    index: (currentPage - 1) * limit + index + 1,
+    index: c.serial_num,
     title: c.title,
     value: `${c.coupon_value} ${
       c.coupon_type == "percentage" ? "%" : t("SAR")
@@ -138,11 +138,10 @@ const CouponsPage = () => {
       const response = await dispatch(
         getAllCouponsWithoutPaginations({ query })
       ).unwrap();
-      console.log("response", response);
 
       const exportData = response?.data.map((c, idx) => {
         return {
-          ID: idx + 1,
+          ID: c?.serial_num || "",
           Coupon: c.title,
           value: `${c.coupon_value} ${
             c.coupon_type == "percentage" ? "%" : t("SAR")

@@ -97,7 +97,6 @@ export default function TripDetailsPage() {
   // Redux: slice.one holds { trip, loading }
   const { trip, loading } = useSelector((s) => s.trip);
 
-  console.log("trip",trip)
   useEffect(() => {
     dispatch(getOneTrip(id));
   }, [dispatch, id]);

@@ -116,7 +116,7 @@ const OfferDetailsPage = () => {
               size="small"
             >
               <MenuItem value="percentage">{t("offer.types.percentage")}</MenuItem>
-              <MenuItem value="fixed">{t("offer.types.fixed")}</MenuItem>
+              <MenuItem value="value">{t("offer.types.fixed")}</MenuItem>
             </TextField>
           ) : (
             <TextField

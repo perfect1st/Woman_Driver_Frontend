@@ -45,7 +45,6 @@ const PaymentMethodsDetailsPage = () => {
   }, []);
 
   const { paymentMethod } = useSelector((state) => state.paymentMethod);
-  console.log("paymentMethod", paymentMethod);
   // Dummy payment method object
 
   const [editableFields, setEditableFields] = useState({

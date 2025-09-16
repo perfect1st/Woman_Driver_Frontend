@@ -91,7 +91,6 @@ const location = useLocation()
     const permissions = getPermissionsByScreen("contactUs");
     return permissions ? permissions[permissionType] === true : false;
   }
-console.log("location.state",location.state)
   const hasViewPermission = hasPermission("view");
   const hasEditPermission = hasPermission("edit");
 

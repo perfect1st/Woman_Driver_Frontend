@@ -429,7 +429,7 @@
   "Approved": "Approved",
   "panned": "Rejected",
   "Scheduled": "Scheduled",
-  "On Demand": "On Demand",
+  "On Demand": "Instant",
   "tripType": "Trip Type",
   "Unassigned": "Unassigned",
   "NoDriverTrips": "No trips found for this driver",
@@ -777,7 +777,7 @@
   "AM":"AM",
   "System":"System",
    "notifications":"Notifications",
-  "mark_all_as_read": "Mark all as read",
+  "mark_all_as_read": "Delete All Notifications",
   "noNotifications": "No notifications available"
 
 

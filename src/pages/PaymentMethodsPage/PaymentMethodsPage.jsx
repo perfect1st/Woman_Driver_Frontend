@@ -93,7 +93,7 @@ const PaymentMethodsPage = () => {
 
   const rows = data.map((pm, index) => ({
     id: pm._id,
-    typeId: (currentPage - 1) * limit + index + 1,
+    typeId: pm?.serial_num,
     nameEn: pm.name_en,
     nameAr: pm.name_ar,
     status: pm.status ? "Available" : "Rejected",
@@ -166,7 +166,7 @@ const PaymentMethodsPage = () => {
       ).unwrap();
 
       const exportData = result.data.map((pm, idx) => ({
-        ID: idx + 1,
+        ID: pm?.serial_num || "",
         "Payment Method (EN)": pm.name_en,
         "Payment Method (AR)": pm.name_ar,
         Status: pm.status ? "Available" : "Rejected",
@@ -269,14 +269,14 @@ const PaymentMethodsPage = () => {
         i18n={i18n}
       />
 
-      <Box sx={{ my: 2 }}>
+      {false && <Box sx={{ my: 2 }}>
         <FilterComponent
           onSearch={handleSearch}
           initialFilters={{ keyword, status }}
           statusOptions={["Available", "Rejected"]}
           paymentMethod
         />
-      </Box>
+      </Box>}
 
       <TableComponent
         columns={tableColumns}

@@ -73,6 +73,7 @@ const FilterComponent = ({
       user_type: queryParams.get("user_type") || "",
       trans_type: queryParams.get("trans_type") || "",
       transaction_type: queryParams.get("transaction_type") || "",
+      date: queryParams.get("date") || "",
     });
   }, [location.search]);
 
@@ -99,7 +100,6 @@ const FilterComponent = ({
     const queryString = queryParams.toString();
 
     // ✅ اطبع الكويري في الكونسل فقط
-    console.log("Query for backend:", queryString);
 
     navigate({
       pathname: location.pathname,

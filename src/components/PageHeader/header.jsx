@@ -29,7 +29,6 @@ const Header = ({
   const theme = useTheme();
   const isRtl = i18n.language === 'ar';
 const user = getUserCookie()
-console.log("user",user)
   return (
     <Box
       component="header"
