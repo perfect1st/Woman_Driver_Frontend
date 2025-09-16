@@ -116,7 +116,7 @@ const CouponDetailsPage = () => {
               size="small"
             >
               <MenuItem value="percentage">{t("coupon.types.percentage")}</MenuItem>
-              <MenuItem value="fixed">{t("coupon.types.fixed")}</MenuItem>
+              <MenuItem value="value">{t("coupon.types.fixed")}</MenuItem>
             </TextField>
           ) : (
             <TextField

@@ -14,6 +14,7 @@ import {
   IconButton,
   useTheme,
   FormHelperText,
+  CircularProgress,
 } from "@mui/material";
 import {
   AddCircleOutline as AddIcon,
@@ -93,7 +94,7 @@ export default function AddCarPage() {
   const {  allCarTypes } = useSelector(
     (state) => state.carType
   );
-
+const [loading,setLoading] = useState(false)
 
   function hasPermission(permissionType) {
     const permissions = getPermissionsByScreen("Cars");
@@ -164,8 +165,9 @@ export default function AddCarPage() {
         formData.append("car_left", images.left);
       if (images.right)
         formData.append("car_right", images.right);
-    
+    if(loading) return
       try {
+        setLoading(true)
         await dispatch(addCar({ data: formData })).unwrap();
         navigate("/Cars");
       } catch (errors) {
@@ -179,6 +181,8 @@ export default function AddCarPage() {
           }
         });
         formik.setErrors(fieldErrors);
+      } finally{
+        setLoading(false)
       }
     },
     
@@ -651,8 +655,8 @@ export default function AddCarPage() {
       </Grid>
 
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-        <Button type="submit" variant="contained" sx={{ px: 6 }}>
-          {t("Save")}
+        <Button type="submit" variant="contained" sx={{ px: 6 }} disabled={loading}>
+          { loading ? <CircularProgress /> :t("Save")}
         </Button>
       </Box>
     </Box>

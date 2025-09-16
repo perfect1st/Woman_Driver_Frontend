@@ -121,7 +121,12 @@ export function CarDriverDetailsPage() {
           }
   }, [hasChanges, selectedCar, assignDate, releaseDate]);
 
-  const handleChangeCar = () => setDialogOpen(true);
+  const handleChangeCar = () => {
+  if(assignment?.driver_id?.user_type =="driver_with_car"){
+    return notify(t('cant_change_personal_driver_car'),"warning")
+  }  
+    setDialogOpen(true)
+  };
   const handleClose = () => setDialogOpen(false);
 
   const handleSelectCar = (car) => {

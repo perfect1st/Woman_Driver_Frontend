@@ -792,7 +792,10 @@
   "System":"النظام",
   "notifications":"الاشعارات",
   "mark_all_as_read": "مسح كل الإشعارات",
-  "noNotifications": "لا توجد إشعارات"
+  "noNotifications": "لا توجد إشعارات",
+  "Change Driver":"تغيير السائق",
+  "cant_change_personal_driver_car": "لا يمكن تغيير السيارة للسائق الذي يمتلك سيارة خاصة"
+
 
 
 

@@ -162,7 +162,7 @@ export default function AddCouponPage() {
       >
         <MenuItem value="">{t("coupon.placeholders.coupon_type")}</MenuItem>
         <MenuItem value="percentage">{t("coupon.types.percentage")}</MenuItem>
-        <MenuItem value="fixed">{t("coupon.types.fixed")}</MenuItem>
+        <MenuItem value="value">{t("coupon.types.fixed")}</MenuItem>
       </TextField>
 
       {/* Coupon Value */}

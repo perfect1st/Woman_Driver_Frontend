@@ -163,7 +163,7 @@ export default function LinkCarDriverPage() {
                 <Grid item xs>
                   <Typography fontWeight="bold">{selectedDriver.fullname}</Typography>
                   <Box display="flex" alignItems="center">
-                    <Typography variant="body2">{selectedDriver.rating || 5}</Typography>
+                    <Typography variant="body2">{selectedDriver.ratings.average || 0}</Typography>
                     <StarIcon fontSize="small" color="primary" sx={{ ml: 0.5 }} />
                   </Box>
                 </Grid>
@@ -379,7 +379,7 @@ export default function LinkCarDriverPage() {
 
           <Box display="flex" alignItems="center">
             <Typography variant="body2" mr={0.5}>
-              {driver?.rating || 5}
+              {driver?.ratings.average || 0}
             </Typography>
             <StarIcon fontSize="small" color="primary" />
           </Box>
