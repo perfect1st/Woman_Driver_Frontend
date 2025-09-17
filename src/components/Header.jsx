@@ -120,6 +120,7 @@ const Header = ({ onAction }) => {
   const handleLangMenuOpen = (event) => {
     setLangMenuAnchor(event.currentTarget);
   };
+  
 
   const handleLangMenuClose = () => {
     setLangMenuAnchor(null);
@@ -314,9 +315,12 @@ const Header = ({ onAction }) => {
       <List>
         {/* Notifications */}
         <ListItemButton
-          onClick={async (e) => {
+           onClick={async (e) => {
+            const target = e.currentTarget; // ✅ خد نسخة قبل await
+            console.log("notificationAnchor", target, e);
+        
             await dispatch(getAllNotifications());
-            setNotificationAnchor(e.currentTarget);
+            setNotificationAnchor(target);
           }}
         >
           <Box
@@ -551,7 +555,10 @@ const Header = ({ onAction }) => {
         </Menu>
 
         {/* Language Selector */}
-        <ListItemButton onClick={handleLangMenuOpen}>
+        <ListItemButton onClick={()=>{
+          console.log("first")
+          setLangMenuAnchor(true)
+          }}>
           <Box
             sx={{
               display: "flex",
@@ -575,16 +582,72 @@ const Header = ({ onAction }) => {
                 </Typography>
               }
             />
-            {langMenuAnchor ? <ArrowDropUp /> : <ArrowDropDown />}
-          </Box>
+ <ExpandMore />          </Box>
         </ListItemButton>
+        <Menu
+            anchorEl={langMenuAnchor}
+            open={Boolean(langMenuAnchor)}
+            onClose={handleLangMenuClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: i18n.language === "ar" ? "right" : "left",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: i18n.language === "ar" ? "right" : "left",
+            }}
+            PaperProps={{
+              sx: {
+                minWidth: 140,
+                borderRadius: 1,
+                boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                overflow: "hidden",
+                p: 0.5,
+                backgroundColor: theme.palette.background.paper,
+              },
+            }}
+          >
+            {["en", "ar"].map((lang) => (
+              <MenuItem
+                key={lang}
+                onClick={() => changeLanguage(lang)}
+                sx={{
+                  px: 2,
+                  py: 1,
+                  borderRadius: 1,
+                  mb: 0.5,
+                  backgroundColor:
+                    i18n.language === lang
+                      ? theme.palette.action.selected
+                      : "transparent",
+                  color:
+                    i18n.language === lang
+                      ? theme.palette.primary.main
+                      : "#000",
+                  "&:hover": {
+                    backgroundColor: theme.palette.action.hover,
+                  },
+                }}
+              >
+                <Typography
+                  fontWeight={i18n.language === lang ? "bold" : "normal"}
+                  fontSize={14}
+                >
+                  {lang === "en" ? "English" : "العربية"}
+                </Typography>
+              </MenuItem>
+            ))}
+          </Menu>
       </List>
 
       <Divider sx={{ my: 2 }} />
 
       <List>
         {/* Profile */}
-        <ListItemButton onClick={handleUserMenuOpen}>
+        <ListItemButton  onClick={()=>{
+          navigate("/profile")
+          setMobileOpen(false)
+          }}>
           <Box
             sx={{
               display: "flex",
@@ -602,7 +665,7 @@ const Header = ({ onAction }) => {
         }}
       /> */}
             <ListItemText
-              onClick={handleUserMenuClose}
+              onClick={()=>{navigate("/profile")}}
               primary={
                 <Typography
                   fontWeight="bold"
