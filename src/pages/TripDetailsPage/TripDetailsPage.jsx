@@ -133,7 +133,12 @@ const totalMinutes = Math.floor(totalWaitingMs / 1000 / 60);
 };
 
   const details = {
-    date: new Date(trip.createdAt).toLocaleDateString(),
+    date: new Date(trip.createdAt).toLocaleDateString( i18n.language === "ar" ? "ar-EG" : "en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      numberingSystem: "latn",
+    }),
     time: `${new Date(trip.createdAt).toLocaleTimeString(
       isArabic ? "ar-EG-u-nu-latn" : "en-US",
       timeOptions

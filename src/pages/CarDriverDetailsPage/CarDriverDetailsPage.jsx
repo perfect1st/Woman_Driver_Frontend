@@ -495,7 +495,17 @@ export function CarDriverDetailsPage() {
                   sx={{ mt: 0.5, cursor: "pointer" }}
                   onClick={() => setEditingAssign(true)}
                 >
-                  {assignDate ? format(parseISO(assignDate), "dd/MM/yyyy") : t("Not set")}
+                   {assignDate
+        ? new Date(assignDate).toLocaleDateString(
+            i18n.language === "ar" ? "ar-EG" : "en-GB",
+            {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              numberingSystem: "latn",
+            }
+          )
+        : t("Not set")}
                 </Typography>
               )}
             </Box>
@@ -561,7 +571,17 @@ export function CarDriverDetailsPage() {
                   color={theme.palette.primary.main}
                   sx={{ mt: 0.5, cursor: "pointer" }}
                 >
-                  {releaseDate ? format(parseISO(releaseDate), "dd/MM/yyyy") : t("Not set")}
+                   {releaseDate
+        ? new Date(releaseDate).toLocaleDateString(
+            i18n.language === "ar" ? "ar-EG" : "en-GB",
+            {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              numberingSystem: "latn",
+            }
+          )
+        : t("Not set")}
                 </Typography>
               )}
             </Box>
