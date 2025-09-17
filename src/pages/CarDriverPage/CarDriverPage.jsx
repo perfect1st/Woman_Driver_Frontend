@@ -80,6 +80,8 @@ const CarDriverPage = () => {
 
   const rows = data.map((item, index) => ({
     mainId: item._id,
+    user_type: item.driver_id?.user_type,
+    mainId: item._id,
     id: item?.serial_num,
     driverName: item?.driver_id?.fullname || "-",
     carModel: item?.cars_id?.car_model || "-",
@@ -187,9 +189,14 @@ const CarDriverPage = () => {
     navigate(`/CarDriverDetails/${row.mainId}`);
   };
   const releasedClick = async (row) => {
+    console.log("row",row)
     if(!hasEditPermission){
       return notify("noPermissionToUpdateStatus", "warning");
     }
+    if(row?.user_type == "driver_with_car"){
+      return notify(t("cantreleasePersonaldriver"), "warning");
+    }
+
 
     try {
       // تحقق إن كان هناك تاريخ إنهاء مسبق

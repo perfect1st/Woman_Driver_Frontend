@@ -780,7 +780,9 @@
   "mark_all_as_read": "Delete All Notifications",
   "noNotifications": "No notifications available",
   "Change Driver":"Change Driver",
-  "cant_change_personal_driver_car": "You cannot change the car for a driver who owns a private car"
+  "cant_change_personal_driver_car": "You cannot change the car for a driver who owns a private car",
+  "cantreleasePersonaldriver": "You cannot release a driver who owns a private car"
+
 
 
 

@@ -136,10 +136,16 @@ export function CarDriverDetailsPage() {
   };
 
   const handleSave = useCallback(async () => {
+    if(assignment?.driver_id?.user_type =="driver_with_car"){
+      setHasChanges(false)
+      return notify(t('cant_change_personal_driver_car'),"warning")
+    }  
     if (!selectedCar) {
       notify(t("Please select a car"), "error");
+      setHasChanges(false)
       return;
     }
+
 
     const data = {
       cars_id: selectedCar._id,
@@ -168,6 +174,9 @@ export function CarDriverDetailsPage() {
   };
 
   const handleReleaseNow = () => {
+    if(assignment?.driver_id?.user_type == "driver_with_car"){
+      return notify(t("cantreleasePersonaldriver"), "warning");
+    }
     const currentDate = format(new Date(), "yyyy-MM-dd");
     setReleaseDate(currentDate);
     setHasChanges(true);
