@@ -312,7 +312,7 @@ useEffect(() => {
         password: "",
         status: getDriverStatusDisplay(),
         accountStatus: getAccountStatusDisplay(),
-        verificationCode: driverData.verification_code || "N/A",
+        verificationCode: driverData.verification_code || "",
         verified: driverData.is_code_verified,
         nationalId: driverData.national_id_number,
         nationalIdExpiry: formatDate(driverData.national_id_expired_date),

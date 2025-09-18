@@ -83,7 +83,7 @@ const PassengersPage = () => {
     riderId: u.serial_num,
     name: u.fullname,
     phone: u.phone_number,
-    rate: u?.ratings?.average || 0,
+    rate: u?.ratings?.average?.toFixed(2) || 0,
     accountStatus:
       u.status === "active"
         ? "Available"
@@ -161,6 +161,7 @@ const PassengersPage = () => {
         "Full Name": user.fullname,
         "Phone Number": user.phone_number,
         Email: user.email,
+        rate: user?.ratings?.average?.toFixed(2) || 0,
         Status:
           user.status === "active"
             ? "Available"

@@ -238,7 +238,7 @@ export function CarDriverDetailsPage() {
               />
             </Grid>
             <Grid item xs>
-              <Typography fontWeight="bold">{assignment?.driver_id?.fullname || "N/A"}</Typography>
+              <Typography fontWeight="bold">{assignment?.driver_id?.fullname || ""}</Typography>
               <Box display="flex" alignItems="center">
                 <Typography variant="body2" color="text.secondary">
                   {assignment?.driver_id?.ratings?.average || 0}

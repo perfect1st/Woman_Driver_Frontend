@@ -91,7 +91,7 @@ const DriversPage = () => {
     driverId: driver?.serial_num,
     name: driver.fullname,
     phone: driver.phone_number,
-    carType: isArabic ? driver.car?.car_types_id?.name_ar : driver.car?.car_types_id?.name_en || "N/A",
+    carType: isArabic ? driver.car?.car_types_id?.name_ar : driver.car?.car_types_id?.name_en || "",
     nationalId: driver.national_id_expired_date 
     ? new Date(driver.national_id_expired_date).toLocaleDateString( i18n.language === "ar" ? "ar-EG" : "en-GB", {
       day: "2-digit",
@@ -178,14 +178,31 @@ const DriversPage = () => {
         "Driver ID": driver?.serial_num || "",
         "Full Name": driver.fullname,
         "Phone Number": driver.phone_number,
-        "Car Type": driver.car?.car_types_id?.name_en || "N/A",
-        "National ID": driver.national_id_number || "N/A",
+        "Car Type": driver.car?.car_types_id?.name_en || "",
+        "National ID Expiry": driver.national_id_expired_date 
+        ? new Date(driver.national_id_expired_date).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          numberingSystem: "latn",
+        }) 
+        : "",
         "Driver License Expiry": driver.driver_license_expired_date 
-          ? new Date(driver.driver_license_expired_date).toLocaleDateString() 
-          : "N/A",
+          ? new Date(driver.driver_license_expired_date).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          numberingSystem: "latn",
+        }) 
+          : "",
         "Car License Expiry": driver.car?.car_license_expired_date 
-          ? new Date(driver.car.car_license_expired_date).toLocaleDateString() 
-          : "N/A",
+          ? new Date(driver.car.car_license_expired_date).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          numberingSystem: "latn",
+        }) 
+          : "",
         "Account Status": driver.status,
         "Created At": new Date(driver.createdAt).toLocaleDateString("en-US", {
   day: "2-digit",

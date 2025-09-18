@@ -56,7 +56,7 @@ const statusStyles = {
     bgColor: "#ECFDF3",
     borderColor: "#ABEFC6",
   },
-  Pending: { textColor: "#1849A9", bgColor: "#EFF8FF", borderColor: "#B2DDFF" },
+  pending: { textColor: "#1849A9", bgColor: "#EFF8FF", borderColor: "#B2DDFF" },
   banned: {
     textColor: "#912018",
     bgColor: "#FEF3F2",
@@ -161,7 +161,7 @@ export default function RiderDetailsPage() {
       to: trip.to_name,
       driver: {
         name: trip.driver_id?.fullname || t("Unknown"),
-        rating: 5.0, // Default rating if not available
+        rating:  trip?.driver_id?.ratings?.average?.toFixed(2), // Default rating if not available
         image: trip.driver_id?.profile_image
           ? `${baseImageUrl}${trip.driver_id.profile_image}`
           : DomiDriverImage,
@@ -186,10 +186,10 @@ export default function RiderDetailsPage() {
       ],
       details: {
         date: format(new Date(trip.createdAt), "yyyy-MM-dd"),
-        time: `${format(new Date(trip.createdAt), "hh:mm a")} - ${
+        time: `${formatTime(trip.createdAt)} - ${
           trip.trip_start_time
-            ? format(new Date(trip.trip_start_time), "hh:mm a")
-            : "-"
+            ? formatTime(trip.updatedAt)
+            : t("noEndTripDate")
         }`,
         distance: `${trip.kilos_number} km`,
         type: trip.car_types_id?.name_en || "",
@@ -218,7 +218,7 @@ export default function RiderDetailsPage() {
       image: `${baseImageUrl}${passenger?.profile_image}`,
       referredBy: passenger?.fullname,
       totalTrips: transformedTrips?.length,
-      rating: passenger?.rating || 0,
+      rating: passenger?.ratings?.average?.toFixed(2) || 0,
       fullname: editable.fullname,
       phone_number: editable.phone_number,
       email: editable.email,

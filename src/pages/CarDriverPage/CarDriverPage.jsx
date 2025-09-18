@@ -81,10 +81,9 @@ const CarDriverPage = () => {
   const rows = data.map((item, index) => ({
     mainId: item._id,
     user_type: item.driver_id?.user_type,
-    mainId: item._id,
     id: item?.serial_num,
     driverName: item?.driver_id?.fullname || "-",
-    carModel: item?.cars_id?.car_model || "-",
+    driver_type: t(item.driver_id?.user_type) || "",    carModel: item?.cars_id?.car_model || "-",
     assignDate: new Date(item?.assign_datetime).toLocaleDateString( i18n.language === "ar" ? "ar-EG" : "en-GB", {
       day: "2-digit",
       month: "short",
@@ -105,6 +104,7 @@ const CarDriverPage = () => {
     { key: "mainId", label: t("mainId") , isPrivate:true },
     { key: "id", label: t("Cars-drivers ID") },
     { key: "driverName", label: t("Driver Name") },
+    { key: "driver_type", label: t("Driver Type") },
     { key: "carModel", label: t("Car Model") },
     { key: "assignDate", label: t("Assign Date") },
     { key: "releaseDate", label: t("Release Date") },

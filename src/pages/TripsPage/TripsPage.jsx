@@ -110,6 +110,7 @@ const TripsPage = () => {
     tripId: trip.trip_number.toUpperCase(), // or any custom formatting
     riderName: trip.user_id.fullname,
     driverName: trip.driver_id?.fullname || t("Unassigned"),
+    driverType: t(trip.driver_id?.user_type) || "",
     fare: trip.cost || "",
     payment: isArabic ? trip.payment_method_snapshot?.name_ar : trip.payment_method_snapshot?.name_en || "",
     tripType: trip.is_scheduled ? t("Scheduled") : t("On Demand"),
@@ -124,7 +125,7 @@ const TripsPage = () => {
     { key: "driverName", label: t("Driver name") },
     { key: "fare", label: t("fare") },
     { key: "payment", label: t("payment") },
-    { key: "driverName", label: t("Driver name") },
+    { key: "driverType", label: t("Driver Type") },
     { key: "tripType", label: t("Trip Type") },
     { key: "carType", label: t("Car Type") },
     { key: "tripStatus", label: t("Trip status") },
@@ -176,6 +177,7 @@ const TripsPage = () => {
         Rider: trip.user_id.fullname,
         Driver: trip.driver_id?.fullname || t("Unassigned"),
         Type: trip.car_types_id.name_en,
+        payment: trip.payment_method_snapshot?.name_en || "",
         Status: statusMap[trip.trips_status] || trip.trips_status,
         Cost: trip.cost,
         "Created At": new Date(trip.createdAt).toLocaleDateString("en-GB", {

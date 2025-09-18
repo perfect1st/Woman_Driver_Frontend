@@ -92,7 +92,7 @@ const DriverTrips = ({ driverId, onTripClick }) => {
 
   // Helper function to format coordinates
   const formatCoordinates = (coordinates) => {
-    if (!coordinates || !Array.isArray(coordinates)) return "N/A";
+    if (!coordinates || !Array.isArray(coordinates)) return "";
     return `${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}`;
   };
 
@@ -317,7 +317,7 @@ const DriverTrips = ({ driverId, onTripClick }) => {
                 >
                   <ListItemText primary="Payment Method" />
                   <Typography fontWeight="bold">
-                    {selectedTrip.payment_method_id?.name_en || "N/A"}
+                    {selectedTrip.payment_method_id?.name_en || ""}
                   </Typography>
                 </ListItem>
               </List>

@@ -147,7 +147,7 @@ const totalMinutes = Math.floor(totalWaitingMs / 1000 / 60);
       timeOptions
     )}`,
     distance: `${trip.kilos_number} ${t("km")}`,
-    carType: isArabic ? trip.car_types_id?.name_ar :trip.car_types_id?.name_en || t("N/A"),
+    carType: isArabic ? trip.car_types_id?.name_ar :trip.car_types_id?.name_en || t(""),
     fare: `${trip.cost} ${t("SAR")}`,
     offer_value: `${trip.offer_value} ${t("SAR")}`,
     coupon_value: `${trip.coupon_value} ${t("SAR")}`,
@@ -156,7 +156,7 @@ const totalMinutes = Math.floor(totalWaitingMs / 1000 / 60);
     waiting: `${trip.total_waiting_minutes_cost} ${t("SAR")}`,
     waitingTime: `${totalMinutes} ${t("min")} `,
     tripType: trip.is_scheduled ? t("Scheduled") : t("On Demand"),
-    payment: isArabic ? trip.payment_method_id?.name_ar : trip.payment_method_id?.name_en || t("N/A"),
+    payment: isArabic ? trip.payment_method_id?.name_ar : trip.payment_method_id?.name_en || t(""),
   };
 
   // Build timeline: first pickup, then any waitings, then dropoff
