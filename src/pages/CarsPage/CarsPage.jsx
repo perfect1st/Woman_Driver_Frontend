@@ -141,7 +141,7 @@ const CarsPage = () => {
         getAllCarsWithoutPaginations({ query: q })
       ).unwrap();
 
-      const exportData = response.data.map((car, i) => ({
+      const exportData = response.map((car, i) => ({
         // ID: i + 1,
         "Car ID":  car?.serial_num,
         Model: car.car_model,

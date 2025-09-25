@@ -176,6 +176,13 @@ const statusStyles = {
     borderColor: "#FEDF89",
     // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#93370D" }} />
   },
+"arrived": {
+  textColor: "#9D174D",   // وردي غامق
+  bgColor: "#FCE7F3",     // وردي فاتح
+  borderColor: "#F9A8D4", // بينك متوسط
+  // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#9D174D" }} />
+},
+
   resolved: {
     textColor: "#085D3A", // أخضر غامق
     bgColor: "#ECFDF3",   // أخضر فاتح

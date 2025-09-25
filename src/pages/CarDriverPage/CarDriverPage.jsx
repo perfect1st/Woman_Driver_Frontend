@@ -119,20 +119,20 @@ const CarDriverPage = () => {
   
       const response = await dispatch(getAllCarAssignmentsWithoutPaginations({ query: q })).unwrap();
   
-      const exportData = response.data.map((item, i) => ({
-        [t("Cars-drivers ID")]: item?.serial_num,
-        [t("Driver Name")]: item?.driver_id?.fullname || "-",
-        [t("Car Model")]: item?.cars_id?.car_model || "-",
-        [t("Assign Date")]: new Date(item.assign_datetime).toLocaleDateString("en-GB", {
+      const exportData = response.map((item, i) => ({
+        ["Cars-drivers ID"]: item?.serial_num || " ", 
+        ["Driver Name"]: item?.driver_id?.fullname || "-",
+        ["Car Model"]: item?.cars_id?.car_model || "-",
+        ["Assign Date"]: new Date(item.assign_datetime).toLocaleDateString("en-GB", {
           day: "2-digit",
           month: "short",
           year: "numeric",
         }),
-        [t("Release Date")]:item?.release_date ?  new Date(item.release_date).toLocaleDateString("en-GB", {
+        ["Release Date"]:item?.release_date ?  new Date(item.release_date).toLocaleDateString("en-GB", {
           day: "2-digit",
           month: "short",
           year: "numeric",
-        }) : t("notReleased"),
+        }) : "Not Released",
       }));
   
       if (type === "excel") {

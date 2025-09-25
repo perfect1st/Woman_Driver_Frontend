@@ -83,6 +83,8 @@ export const addCar = createAsyncThunk(
       const response = await useInsertData("/cars", data);
       return response;
     } catch (error) {
+
+      console.log("errorerrorerror",error)
       // network-level
       if (error.message === "Network Error") {
         return rejectWithValue([{ message: "حدث خطأ اثناء الاتصال بالانترنت حاول مرة اخري" }]);
@@ -92,6 +94,9 @@ export const addCar = createAsyncThunk(
         return rejectWithValue(error.response.data.errors);
       }
       // any other
+      if(error.response.data.error){
+        notify(error.response.data.error, "error");
+      }
       return rejectWithValue([{ message: error.response?.data || error.message }]);
     }
   }

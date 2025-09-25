@@ -131,7 +131,7 @@ const WalletPage = () => {
         getAllWalletsWithoutPaginations({ query: q })
       ).unwrap();
 
-      const exportData = response.data.map((wallet, i) => ({
+      const exportData = response.map((wallet, i) => ({
         ID: wallet?.serial_num,
         "User Name": wallet.user_id?.fullname || "-",
         "User Type": wallet.user_id?.user_type || "-",

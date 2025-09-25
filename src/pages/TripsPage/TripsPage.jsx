@@ -24,9 +24,10 @@ import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 const statusMap = {
   requested: "OnRequest",
   accepted: "Approved",
-  cancelled: "Cancelled",
-  complete: "Complete",
+  arrived: "arrived",
   started: "Start",
+  complete: "Complete",
+  cancelled: "Cancelled",
 };
 
 const TripsPage = () => {

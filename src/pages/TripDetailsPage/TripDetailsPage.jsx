@@ -41,32 +41,38 @@ const tripStatusStyles = {
     textColor: "#912018",
     bgColor: "#FEF3F2",
     borderColor: "#FECDCA",
-    icon: <WarningIcon fontSize="small" sx={{ color: "#912018" }} />,
+    // icon: <WarningIcon fontSize="small" sx={{ color: "#912018" }} />,
   },
   accepted: {
     textColor: "#1F2A37",
     bgColor: "#F9FAFB",
     borderColor: "#E5E7EB",
-    icon: <CheckCircleIcon fontSize="small" sx={{ color: "#1F2A37" }} />,
+    // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#1F2A37" }} />,
   },
   requested: {
     textColor: "#93370D",
     bgColor: "#FFFAEB",
     borderColor: "#FEDF89",
-    icon: <AccessTimeIcon fontSize="small" sx={{ color: "#93370D" }} />,
+    // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#93370D" }} />,
   },
   complete: {
     textColor: "#085D3A",
     bgColor: "#ECFDF3",
     borderColor: "#ABEFC6",
-    icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />,
+    // icon: <CheckCircleIcon fontSize="small" sx={{ color: "#085D3A" }} />,
   },
   start: {
     textColor: "#1849A9",
     bgColor: "#EFF8FF",
     borderColor: "#B2DDFF",
-    icon: <AccessTimeIcon fontSize="small" sx={{ color: "#1849A9" }} />,
+    // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#1849A9" }} />,
   },
+  "arrived": {
+  textColor: "#9D174D",   // وردي غامق
+  bgColor: "#FCE7F3",     // وردي فاتح
+  borderColor: "#F9A8D4", // بينك متوسط
+  // icon: <AccessTimeIcon fontSize="small" sx={{ color: "#9D174D" }} />
+},
 };
 
 export default function TripDetailsPage() {

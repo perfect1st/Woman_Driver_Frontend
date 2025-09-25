@@ -241,7 +241,7 @@ export function CarDriverDetailsPage() {
               <Typography fontWeight="bold">{assignment?.driver_id?.fullname || ""}</Typography>
               <Box display="flex" alignItems="center">
                 <Typography variant="body2" color="text.secondary">
-                  {assignment?.driver_id?.ratings?.average || 0}
+                  {assignment?.driver_id?.ratings?.average?.toFixed(2) || 0}
                 </Typography>
                 <StarIcon fontSize="small" color="primary" sx={{ ml: 0.5 }} />
               </Box>

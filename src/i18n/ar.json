@@ -797,6 +797,9 @@
   "cant_change_personal_driver_car": "لا يمكن تغيير السيارة للسائق الذي يمتلك سيارة خاصة",
   "cantreleasePersonaldriver": "لا يمكن إنهاء خدمة السائق الذي يمتلك سيارة خاصة",
   "Driver Type":"نوع السائق",
-  "noEndTripDate": "بلا وقت انتهاء"
+  "noEndTripDate": "بلا وقت انتهاء",
+  "withdrawal_request": "طلب سحب",
+  "arrived":"وصل السائق"
+
 
 }

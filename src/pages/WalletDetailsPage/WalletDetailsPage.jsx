@@ -285,7 +285,7 @@ const WalletDetailsPage = () => {
                   {wallet?.transaction?.user_id?.ratings && (
                     <Box display="flex" alignItems="center" gap={0.5}>
                       <Typography variant="body2" color="text.secondary">
-                        {wallet?.transaction?.user_id?.ratings?.average ||
+                        {wallet?.transaction?.user_id?.ratings?.average.toFixed(2) ||
                           "notRated"}
                       </Typography>
                       <StarIcon fontSize="small" color="warning" />

@@ -783,9 +783,9 @@
   "cant_change_personal_driver_car": "You cannot change the car for a driver who owns a private car",
   "cantreleasePersonaldriver": "You cannot release a driver who owns a private car",
   "Driver Type":"Driver Type",
-  "noEndTripDate": "No End Time"
-
-
+  "noEndTripDate": "No End Time",
+  "withdrawal_request": "Withdrawal Request",
+  "arrived":"Driver Arrived"
 
 
 
