@@ -49,6 +49,10 @@ import PaginationFooter from "../../components/PaginationFooter/PaginationFooter
 import { format } from "date-fns";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 import ModernChatDrawer from "../DriverDetailsPage/ModernChatDrawer";
+import ReactSelect from "react-select";
+import countryList from "react-select-country-list";
+import ReactCountryFlag from "react-country-flag";
+import ctd from "country-telephone-data";
 
 const statusStyles = {
   active: {
@@ -98,6 +102,7 @@ export default function RiderDetailsPage() {
     fullname: "",
     phone_number: "",
     email: "",
+    country_code: "",
     password: "",
     status: "",
     verification_code: "",
@@ -130,8 +135,9 @@ export default function RiderDetailsPage() {
         fullname: passenger.fullname || "",
         phone_number: passenger.phone_number || "",
         email: passenger.email || "",
+        country_code: passenger.country_code || "",
         password: "",
-        status: passenger.status === "active" ? "Available" : passenger.status,
+        status: passenger.status === "active" ? "active" : passenger.status,
         verification_code: passenger.verification_code || "",
         is_code_verified: passenger.is_code_verified || false,
       });
@@ -222,6 +228,7 @@ export default function RiderDetailsPage() {
       fullname: editable.fullname,
       phone_number: editable.phone_number,
       email: editable.email,
+      country_code: editable.country_code,
       password: editable.password,
       status: editable.status,
       wallet: "",
@@ -278,13 +285,17 @@ export default function RiderDetailsPage() {
   }, [messages.length]);
 
 
+  const countryOptions = useMemo(() => {
+    // بعض الحزم تصدر allCountries أو countries — لو لم تعمل جرب console.log(ctd)
+    const list = ctd.allCountries || ctd.countries || ctd; 
+    return (list || []).map(c => ({
+      value: c.dialCode,               // <- هذا هو رقم الكود مثل '20' أو '966'
+      label: `${c.name} (+${c.dialCode})`,
+      iso2: (c.iso2 || c.iso2).toUpperCase?.() || (c.iso2 || "").toUpperCase?.()
+    })).sort((a,b) => a.label.localeCompare(b.label));
+  }, []);
 
-  // EARLY RETURN SPINNER
-  if (loading || !passenger) {
-    return <LoadingPage />;
-  }
 
-  if(!hasViewPermission) return <Navigate to="/profile" />
 
   // HANDLERS (unchanged logic)
   const handleFieldChange = (f, v) => setEditable((e) => ({ ...e, [f]: v }));
@@ -302,6 +313,7 @@ export default function RiderDetailsPage() {
       }
 
       await dispatch(editPassenger({ id, data: updatedField }));
+      await dispatch(getOnePassenger(id));
 
       setEditMode((m) => ({ ...m, [field]: false }));
     } catch (error) {
@@ -314,8 +326,85 @@ export default function RiderDetailsPage() {
   const openDrawer = (t) => (setSelectedTrip(t), setDrawerOpen(true));
   const closeDrawer = () => (setDrawerOpen(false), setSelectedTrip(null));
 
+
+
   const renderEditableField = (field) => {
     const styles = statusStyles[editable.status] || statusStyles.active;
+  
+    // --- country_code edit mode ---
+    if (field === "country_code" && editMode[field]) {
+      return (
+        <Box display="flex" alignItems="center" width="100%">
+          <Box sx={{ flexGrow: 1, mr: 1 }}>
+            <ReactSelect
+              options={countryOptions}
+              value={
+                countryOptions?.find(
+                  (opt) => String(opt.value) === String(editable.country_code)
+                ) || null
+              }
+              onChange={(opt) => handleFieldChange("country_code", opt?.value || "")}
+              placeholder={t("select_country")}
+              isClearable
+              menuPortalTarget={typeof document !== "undefined" ? document.body : null}
+              menuPosition="fixed"
+              formatOptionLabel={(opt) => (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  {opt.iso2 ? (
+                    <ReactCountryFlag svg countryCode={opt.iso2} style={{ fontSize: 16 }} />
+                  ) : null}
+                  <span>{opt.label}</span>
+                </Box>
+              )}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                control: (base) => ({ ...base, minHeight: 40 }),
+              }}
+            />
+          </Box>
+  
+          <IconButton onClick={() => handleSave(field)} disabled={saving[field]}>
+            {saving[field] ? <CircularProgress size={24} /> : <SaveIcon />}
+          </IconButton>
+        </Box>
+      );
+    }
+  
+    // --- country_code display mode (flag + name or +dial) ---
+    if (field === "country_code") {
+      const code = editable.country_code || "";
+  
+      const byValue = (countryOptions || []).find(
+        (c) => String(c.value) === String(code)
+      );
+      const byIso = (countryOptions || []).find(
+        (c) => (c.iso2 || "").toUpperCase() === String(code).toUpperCase()
+      );
+  
+      const country = byValue || byIso;
+      const flagIso = country?.iso2 || (byIso ? byIso.iso2 : "");
+      const label = country ? (byValue ? `${country.label}` : country.label) : t("no_country");
+  
+      return (
+        <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
+          <Chip
+            icon={
+              flagIso ? <ReactCountryFlag svg countryCode={flagIso} style={{ fontSize: 20, lineHeight: 1 }} /> : null
+            }
+            label={label}
+            sx={{ fontWeight: "bold", borderRadius: 1, px: 1.5, py: 0.5 }}
+          />
+  
+          {hasEditPermission && (
+            <IconButton onClick={() => toggleEdit(field)}>
+              <EditIcon />
+            </IconButton>
+          )}
+        </Box>
+      );
+    }
+  
+    // --- generic edit mode (status or text inputs) ---
     if (editMode[field]) {
       return (
         <Box display="flex" alignItems="center" width="100%">
@@ -343,22 +432,17 @@ export default function RiderDetailsPage() {
               sx={{ flexGrow: 1, mr: 1 }}
             />
           )}
-          <IconButton
-            onClick={() => handleSave(field)}
-            disabled={saving[field]}
-          >
+  
+          <IconButton onClick={() => handleSave(field)} disabled={saving[field]}>
             {saving[field] ? <CircularProgress size={24} /> : <SaveIcon />}
           </IconButton>
         </Box>
       );
     }
+  
+    // --- display mode for other fields ---
     return (
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        width="100%"
-      >
+      <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
         <Box>
           {field === "status" ? (
             <Chip
@@ -377,12 +461,21 @@ export default function RiderDetailsPage() {
             <Typography>{editable[field]}</Typography>
           )}
         </Box>
-        {hasEditPermission && <IconButton onClick={() => toggleEdit(field)}>
-          <EditIcon />
-        </IconButton>}
+  
+        {hasEditPermission && (
+          <IconButton onClick={() => toggleEdit(field)}>
+            <EditIcon />
+          </IconButton>
+        )}
       </Box>
     );
   };
+  
+  if(!hasViewPermission) return <Navigate to="/profile" />
+    // EARLY RETURN SPINNER
+    if (loading || !passenger) {
+      return <LoadingPage />;
+    }
 
   return (
     <Box p={2}>
@@ -457,6 +550,20 @@ export default function RiderDetailsPage() {
               </CardContent>
             </Card>
           </Grid>
+                    {/* Country Code */}
+
+              <Grid item xs={12} md={6} sx={{ display: "flex" }}>
+              <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
+                <CardContent>
+                  <Typography variant="subtitle2">
+                    {t("Country Code")}
+                  </Typography>
+                  <Box mt={1}>
+                    {renderEditableField("country_code")}
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
           {/* Phone */}
           <Grid item xs={12}>
             <Card sx={{ background: theme.palette.secondary.sec }}>
@@ -476,14 +583,14 @@ export default function RiderDetailsPage() {
             </Card>
           </Grid>
           {/* Password */}
-          <Grid item xs={12}>
+       {false &&   <Grid item xs={12}>
             <Card sx={{ background: theme.palette.secondary.sec }}>
               <CardContent>
                 <Typography variant="subtitle2">{t("Password")}</Typography>
                 <Box mt={1}>{renderEditableField("password")}</Box>
               </CardContent>
             </Card>
-          </Grid>
+          </Grid>}
           {/* Status */}
           <Grid item xs={12}>
             <Card sx={{ background: theme.palette.secondary.sec }}>

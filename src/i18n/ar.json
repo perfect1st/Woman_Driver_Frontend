@@ -799,7 +799,9 @@
   "Driver Type":"نوع السائق",
   "noEndTripDate": "بلا وقت انتهاء",
   "withdrawal_request": "طلب سحب",
-  "arrived":"وصل السائق"
+  "arrived":"وصل السائق",
+  "no_country":"لا يوجد دوله",
+  "Country Code":"كود الدوله"
 
 
 }

@@ -785,7 +785,9 @@
   "Driver Type":"Driver Type",
   "noEndTripDate": "No End Time",
   "withdrawal_request": "Withdrawal Request",
-  "arrived":"Driver Arrived"
+  "arrived":"Driver Arrived",
+  "no_country":"No Country",
+  "Country Code":"Country Code"
 
 
 

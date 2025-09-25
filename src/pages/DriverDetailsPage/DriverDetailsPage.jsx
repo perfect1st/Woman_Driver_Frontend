@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -44,7 +44,12 @@ import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  Navigate,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DomiCar from "../../assets/DomiCar.png";
 import DomiDriverImage from "../../assets/DomiDriverImage.png";
@@ -60,10 +65,15 @@ import { getAllDriverTrips, getTripChat } from "../../redux/slices/trip/thunk";
 import { useDispatch, useSelector } from "react-redux";
 import useBaseImageUrlForDriver from "../../hooks/useBaseImageUrlForDriver";
 import LoadingPage from "../../components/LoadingComponent";
-import PaginationFooter from "../../components/PaginationFooter/PaginationFooter"
+import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
 import DriverTrips from "./DriverTrips";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 import ModernChatDrawer from "./ModernChatDrawer";
+import ReactSelect from "react-select";
+import countryList from "react-select-country-list";
+import ReactCountryFlag from "react-country-flag";
+import ctd from "country-telephone-data";
+
 // Mock assets for trips and transactions since real data doesn't include them
 const statusStyles = {
   Available: {
@@ -94,7 +104,6 @@ const AccountStatus = {
     borderColor: "#FECDCA",
   },
 };
-
 
 // Mock transaction data since it's not available in the real API response
 const mockTransactions = [
@@ -130,9 +139,6 @@ const mockTransactions = [
   },
 ];
 
-
-
-
 export default function DriverDetailsPage() {
   const { t, i18n } = useTranslation();
   const { id } = useParams();
@@ -161,46 +167,47 @@ export default function DriverDetailsPage() {
   const [chatInput, setChatInput] = useState("");
 
   const fileInputRef = useRef(null);
- 
+
   const baseImageUrl = useBaseImageUrlForDriver();
   function hasPermission(permissionType) {
     const permissions = getPermissionsByScreen("Drivers");
     return permissions ? permissions[permissionType] === true : false;
   }
 
-  const hasViewPermission = hasPermission("view")
-  const hasAddPermission = hasPermission("add")
-  const hasEditPermission = hasPermission("edit")
-  const hasDeletePermission = hasPermission("delete")
+  const hasViewPermission = hasPermission("view");
+  const hasAddPermission = hasPermission("add");
+  const hasEditPermission = hasPermission("edit");
+  const hasDeletePermission = hasPermission("delete");
 
-const {allDriverTrips, chat} = useSelector((state) => state.trip);
-const pageParam = searchParams.get("page");
-const limitParam = searchParams.get("limit");
+  const { allDriverTrips, chat } = useSelector((state) => state.trip);
+  const pageParam = searchParams.get("page");
+  const limitParam = searchParams.get("limit");
 
-const page = pageParam && !isNaN(pageParam) ? parseInt(pageParam, 10) : 1;
-const limit = limitParam && !isNaN(limitParam) ? parseInt(limitParam, 10) : 10;
+  const page = pageParam && !isNaN(pageParam) ? parseInt(pageParam, 10) : 1;
+  const limit =
+    limitParam && !isNaN(limitParam) ? parseInt(limitParam, 10) : 10;
 
-useEffect(() => {
-  // Ensure parameters are valid before fetching
-  if (!isNaN(page) && !isNaN(limit)) {
-    const query = `page=${page}&limit=${limit}`;
-    dispatch(getAllDriverTrips({ id, query }));
-  }
-}, [dispatch, id, page, limit]);
+  useEffect(() => {
+    // Ensure parameters are valid before fetching
+    if (!isNaN(page) && !isNaN(limit)) {
+      const query = `page=${page}&limit=${limit}`;
+      dispatch(getAllDriverTrips({ id, query }));
+    }
+  }, [dispatch, id, page, limit]);
 
   // Get the actual driver data from Redux store
   const driverState = useSelector((state) => state.driver);
   const driverData = driverState.driver;
   const tabOptions = [
-  "driver-details",
-  ...(driverData?.car ? ["car-documents"] : []),
-  "payment-details",
-  "trips",
-];
- const defaultTab = tabOptions[0]; // first tab by default
+    "driver-details",
+    ...(driverData?.car ? ["car-documents"] : []),
+    "payment-details",
+    "trips",
+  ];
+  const defaultTab = tabOptions[0]; // first tab by default
   const currentTab =
     tabParam && tabOptions.includes(tabParam) ? tabParam : defaultTab;
-    
+
   const apiLoading = driverState.loading;
   // Determine if we have valid driver data
   const hasDriverData = driverData && driverData._id;
@@ -221,7 +228,7 @@ useEffect(() => {
     if (!hasDriverData) return "Unavailable";
     return driverData.driver_is_available ? "Available" : "Unavailable";
   };
-   
+
   const getAccountStatusDisplay = () => {
     if (!hasDriverData) return "Pending";
     // Map API status to UI status
@@ -262,11 +269,12 @@ useEffect(() => {
     fullName: hasDriverData ? driverData.fullname : "",
     phone: hasDriverData ? driverData.phone_number : "",
     email: hasDriverData ? driverData.email : "",
+    country_code: hasDriverData ? driverData.country_code : "",
     password: "",
     status: getDriverStatusDisplay(),
     accountStatus: getAccountStatusDisplay(),
     verificationCode: hasDriverData ? driverData.verification_code : "",
-    verified: hasDriverData ? driverData.is_code_verified : true,
+    verified: hasDriverData ? driverData.is_code_verified : false,
     nationalId: hasDriverData ? driverData.national_id_number : "",
     nationalIdExpiry: hasDriverData
       ? formatDate(driverData.national_id_expired_date)
@@ -309,6 +317,7 @@ useEffect(() => {
         fullName: driverData.fullname,
         phone: driverData.phone_number,
         email: driverData.email,
+        country_code: driverData.country_code,
         password: "",
         status: getDriverStatusDisplay(),
         accountStatus: getAccountStatusDisplay(),
@@ -332,10 +341,12 @@ useEffect(() => {
           driverData.car && driverData.car.car_license_images
             ? "License Uploaded"
             : "No License",
-            carLicenseExpiry: driverData.car?.car_license_expired_date
-            ? new Date(driverData.car.car_license_expired_date).toISOString().split("T")[0]
-            : "",
-            isCompanyCar: driverData.car ? driverData.car.is_company_car : false,
+        carLicenseExpiry: driverData.car?.car_license_expired_date
+          ? new Date(driverData.car.car_license_expired_date)
+              .toISOString()
+              .split("T")[0]
+          : "",
+        isCompanyCar: driverData.car ? driverData.car.is_company_car : false,
       });
     }
   }, [hasDriverData, driverData]);
@@ -356,6 +367,7 @@ useEffect(() => {
     phone: false,
     email: false,
     password: false,
+    country_code: false,
     status: false,
     AccountStatus: false,
     verificationCode: false,
@@ -380,6 +392,7 @@ useEffect(() => {
     phone: false,
     email: false,
     password: false,
+    country_code: false,
     status: false,
     AccountStatus: false,
     verificationCode: false,
@@ -400,76 +413,78 @@ useEffect(() => {
   });
 
   // Format time (HH:MM AM/PM)
-const formatTime = (dateString) => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  return date.toLocaleTimeString(i18n.language, {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-};
+  const formatTime = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleTimeString(i18n.language, {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
-// Format date (Month Day, Year)
-// const formatDate = (dateString) => {
-//   if (!dateString) return "";
-//   const date = new Date(dateString);
-//   return date.toLocaleDateString(i18n.language, {
-//     year: "numeric",
-//     month: "short",
-//     day: "numeric"
-//   });
-// };
+  // Format date (Month Day, Year)
+  // const formatDate = (dateString) => {
+  //   if (!dateString) return "";
+  //   const date = new Date(dateString);
+  //   return date.toLocaleDateString(i18n.language, {
+  //     year: "numeric",
+  //     month: "short",
+  //     day: "numeric"
+  //   });
+  // };
 
   const handleOpenDrawer = (trip) => {
     // Map API data to drawer structure
     const drawerTrip = {
-      id:trip?._id,
+      id: trip?._id,
       driver: {
         name: trip.driver_id?.fullname || t("Unknown Driver"),
         rating: 4.9, // Placeholder since rating doesn't exist in API
-        image: trip.driver_id?.profile_image 
+        image: trip.driver_id?.profile_image
           ? `${baseImageUrl}${trip.driver_id.profile_image}`
-          : DomiDriverImage
+          : DomiDriverImage,
       },
       car: {
         plate: trip.car_snapshot?.plate_number || t("Not assigned"),
         color: trip.car_snapshot?.car_color || t("Not assigned"),
         brand: trip.car_snapshot?.car_model || t("Not assigned"),
-        image: `${baseImageUrl}${trip?.car_snapshot?.car_images[0]?.front}` || DomiCar 
+        image:
+          `${baseImageUrl}${trip?.car_snapshot?.car_images[0]?.front}` ||
+          DomiCar,
       },
       timeline: [
         {
           type: "Pickup",
           time: formatTime(trip.createdAt),
-          address: trip?.from_name || t("Pickup Location")
+          address: trip?.from_name || t("Pickup Location"),
         },
         {
           type: "Dropoff",
           time: formatTime(trip.updatedAt),
-          address: trip?.to_name || t("Dropoff Location")
-        }
+          address: trip?.to_name || t("Dropoff Location"),
+        },
       ],
       details: {
         date: formatDate(trip.createdAt),
         time: `${formatTime(trip.createdAt)} - ${formatTime(trip.updatedAt)}`,
         distance: `${trip.kilos_number || 0} km`,
-        type: isArabic 
-          ? trip.car_types_id?.name_ar 
+        type: isArabic
+          ? trip.car_types_id?.name_ar
           : trip.car_types_id?.name_en || t("Not assigned"),
         fare: `SAR ${trip.cost || 0}`,
         trips_status: `${t(trip.trips_status)}`,
         waiting: `SAR ${trip.total_waiting_minutes_cost || 0}`,
-        payment: isArabic 
-          ? trip.payment_method_id?.name_ar 
+        payment: isArabic
+          ? trip.payment_method_id?.name_ar
           : trip.payment_method_id?.name_en || t("Not assigned"),
-        cashback: "SAR 0.00"
+        cashback: "SAR 0.00",
       },
       coordinates: {
         from: trip.from_lng_lat?.coordinates || [],
-        to: trip.to_lng_lat?.coordinates || []
-      }
+        to: trip.to_lng_lat?.coordinates || [],
+      },
     };
-    
+
     setSelectedTrip(drawerTrip);
     setDrawerOpen(true);
   };
@@ -611,7 +626,7 @@ const formatTime = (dateString) => {
       setNewImages([]);
       setImagePreviews([]);
       setUploadError("");
-      setImageModalOpen(false)
+      setImageModalOpen(false);
     } catch (error) {
       setUploadError(t("Failed to upload images. Please try again."));
     } finally {
@@ -654,7 +669,7 @@ const formatTime = (dateString) => {
     }));
   };
 
-  const handleSave = async (field) => {
+  const handleSave = async (field,value) => {
     setLoading((prev) => ({ ...prev, [field]: true }));
 
     // Create FormData object instead of regular object
@@ -667,6 +682,8 @@ const formatTime = (dateString) => {
         break;
       case "phone":
         formData.append("phone_number", editableFields.phone);
+      case "country_code":
+        formData.append("country_code", editableFields.country_code);
         break;
       case "email":
         formData.append("email", editableFields.email);
@@ -686,8 +703,11 @@ const formatTime = (dateString) => {
         if (editableFields.accountStatus === "Rejected") apiStatus = "banned";
         formData.append("status", apiStatus);
         break;
-      case "verified":
-        formData.append("is_code_verified", editableFields.verified);
+        case "verified":
+      formData.append(
+        "is_code_verified",
+        value !== undefined ? value : editableFields.verified
+      );
         break;
       case "nationalId":
         formData.append("national_id_number", editableFields.nationalId);
@@ -722,7 +742,10 @@ const formatTime = (dateString) => {
         formData.append("car[plate_number]", editableFields.plateNumber);
         break;
       case "carLicenseExpiry":
-        formData.append("car[car_license_expired_date]", editableFields.carLicenseExpiry);
+        formData.append(
+          "car[car_license_expired_date]",
+          editableFields.carLicenseExpiry
+        );
         break;
       case "isCompanyCar":
         formData.append("car[is_company_car]", !editableFields.isCompanyCar);
@@ -766,7 +789,99 @@ const formatTime = (dateString) => {
     handleSave("isCompanyCar");
   };
 
+  const countryOptions = useMemo(() => {
+    // بعض الحزم تصدر allCountries أو countries — لو لم تعمل جرب console.log(ctd)
+    const list = ctd.allCountries || ctd.countries || ctd; 
+    return (list || []).map(c => ({
+      value: c.dialCode,               // <- هذا هو رقم الكود مثل '20' أو '966'
+      label: `${c.name} (+${c.dialCode})`,
+      iso2: (c.iso2 || c.iso2).toUpperCase?.() || (c.iso2 || "").toUpperCase?.()
+    })).sort((a,b) => a.label.localeCompare(b.label));
+  }, []);
+  
   const renderEditableField = (field, label, type = "text") => {
+    // --- country_code edit mode (select country) ---
+    if (field === "country_code" && editMode[field]) {
+      return (
+        <Box display="flex" alignItems="center" width="100%">
+          <Box sx={{ flexGrow: 1, mr: 1 }}>
+<ReactSelect
+  options={countryOptions}
+  value={countryOptions?.find(opt => opt.value === editableFields.country_code) || null}
+  onChange={(opt) => handleFieldChange("country_code", opt?.value || "")}
+  placeholder={t("select_country")}
+  isClearable
+  menuPortalTarget={typeof document !== "undefined" ? document.body : null} // يخرج القائمة من الكارد
+  menuPosition="fixed" 
+  styles={{
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }), // تأكد من الظهور فوق كل شيء
+    control: (base) => ({ ...base, minHeight: 40 }),
+  }}
+/>
+
+          </Box>
+
+          <IconButton
+            onClick={() => handleSave(field)}
+            disabled={loading[field]}
+          >
+            {loading[field] ? <CircularProgress size={24} /> : <SaveIcon />}
+          </IconButton>
+        </Box>
+      );
+    }
+
+    // --- country_code display mode (flag + name) ---
+    if (field === "country_code") {
+      const code = editableFields.country_code || "";
+    
+      const byValue = (countryOptions || []).find((c) => String(c.value) === String(code));
+      const byIso = (countryOptions || []).find(
+        (c) => (c.iso2 || "").toUpperCase() === String(code).toUpperCase()
+      );
+    
+      const country = byValue || byIso;
+    
+      // العلم يحتاج رمز ISO ثنائي حرف
+      const flagIso = country?.iso2 || (byIso ? byIso.iso2 : "");
+    
+      const label = country
+        ? (byValue ? `${country.label}` : country.label)
+        : t("no_country");
+    
+      return (
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          width="100%"
+        >
+          <Chip
+            icon={
+              flagIso ? (
+                <ReactCountryFlag svg countryCode={flagIso} style={{ fontSize: 20, lineHeight: 1 }} />
+              ) : null
+            }
+            label={label}
+            sx={{
+              fontWeight: "bold",
+              borderRadius: 1,
+              px: 1.5,
+              py: 0.5,
+            }}
+          />
+    
+          {hasEditPermission && (
+            <IconButton onClick={() => toggleEditMode(field)}>
+              <EditIcon sx={{ color: theme.palette.primary.main }} />
+            </IconButton>
+          )}
+        </Box>
+      );
+    }
+    
+
+    // --- existing branches kept as-is ---
     if (field === "carType" && editMode[field]) {
       return (
         <Box display="flex" alignItems="center" width="100%">
@@ -890,9 +1005,11 @@ const formatTime = (dateString) => {
               py: 0.5,
             }}
           />
-        {hasEditPermission &&  <IconButton onClick={() => toggleEditMode(field)}>
-            <EditIcon sx={{ color: theme.palette.primary.main }} />
-          </IconButton>}
+          {hasEditPermission && (
+            <IconButton onClick={() => toggleEditMode(field)}>
+              <EditIcon sx={{ color: theme.palette.primary.main }} />
+            </IconButton>
+          )}
         </Box>
       );
     }
@@ -918,9 +1035,11 @@ const formatTime = (dateString) => {
               py: 0.5,
             }}
           />
-          {hasEditPermission && <IconButton onClick={() => toggleEditMode(field)}>
-            <EditIcon sx={{ color: theme.palette.primary.main }} />
-          </IconButton>}
+          {hasEditPermission && (
+            <IconButton onClick={() => toggleEditMode(field)}>
+              <EditIcon sx={{ color: theme.palette.primary.main }} />
+            </IconButton>
+          )}
         </Box>
       );
     }
@@ -935,9 +1054,11 @@ const formatTime = (dateString) => {
         <Typography sx={{ color: theme.palette.text.primary }}>
           {editableFields[field]}
         </Typography>
-        {hasEditPermission && <IconButton onClick={() => toggleEditMode(field)}>
-          <EditIcon sx={{ color: theme.palette.primary.main }} />
-        </IconButton>}
+        {hasEditPermission && (
+          <IconButton onClick={() => toggleEditMode(field)}>
+            <EditIcon sx={{ color: theme.palette.primary.main }} />
+          </IconButton>
+        )}
       </Box>
     );
   };
@@ -954,12 +1075,12 @@ const formatTime = (dateString) => {
     } else {
       imageSrc = [DomiCar];
     }
-  
+
     // 2) اسم الملف
     const fileName = `${fieldName}_${driverData?._id || "mock"}.jpg`;
-  
+
     // 3) ديباغ للطباعة
-  
+
     return (
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography
@@ -973,13 +1094,14 @@ const formatTime = (dateString) => {
         >
           {t("Click Here To Download")}
         </Typography>
-        <IconButton onClick={() => handleOpenImageModal(imageSrc, fieldName, title)}>
+        <IconButton
+          onClick={() => handleOpenImageModal(imageSrc, fieldName, title)}
+        >
           <VisibilityIcon sx={{ color: theme.palette.primary.main }} />
         </IconButton>
       </Box>
     );
   };
-  
 
   const renderCarImageCard = (title, angle, fieldName) => {
     let imageSrc = DomiCar;
@@ -1075,10 +1197,7 @@ const formatTime = (dateString) => {
     </Card>
   );
 
-
-
-
-    // ------------------ Chat Drawer Implementation ------------------
+  // ------------------ Chat Drawer Implementation ------------------
   const chatListRef = useRef(null);
 
   // messages array (support chat or chat.data)
@@ -1089,7 +1208,8 @@ const formatTime = (dateString) => {
     const img = sender.profile_image || sender.profileImage || "";
     if (!img) return DomiDriverImage;
     // if img looks like a full URL, return it directly; otherwise prefix baseImageUrl
-    if (img.startsWith("http") || img.startsWith("uploads/")) return img.startsWith("http") ? img : `${baseImageUrl}${img}`;
+    if (img.startsWith("http") || img.startsWith("uploads/"))
+      return img.startsWith("http") ? img : `${baseImageUrl}${img}`;
     return `${baseImageUrl}${img}`;
   };
 
@@ -1100,7 +1220,8 @@ const formatTime = (dateString) => {
     // already a data URI
     if (t.startsWith("data:audio")) return t;
     // if it looks like a file path to uploads -> prefix baseImageUrl
-    if (t.startsWith("uploads/") || t.startsWith("/uploads/")) return `${baseImageUrl}${t}`;
+    if (t.startsWith("uploads/") || t.startsWith("/uploads/"))
+      return `${baseImageUrl}${t}`;
     // otherwise assume raw base64 and use audio/mpeg
     return `data:audio/mpeg;base64,${t}`;
   };
@@ -1110,9 +1231,6 @@ const formatTime = (dateString) => {
       chatListRef.current.scrollTop = chatListRef.current.scrollHeight;
     }
   }, [messages.length]);
-
-
-
 
   // ------------------ End of Chat Drawer Implementation ------------------
   if (apiLoading) {
@@ -1218,7 +1336,9 @@ const formatTime = (dateString) => {
         </Typography>
 
         <Box display="flex" alignItems="center" mt={0.5}>
-          <Typography>{hasDriverData ? driverData?.ratings?.average.toFixed(2) : '0'}</Typography>
+          <Typography>
+            {hasDriverData ? driverData?.ratings?.average.toFixed(2) : "0"}
+          </Typography>
           <StarIcon fontSize="small" color="primary" sx={{ ml: 0.5 }} />
         </Box>
       </Box>
@@ -1255,6 +1375,28 @@ const formatTime = (dateString) => {
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
                 <CardContent>
+                  <Typography variant="subtitle2">{t("Email")}</Typography>
+                  <Box mt={1}>{renderEditableField("email", t("Email"))}</Box>
+                </CardContent>
+              </Card>
+            </Grid>
+                        {/* Row 2 */}
+                        <Grid item xs={12} md={6} sx={{ display: "flex" }}>
+              <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
+                <CardContent>
+                  <Typography variant="subtitle2">
+                    {t("Country Code")}
+                  </Typography>
+                  <Box mt={1}>
+                    {renderEditableField("country_code", t("country code"))}
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+            
+            <Grid item xs={12} md={6} sx={{ display: "flex" }}>
+              <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
+                <CardContent>
                   <Typography variant="subtitle2">
                     {t("Phone Number")}
                   </Typography>
@@ -1264,17 +1406,11 @@ const formatTime = (dateString) => {
                 </CardContent>
               </Card>
             </Grid>
+        
 
-            {/* Row 2 */}
-            <Grid item xs={12} md={6} sx={{ display: "flex" }}>
-              <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
-                <CardContent>
-                  <Typography variant="subtitle2">{t("Email")}</Typography>
-                  <Box mt={1}>{renderEditableField("email", t("Email"))}</Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={6} sx={{ display: "flex" }}>
+            {/* Row 3 */}
+            
+           {false && <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
                 <CardContent>
                   <Typography variant="subtitle2">{t("Password")}</Typography>
@@ -1283,9 +1419,8 @@ const formatTime = (dateString) => {
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
+            </Grid>}
 
-            {/* Row 3 */}
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
                 <CardContent>
@@ -1312,21 +1447,26 @@ const formatTime = (dateString) => {
                   >
                     <Typography>{editableFields.verificationCode}</Typography>
                     <Box display="flex" alignItems="center">
-                      <Checkbox
-                        checked={editableFields.verified}
-                        onChange={(e) => {
-                          handleFieldChange("verified", e.target.checked);
-                          handleSave("verified");
-                        }}
-                        disabled={loading.verified}
-                        color="primary"
-                      />
+                    <Checkbox
+  checked={editableFields.verified}
+  onChange={() => {
+    const newValue = !editableFields.verified; // عكس القيمة الحالية
+    handleFieldChange("verified", newValue);
+    handleSave("verified", newValue); // ابعت القيمة الجديدة
+  }}
+  disabled={loading.verified}
+  color="primary"
+/>
+
+
+
                       <Typography>{t("Verified code")}</Typography>
                     </Box>
                   </Box>
                 </CardContent>
               </Card>
             </Grid>
+            {/* Row 4 */}
 
             {/* National ID Row */}
             <Grid item xs={6} sx={{ display: "flex" }}>
@@ -1567,7 +1707,7 @@ const formatTime = (dateString) => {
                 </CardContent>
               </Card>
             </Grid>
-                        {/* Plate Number & Model */}
+            {/* Plate Number & Model */}
 
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card
@@ -1579,17 +1719,15 @@ const formatTime = (dateString) => {
               >
                 <CardContent>
                   <Typography variant="subtitle2">
-                  {t("Plate Number")}
+                    {t("Plate Number")}
                   </Typography>
                   <Box mt={1}>
-                  {renderEditableField("plateNumber", t("Plate Number"))}
-
+                    {renderEditableField("plateNumber", t("Plate Number"))}
                   </Box>
                 </CardContent>
               </Card>
             </Grid>
 
-         
             <Grid item xs={12} md={6} sx={{ display: "flex" }}>
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
                 <CardContent>
@@ -1652,28 +1790,27 @@ const formatTime = (dateString) => {
                   <Typography variant="h6">
                     {t("Wallet")}: {hasDriverData ? "SAR 0.00" : "SAR 98.50"}
                   </Typography>
-                  {false &&<CreditCardIcon color="primary" />}
+                  {false && <CreditCardIcon color="primary" />}
                 </Box>
                 <Box
                   display="flex"
                   justifyContent="space-between"
                   alignItems="center"
                 >
-                 <Typography variant="body1" mt={1}>
-                  {t("Your Cash")}: {hasDriverData ? "SAR 0.00" : "SAR 98.50"}
-                </Typography>
-                <Button
+                  <Typography variant="body1" mt={1}>
+                    {t("Your Cash")}: {hasDriverData ? "SAR 0.00" : "SAR 98.50"}
+                  </Typography>
+                  <Button
                     variant="contained"
                     color="primary"
                     sx={{ fontSize: 16, fontWeight: 700 }}
                     onClick={() =>
                       navigate(`/walletDetails/${id}?fromDriver=true`)
                     }
-                     >
+                  >
                     {t("Transaction")}
                   </Button>
                 </Box>
-                
               </Paper>
               <Typography variant="h6" color="primary" mb={1}>
                 {t("Payment Details")}
@@ -1708,22 +1845,24 @@ const formatTime = (dateString) => {
                 </CardContent>
               </Card>
             </Grid>
-            {false &&<Grid item xs={12}>
-              <Typography variant="h6" color="primary" mt={3} mb={1}>
-                {t("Transactions")}
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              {mockTransactions.map((transaction) =>
-                renderTransactionItem(transaction)
-              )}
-            </Grid>}
+            {false && (
+              <Grid item xs={12}>
+                <Typography variant="h6" color="primary" mt={3} mb={1}>
+                  {t("Transactions")}
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+                {mockTransactions.map((transaction) =>
+                  renderTransactionItem(transaction)
+                )}
+              </Grid>
+            )}
           </Grid>
         )}
 
         {/* Trips Tab */}
         {tabParam === "trips" && (
-  <DriverTrips driverId={id} onTripClick={handleOpenDrawer}/>
-)}
+          <DriverTrips driverId={id} onTripClick={handleOpenDrawer} />
+        )}
       </Box>
 
       {/* Trip Details Drawer */}
@@ -1771,12 +1910,12 @@ const formatTime = (dateString) => {
                 borderRadius: 1,
               }}
             >
-             <RouteMap
-  fromLat={selectedTrip.coordinates.from[1] || 30.0444}
-  fromLng={selectedTrip.coordinates.from[0] || 31.2357}
-  toLat={selectedTrip.coordinates.to[1] || 30.072}
-  toLng={selectedTrip.coordinates.to[0] || 31.346}
-/>
+              <RouteMap
+                fromLat={selectedTrip.coordinates.from[1] || 30.0444}
+                fromLng={selectedTrip.coordinates.from[0] || 31.2357}
+                toLat={selectedTrip.coordinates.to[1] || 30.072}
+                toLng={selectedTrip.coordinates.to[0] || 31.346}
+              />
             </Box>
 
             {/* Driver & Car Info */}
@@ -1800,46 +1939,51 @@ const formatTime = (dateString) => {
                       />
                       <Box>
                         <Typography variant="subtitle1" fontWeight="bold">
-                        {selectedTrip.driver?.name || t("Driver not assigned")}
+                          {selectedTrip.driver?.name ||
+                            t("Driver not assigned")}
                         </Typography>
                         {selectedTrip.driver?.rating ? (
-        <Box display="flex" alignItems="center" mt={0.25}>
-          <StarIcon fontSize="small" color="primary" sx={{ mr: 0.5 }} />
-          <Typography variant="body2">
-            {selectedTrip.driver.rating}
-          </Typography>
-        </Box>
-      ) : null}
-
+                          <Box display="flex" alignItems="center" mt={0.25}>
+                            <StarIcon
+                              fontSize="small"
+                              color="primary"
+                              sx={{ mr: 0.5 }}
+                            />
+                            <Typography variant="body2">
+                              {selectedTrip.driver.rating}
+                            </Typography>
+                          </Box>
+                        ) : null}
                       </Box>
                     </Box>
                   </Grid>
 
                   {/* Car Info */}
                   <Grid item xs={12} md={5}>
-  {selectedTrip.car ? (
-    <Box display="flex" alignItems="center">
-      <Box
-        component="img"
-        src={selectedTrip.car.image}
-        alt={selectedTrip.car.brand}
-        sx={{ width: 64, height: 64, objectFit: "contain" }}
-      />
-      <Box ml={2}>
-        <Typography variant="subtitle1" fontWeight="bold">
-          {selectedTrip.car.plate || t("Not assigned")}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {selectedTrip.car.color} &bull; {selectedTrip.car.brand}
-        </Typography>
-      </Box>
-    </Box>
-  ) : (
-    <Typography variant="body2">
-      {t("No car information available")}
-    </Typography>
-  )}
-</Grid>
+                    {selectedTrip.car ? (
+                      <Box display="flex" alignItems="center">
+                        <Box
+                          component="img"
+                          src={selectedTrip.car.image}
+                          alt={selectedTrip.car.brand}
+                          sx={{ width: 64, height: 64, objectFit: "contain" }}
+                        />
+                        <Box ml={2}>
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            {selectedTrip.car.plate || t("Not assigned")}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {selectedTrip.car.color} &bull;{" "}
+                            {selectedTrip.car.brand}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    ) : (
+                      <Typography variant="body2">
+                        {t("No car information available")}
+                      </Typography>
+                    )}
+                  </Grid>
 
                   {/* Open Chat Button on same line */}
                   <Grid item xs={12} md={3}>
@@ -1847,17 +1991,23 @@ const formatTime = (dateString) => {
                       display="flex"
                       justifyContent={isMobile ? "flex-start" : "flex-end"}
                     >
-                      <Button variant="outlined" color="primary" size="small"
-                       onClick={async ()=>{
-                        setChatLoading(true)
-                        await dispatch(getTripChat(selectedTrip.id))
-                        setChatLoading(false)
-                        setChatDrawerOpen(true)
-                                                
-                                              }}
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        onClick={async () => {
+                          setChatLoading(true);
+                          await dispatch(getTripChat(selectedTrip.id));
+                          setChatLoading(false);
+                          setChatDrawerOpen(true);
+                        }}
                       >
-                        {chatLoading ? <CircularProgress size={20} /> : t("Open Chat")}
-                        </Button>
+                        {chatLoading ? (
+                          <CircularProgress size={20} />
+                        ) : (
+                          t("Open Chat")
+                        )}
+                      </Button>
                     </Box>
                   </Grid>
                 </Grid>
@@ -2037,17 +2187,17 @@ const formatTime = (dateString) => {
       </Drawer>
 
       <ModernChatDrawer
-  open={chatDrawerOpen}
-  onClose={() => setChatDrawerOpen(false)}
-  messages={messages}
-  currentUserId={driverData?._id}
-  isArabic={isArabic}
-  isMobile={isMobile}
-  chatLoading={chatLoading}
-  getAudioSrc={getAudioSrc}
-  getSenderImage={getSenderImage}
-  t={t}
-/>
+        open={chatDrawerOpen}
+        onClose={() => setChatDrawerOpen(false)}
+        messages={messages}
+        currentUserId={driverData?._id}
+        isArabic={isArabic}
+        isMobile={isMobile}
+        chatLoading={chatLoading}
+        getAudioSrc={getAudioSrc}
+        getSenderImage={getSenderImage}
+        t={t}
+      />
 
       {/* Image Modal */}
       <Dialog
@@ -2182,22 +2332,26 @@ const formatTime = (dateString) => {
             </>
           ) : (
             <>
-             {false && <Button
-                variant="outlined"
-                color="error"
-                onClick={handleDeleteImage}
-                sx={{ mx: 1 }}
-              >
-                {t("Delete")}
-              </Button>}
-              {hasEditPermission &&<Button
-                variant="contained"
-                color="primary"
-                onClick={handleEditImage}
-                sx={{ mx: 1 }}
-              >
-                {t("Update")}
-              </Button>}
+              {false && (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={handleDeleteImage}
+                  sx={{ mx: 1 }}
+                >
+                  {t("Delete")}
+                </Button>
+              )}
+              {hasEditPermission && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleEditImage}
+                  sx={{ mx: 1 }}
+                >
+                  {t("Update")}
+                </Button>
+              )}
             </>
           )}
         </DialogActions>
