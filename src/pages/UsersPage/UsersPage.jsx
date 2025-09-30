@@ -145,13 +145,13 @@ const UsersPage = () => {
       const fullUsers = response || [];
 
       const exportData = fullUsers.map((user, index) => ({
-        userId: user.serial_num,
+        // userId: user.serial_num,
         Name: user.name,
         "Phone Number": user.phone_number,
         Email: user.email,
         Status: user.status,
         "Super Admin": user.super_admin ? "Yes" : "No",
-        "Created At": new Date(user.createdAt).toLocaleDateString(),
+        // "Created At": new Date(user.createdAt).toLocaleDateString(),
       }));
 
       if (type === "excel") {

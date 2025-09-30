@@ -144,7 +144,7 @@ const WalletPage = () => {
           month: "short",
           year: "numeric",
         }),
-        Notes: wallet.notes,
+        // Notes: wallet.notes,
       }));
 
       if (type === "excel") {
