@@ -70,7 +70,7 @@ import ContactUsPage from "./pages/ContactUsPage/ContactUsPage";
 import ProtectedRoute from "./Auth/ProtectedRoute";
 
 export const ColorModeContext = React.createContext({
-  toggleColorMode: () => {},
+  toggleColorMode: () => { },
 });
 
 function App() {
@@ -294,26 +294,26 @@ function App() {
   };
   const user = getUserCookie();
 
- // ======= Replace the old polling block with this =======
+  // ======= Replace the old polling block with this =======
 
-// read cookie once at mount to avoid unstable deps
-const initialUser = useMemo(() => getUserCookie(), []);
-const isLoggedIn = Boolean(initialUser?.id); 
-
-
+  // read cookie once at mount to avoid unstable deps
+  const initialUser = useMemo(() => getUserCookie(), []);
+  const isLoggedIn = Boolean(initialUser?.id);
 
 
-useEffect(() => {
-  if (!isLoggedIn) return; 
 
-  dispatch(getAllNotifications());
 
-  const interval = setInterval(() => {
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
     dispatch(getAllNotifications());
-  }, 60000); 
 
-  return () => clearInterval(interval);
-}, [dispatch, isLoggedIn]);
+    const interval = setInterval(() => {
+      dispatch(getAllNotifications());
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [dispatch, isLoggedIn]);
 
 
   const hideHeader = location.pathname != "/login";
@@ -353,401 +353,401 @@ useEffect(() => {
                   // </MainLayout>
                 }
               />
-                  <Route element={<ProtectedRoute />}>
+              <Route element={<ProtectedRoute />}>
 
-              <Route
-                path="/home"
-                element={
-                  <MainLayout>
-                    <Home />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Passengers"
-                element={
-                  <MainLayout>
-                    <PassengersPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/users"
-                element={
-                  <MainLayout>
-                    <UsersPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/UserDetails/:id"
-                element={
-                  <MainLayout>
-                    <UserDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Drivers"
-                element={
-                  <MainLayout>
-                    <DriversPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Profile"
-                element={
-                  <MainLayout>
-                    <ProfilePage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/PermissionGroups/showpermissiongroup/:id"
-                element={
-                  <MainLayout>
-                    <PermissionGroupDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Trips"
-                element={
-                  <MainLayout>
-                    <TripsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Coupons"
-                element={
-                  <MainLayout>
-                    <CouponsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Coupons/AddCoupon"
-                element={
-                  <MainLayout>
-                    <AddCouponPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/couponDetails/:id"
-                element={
-                  <MainLayout>
-                    <CouponDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Cars"
-                element={
-                  <MainLayout>
-                    <CarsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/CarTypes"
-                element={
-                  <MainLayout>
-                    <CarTypesPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/CarDriver"
-                element={
-                  <MainLayout>
-                    <CarDriverPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/TrafficTime"
-                element={
-                  <MainLayout>
-                    <TrafficTimePage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/users/AddUser"
-                element={
-                  <MainLayout>
-                    <AddUserPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/PermissionGroups"
-                element={
-                  <MainLayout>
-                    <PermissionGroupsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/PaymentMethods"
-                element={
-                  <MainLayout>
-                    <PaymentMethodsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/liqudation"
-                element={
-                  <MainLayout>
-                    <LiqudationPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Commission"
-                element={
-                  <MainLayout>
-                    <CommissionPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/CommissionCategory"
-                element={
-                  <MainLayout>
-                    <CommissionCategoryPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/PaymentMethod/AddPaymentMethod"
-                element={
-                  <MainLayout>
-                    <AddPaymentMethodPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/ContactUs"
-                element={
-                  <MainLayout>
-                    <ContactUsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Loading"
-                element={
-                  <MainLayout>
-                    <LoadingPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/paymentMethodDetails/:id"
-                element={
-                  <MainLayout>
-                    <PaymentMethodsDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="CommissionCategory/AddCommissionCategory"
-                element={
-                  <MainLayout>
-                    <AddCommissionCategory />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/LiqudationDetails/:id"
-                element={
-                  <MainLayout>
-                    <LiqudationDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/CommissionDetails/:id"
-                element={
-                  <MainLayout>
-                    <CommissionDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/CommissionCategoryDetails/:id"
-                element={
-                  <MainLayout>
-                    <CommissionCategoryDetails />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Wallet"
-                element={
-                  <MainLayout>
-                    <WalletPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/offerDetails/:id"
-                element={
-                  <MainLayout>
-                    <OfferDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Offers"
-                element={
-                  <MainLayout>
-                    <OffersPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Offers/AddOffer"
-                element={
-                  <MainLayout>
-                    <AddOfferPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Wallet/AddTransaction"
-                element={
-                  <MainLayout>
-                    <AddTransactionPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/WalletDetails/:id"
-                element={
-                  <MainLayout>
-                    <WalletDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/TrafficTimeDetails/:id"
-                element={
-                  <MainLayout>
-                    <TrafficTimeDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/TrafficTime/AddTrafficTime"
-                element={
-                  <MainLayout>
-                    <AddTrafficTimePage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/CarDriverDetails/AddCarDrive"
-                element={
-                  <MainLayout>
-                    <LinkCarDriverPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/tripDetails/:id"
-                element={
-                  <MainLayout>
-                    <TripDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/riderDetails/:id"
-                element={
-                  <MainLayout>
-                    <RiderDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/DriverDetails/:id"
-                element={
-                  <MainLayout>
-                    <DriverDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/CarDetails/:id"
-                element={
-                  <MainLayout>
-                    <CarDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/CarTypeDetails/:id"
-                element={
-                  <MainLayout>
-                    <CarTypeDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/CarDriverDetails/:id"
-                element={
-                  <MainLayout>
-                    <CarDriverDetailsPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Cars/AddCar"
-                element={
-                  <MainLayout>
-                    <AddCarPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/CarTypes/AddCarType"
-                element={
-                  <MainLayout>
-                    <AddCarTypePage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/Help"
-                element={
-                  <MainLayout>
-                    <HelpPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/PrivacyPolicy"
-                element={
-                  <MainLayout>
-                    <PrivacyPolicyPage />
-                  </MainLayout>
-                }
-              />
-              <Route
-                path="/admin/users"
-                element={<MainLayout>{/* <RiderDetailsPage /> */}</MainLayout>}
-              />
-              <Route
-                path="/accountantHome"
-                element={<MainLayout>{/* <AccountantHome /> */}</MainLayout>}
-              />
-    </Route>
+                <Route
+                  path="/home"
+                  element={
+                    <MainLayout>
+                      <Home />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Passengers"
+                  element={
+                    <MainLayout>
+                      <PassengersPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/users"
+                  element={
+                    <MainLayout>
+                      <UsersPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/UserDetails/:id"
+                  element={
+                    <MainLayout>
+                      <UserDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Drivers"
+                  element={
+                    <MainLayout>
+                      <DriversPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Profile"
+                  element={
+                    <MainLayout>
+                      <ProfilePage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/PermissionGroups/showpermissiongroup/:id"
+                  element={
+                    <MainLayout>
+                      <PermissionGroupDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Trips"
+                  element={
+                    <MainLayout>
+                      <TripsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Coupons"
+                  element={
+                    <MainLayout>
+                      <CouponsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Coupons/AddCoupon"
+                  element={
+                    <MainLayout>
+                      <AddCouponPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/couponDetails/:id"
+                  element={
+                    <MainLayout>
+                      <CouponDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Cars"
+                  element={
+                    <MainLayout>
+                      <CarsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/CarTypes"
+                  element={
+                    <MainLayout>
+                      <CarTypesPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/CarDriver"
+                  element={
+                    <MainLayout>
+                      <CarDriverPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/TrafficTime"
+                  element={
+                    <MainLayout>
+                      <TrafficTimePage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/users/AddUser"
+                  element={
+                    <MainLayout>
+                      <AddUserPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/PermissionGroups"
+                  element={
+                    <MainLayout>
+                      <PermissionGroupsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/PaymentMethods"
+                  element={
+                    <MainLayout>
+                      <PaymentMethodsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/liqudation"
+                  element={
+                    <MainLayout>
+                      <LiqudationPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Commission"
+                  element={
+                    <MainLayout>
+                      <CommissionPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/CommissionCategory"
+                  element={
+                    <MainLayout>
+                      <CommissionCategoryPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/PaymentMethod/AddPaymentMethod"
+                  element={
+                    <MainLayout>
+                      <AddPaymentMethodPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/ContactUs"
+                  element={
+                    <MainLayout>
+                      <ContactUsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Loading"
+                  element={
+                    <MainLayout>
+                      <LoadingPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/paymentMethodDetails/:id"
+                  element={
+                    <MainLayout>
+                      <PaymentMethodsDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="CommissionCategory/AddCommissionCategory"
+                  element={
+                    <MainLayout>
+                      <AddCommissionCategory />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/LiqudationDetails/:id"
+                  element={
+                    <MainLayout>
+                      <LiqudationDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/CommissionDetails/:id"
+                  element={
+                    <MainLayout>
+                      <CommissionDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/CommissionCategoryDetails/:id"
+                  element={
+                    <MainLayout>
+                      <CommissionCategoryDetails />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Wallet"
+                  element={
+                    <MainLayout>
+                      <WalletPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/offerDetails/:id"
+                  element={
+                    <MainLayout>
+                      <OfferDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Offers"
+                  element={
+                    <MainLayout>
+                      <OffersPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Offers/AddOffer"
+                  element={
+                    <MainLayout>
+                      <AddOfferPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Wallet/AddTransaction"
+                  element={
+                    <MainLayout>
+                      <AddTransactionPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/WalletDetails/:id"
+                  element={
+                    <MainLayout>
+                      <WalletDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/TrafficTimeDetails/:id"
+                  element={
+                    <MainLayout>
+                      <TrafficTimeDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/TrafficTime/AddTrafficTime"
+                  element={
+                    <MainLayout>
+                      <AddTrafficTimePage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/CarDriverDetails/AddCarDrive"
+                  element={
+                    <MainLayout>
+                      <LinkCarDriverPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/tripDetails/:id"
+                  element={
+                    <MainLayout>
+                      <TripDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/riderDetails/:id"
+                  element={
+                    <MainLayout>
+                      <RiderDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/DriverDetails/:id"
+                  element={
+                    <MainLayout>
+                      <DriverDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/CarDetails/:id"
+                  element={
+                    <MainLayout>
+                      <CarDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/CarTypeDetails/:id"
+                  element={
+                    <MainLayout>
+                      <CarTypeDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/CarDriverDetails/:id"
+                  element={
+                    <MainLayout>
+                      <CarDriverDetailsPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Cars/AddCar"
+                  element={
+                    <MainLayout>
+                      <AddCarPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/CarTypes/AddCarType"
+                  element={
+                    <MainLayout>
+                      <AddCarTypePage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/Help"
+                  element={
+                    <MainLayout>
+                      <HelpPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/PrivacyPolicy"
+                  element={
+                    <MainLayout>
+                      <PrivacyPolicyPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/admin/users"
+                  element={<MainLayout>{/* <RiderDetailsPage /> */}</MainLayout>}
+                />
+                <Route
+                  path="/accountantHome"
+                  element={<MainLayout>{/* <AccountantHome /> */}</MainLayout>}
+                />
+              </Route>
 
               <Route path="/Maintenance" element={<Maintenance />} />
               <Route path="*" element={<NotFoundPage />} />

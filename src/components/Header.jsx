@@ -120,7 +120,7 @@ const Header = ({ onAction }) => {
   const handleLangMenuOpen = (event) => {
     setLangMenuAnchor(event.currentTarget);
   };
-  
+
 
   const handleLangMenuClose = () => {
     setLangMenuAnchor(null);
@@ -315,10 +315,10 @@ const Header = ({ onAction }) => {
       <List>
         {/* Notifications */}
         <ListItemButton
-           onClick={async (e) => {
+          onClick={async (e) => {
             const target = e.currentTarget; // ✅ خد نسخة قبل await
             console.log("notificationAnchor", target, e);
-        
+
             await dispatch(getAllNotifications());
             setNotificationAnchor(target);
           }}
@@ -444,80 +444,80 @@ const Header = ({ onAction }) => {
 
                 return (
                   <MenuItem
-  key={notif?._id || notif?.id}
-  onClick={handleClick}
-  sx={{
-    px: 2,
-    py: 1,
-    mb: 1,
-    borderRadius: 2,
-    display: "flex",
-    alignItems: "center",
-    gap: 2,
-    bgcolor: isRead ? "background.paper" : "action.hover",
-    "&:hover": {
-      background: `linear-gradient(90deg, ${theme.palette.primary.light}20, ${theme.palette.primary.light}10)`,
-      boxShadow: "0px 2px 10px rgba(0,0,0,0.05)",
-    },
-  }}
->
-  {/* Avatar */}
-  <Avatar
-    sx={{
-      bgcolor: typeColors[notif.type] || theme.palette.primary.main,
-      width: 40,
-      height: 40,
-      fontSize: 16,
-    }}
-  >
-    {(notif.type || "·").charAt(0).toUpperCase()}
-  </Avatar>
+                    key={notif?._id || notif?.id}
+                    onClick={handleClick}
+                    sx={{
+                      px: 2,
+                      py: 1,
+                      mb: 1,
+                      borderRadius: 2,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      bgcolor: isRead ? "background.paper" : "action.hover",
+                      "&:hover": {
+                        background: `linear-gradient(90deg, ${theme.palette.primary.light}20, ${theme.palette.primary.light}10)`,
+                        boxShadow: "0px 2px 10px rgba(0,0,0,0.05)",
+                      },
+                    }}
+                  >
+                    {/* Avatar */}
+                    <Avatar
+                      sx={{
+                        bgcolor: typeColors[notif.type] || theme.palette.primary.main,
+                        width: 40,
+                        height: 40,
+                        fontSize: 16,
+                      }}
+                    >
+                      {(notif.type || "·").charAt(0).toUpperCase()}
+                    </Avatar>
 
-  {/* Text */}
-  <Box sx={{ flex: 1, minWidth: 0 }}>
-    <Typography
-      sx={{
-        fontWeight: isRead ? "normal" : "bold",
-        fontSize: 14,
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      }}
-    >
-      {isArabic ? notif.title?.ar : notif.title?.en}
-    </Typography>
+                    {/* Text */}
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography
+                        sx={{
+                          fontWeight: isRead ? "normal" : "bold",
+                          fontSize: 14,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {isArabic ? notif.title?.ar : notif.title?.en}
+                      </Typography>
 
-    <Typography
-      variant="body2"
-      sx={{
-        fontSize: 13,
-        color: "text.secondary",
-        display: "-webkit-box",
-        WebkitLineClamp: 2,
-        WebkitBoxOrient: "vertical",
-        overflow: "hidden",
-      }}
-    >
-      {isArabic ? notif.message?.ar : notif.message?.en}
-    </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontSize: 13,
+                          color: "text.secondary",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {isArabic ? notif.message?.ar : notif.message?.en}
+                      </Typography>
 
-    <Typography sx={{ fontSize: 11, color: "text.disabled", mt: 0.5 }}>
-      {timeAgo(notif.createdAt)}
-    </Typography>
-  </Box>
+                      <Typography sx={{ fontSize: 11, color: "text.disabled", mt: 0.5 }}>
+                        {timeAgo(notif.createdAt)}
+                      </Typography>
+                    </Box>
 
-  {/* Unread Dot */}
-  {!isRead && (
-    <Box
-      sx={{
-        width: 10,
-        height: 10,
-        borderRadius: "50%",
-        bgcolor: "error.main",
-      }}
-    />
-  )}
-</MenuItem>
+                    {/* Unread Dot */}
+                    {!isRead && (
+                      <Box
+                        sx={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: "50%",
+                          bgcolor: "error.main",
+                        }}
+                      />
+                    )}
+                  </MenuItem>
 
                 );
               })
@@ -555,10 +555,10 @@ const Header = ({ onAction }) => {
         </Menu>
 
         {/* Language Selector */}
-        <ListItemButton onClick={()=>{
+        <ListItemButton onClick={() => {
           console.log("first")
           setLangMenuAnchor(true)
-          }}>
+        }}>
           <Box
             sx={{
               display: "flex",
@@ -582,72 +582,72 @@ const Header = ({ onAction }) => {
                 </Typography>
               }
             />
- <ExpandMore />          </Box>
+            <ExpandMore />          </Box>
         </ListItemButton>
         <Menu
-            anchorEl={langMenuAnchor}
-            open={Boolean(langMenuAnchor)}
-            onClose={handleLangMenuClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: i18n.language === "ar" ? "right" : "left",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: i18n.language === "ar" ? "right" : "left",
-            }}
-            PaperProps={{
-              sx: {
-                minWidth: 140,
+          anchorEl={langMenuAnchor}
+          open={Boolean(langMenuAnchor)}
+          onClose={handleLangMenuClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: i18n.language === "ar" ? "right" : "left",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: i18n.language === "ar" ? "right" : "left",
+          }}
+          PaperProps={{
+            sx: {
+              minWidth: 140,
+              borderRadius: 1,
+              boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+              overflow: "hidden",
+              p: 0.5,
+              backgroundColor: theme.palette.background.paper,
+            },
+          }}
+        >
+          {["en", "ar"].map((lang) => (
+            <MenuItem
+              key={lang}
+              onClick={() => changeLanguage(lang)}
+              sx={{
+                px: 2,
+                py: 1,
                 borderRadius: 1,
-                boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-                overflow: "hidden",
-                p: 0.5,
-                backgroundColor: theme.palette.background.paper,
-              },
-            }}
-          >
-            {["en", "ar"].map((lang) => (
-              <MenuItem
-                key={lang}
-                onClick={() => changeLanguage(lang)}
-                sx={{
-                  px: 2,
-                  py: 1,
-                  borderRadius: 1,
-                  mb: 0.5,
-                  backgroundColor:
-                    i18n.language === lang
-                      ? theme.palette.action.selected
-                      : "transparent",
-                  color:
-                    i18n.language === lang
-                      ? theme.palette.primary.main
-                      : "#000",
-                  "&:hover": {
-                    backgroundColor: theme.palette.action.hover,
-                  },
-                }}
+                mb: 0.5,
+                backgroundColor:
+                  i18n.language === lang
+                    ? theme.palette.action.selected
+                    : "transparent",
+                color:
+                  i18n.language === lang
+                    ? theme.palette.primary.main
+                    : "#000",
+                "&:hover": {
+                  backgroundColor: theme.palette.action.hover,
+                },
+              }}
+            >
+              <Typography
+                fontWeight={i18n.language === lang ? "bold" : "normal"}
+                fontSize={14}
               >
-                <Typography
-                  fontWeight={i18n.language === lang ? "bold" : "normal"}
-                  fontSize={14}
-                >
-                  {lang === "en" ? "English" : "العربية"}
-                </Typography>
-              </MenuItem>
-            ))}
-          </Menu>
+                {lang === "en" ? "English" : "العربية"}
+              </Typography>
+            </MenuItem>
+          ))}
+        </Menu>
       </List>
 
       <Divider sx={{ my: 2 }} />
 
       <List>
         {/* Profile */}
-        <ListItemButton  onClick={()=>{
+        <ListItemButton onClick={() => {
           navigate("/profile")
           setMobileOpen(false)
-          }}>
+        }}>
           <Box
             sx={{
               display: "flex",
@@ -665,7 +665,7 @@ const Header = ({ onAction }) => {
         }}
       /> */}
             <ListItemText
-              onClick={()=>{navigate("/profile")}}
+              onClick={() => { navigate("/profile") }}
               primary={
                 <Typography
                   fontWeight="bold"
