@@ -105,39 +105,6 @@ const AccountStatus = {
   },
 };
 
-// Mock transaction data since it's not available in the real API response
-const mockTransactions = [
-  {
-    id: 1,
-    type: "Trip",
-    title: "Today",
-    time: "10:00 AM",
-    description: "123 Main St to 789 Pine St",
-    amount: "+ $15.00",
-    status: "success",
-    icon: <CalendarMonthIcon />,
-  },
-  {
-    id: 2,
-    type: "Cash Out",
-    title: "Yesterday",
-    time: "16:00 PM",
-    description: "Bank transfer",
-    amount: "- $18.75",
-    status: "error",
-    icon: <CreditCardIcon />,
-  },
-  {
-    id: 3,
-    type: "Top Up",
-    title: "Today",
-    time: "11:30 AM",
-    description: "Credit card deposit",
-    amount: "+ $50.00",
-    status: "success",
-    icon: <CreditCardIcon />,
-  },
-];
 
 export default function DriverDetailsPage() {
   const { t, i18n } = useTranslation();
@@ -303,6 +270,7 @@ export default function DriverDetailsPage() {
     carLicenseExpiry: "", // Not in real data
     isCompanyCar:
       hasDriverData && driverData.car ? driverData.car.is_company_car : true,
+    bankName: hasDriverData ? driverData.bank_name : "",
   });
 
   useEffect(() => {
@@ -347,6 +315,7 @@ export default function DriverDetailsPage() {
               .split("T")[0]
           : "",
         isCompanyCar: driverData.car ? driverData.car.is_company_car : false,
+        bankName: driverData.bank_name || "",
       });
     }
   }, [hasDriverData, driverData]);
@@ -385,6 +354,7 @@ export default function DriverDetailsPage() {
     carLicense: false,
     carLicenseExpiry: false,
     isCompanyCar: false,
+    bankName: false,
   });
 
   const [loading, setLoading] = useState({
@@ -410,6 +380,7 @@ export default function DriverDetailsPage() {
     carLicense: false,
     carLicenseExpiry: false,
     isCompanyCar: false,
+    bankName: false,
   });
 
   // Format time (HH:MM AM/PM)
@@ -726,6 +697,9 @@ export default function DriverDetailsPage() {
         break;
       case "accountNumber":
         formData.append("account_number", editableFields.accountNumber);
+        break;
+      case "bankName":
+        formData.append("bank_name", editableFields.bankName);
         break;
       case "carModel":
         formData.append("car[car_model]", editableFields.carModel);
@@ -1833,6 +1807,18 @@ export default function DriverDetailsPage() {
               <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
                 <CardContent>
                   <Typography variant="subtitle2">
+                    {t("Bank Name")}
+                  </Typography>
+                  <Box mt={1}>
+                    {renderEditableField("bankName", t("Bank Name"))}
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ display: "flex" }}>
+              <Card sx={{ background: theme.palette.secondary.sec, flex: 1 }}>
+                <CardContent>
+                  <Typography variant="subtitle2">
                     {t("Bank letter")}
                   </Typography>
                   {renderDownloadLink(
@@ -1845,17 +1831,7 @@ export default function DriverDetailsPage() {
                 </CardContent>
               </Card>
             </Grid>
-            {false && (
-              <Grid item xs={12}>
-                <Typography variant="h6" color="primary" mt={3} mb={1}>
-                  {t("Transactions")}
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-                {mockTransactions.map((transaction) =>
-                  renderTransactionItem(transaction)
-                )}
-              </Grid>
-            )}
+         
           </Grid>
         )}
 

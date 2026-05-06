@@ -10,7 +10,10 @@ import {
   MenuItem,
   Autocomplete,
   TextField,
+  Checkbox,
 } from "@mui/material";
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { useNavigate, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
@@ -21,6 +24,9 @@ import { createTransaction } from "../../redux/slices/wallet/thunk";
 import { useSelector, useDispatch } from "react-redux";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 import { getUserCookie } from "../../hooks/authCookies";
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export default function AddTransactionPage() {
   const theme = useTheme();
@@ -73,7 +79,7 @@ export default function AddTransactionPage() {
 
   const validationSchema = Yup.object({
     userType: Yup.string().required(t("User Type is required")),
-    userName: Yup.mixed().required(t("User Name is required")),
+    userName: Yup.array().min(1, t("User Name is required")).required(t("User Name is required")),
     // tripId intentionally NOT required
     transactionType: Yup.string().required(t("Transaction Type is required")),
     transactionReason: Yup.string().required(t("Transaction Reason is required")),
@@ -87,7 +93,7 @@ export default function AddTransactionPage() {
   const formik = useFormik({
     initialValues: {
       userType: "",
-      userName: null, // will store full user object
+      userName: [], // will store array of user objects
       tripId: null, // will store full trip object (optional)
       transactionType: "",
       transactionReason: "",
@@ -103,7 +109,7 @@ export default function AddTransactionPage() {
           amount: Number(values.amount),
           notes: values.notes || "",
           transaction_type: values.transactionReason,
-          user_id: values.userName?._id, // user object or id
+          user_id: values.userName.map((u) => u._id), // array of user ids
           admin_id: user?.id, 
           // trips_id should be omitted if not provided
           ...(values.tripId ? { trips_id: values.tripId._id || values.tripId } : {}),
@@ -133,14 +139,14 @@ export default function AddTransactionPage() {
   }, [dispatch, formik.values.userType]);
 
   useEffect(() => {
-    if (!formik.values.userName) return;
+    if (!formik.values.userName || formik.values.userName.length !== 1) return;
     setTripsLoading(true);
-    const userId = formik.values.userName._id ;
-    let type = formik.values.userType == "passenger" ? "userId" : "driverId"
-    let query = `${type}=${userId}`
+    const userId = formik.values.userName[0]._id;
+    let type = formik.values.userType === "passenger" ? "userId" : "driverId";
+    let query = `${type}=${userId}`;
     dispatch(getAllTripsLookups({ query }))
       .finally(() => setTripsLoading(false));
-  }, [dispatch, formik.values.userName]);
+  }, [dispatch, formik.values.userName, formik.values.userType]);
 
   const handleUserSearch = (search) => {
     if (!formik.values.userType) return;
@@ -218,16 +224,29 @@ export default function AddTransactionPage() {
       </Typography>
 
       <Autocomplete
+        multiple
         disablePortal
         fullWidth
+        disableCloseOnSelect
         getOptionLabel={(opt) => (typeof opt === 'string' ? opt : opt.fullname || opt.name || '')}
         options={usersLookups || []}
         loading={usersLoading}
-        value={formik.values.userName}
+        value={formik.values.userName || []}
         onChange={(e, newVal) => {
           formik.setFieldValue('userName', newVal);
           formik.setFieldValue('tripId', null);
         }}
+        renderOption={(props, option, { selected }) => (
+          <li {...props}>
+            <Checkbox
+              icon={icon}
+              checkedIcon={checkedIcon}
+              style={{ marginRight: 8 }}
+              checked={selected}
+            />
+            {typeof option === 'string' ? option : option.fullname || option.name || ''}
+          </li>
+        )}
         onInputChange={(e, value, reason) => {
           if (reason === 'input') handleUserSearch(value);
         }}
@@ -269,7 +288,7 @@ export default function AddTransactionPage() {
         onInputChange={(e, value, reason) => {
           if (reason === 'input') handleTripSearch(value);
         }}
-        disabled={!formik.values.userName}
+        disabled={!formik.values.userName || formik.values.userName.length !== 1}
         renderInput={(params) => (
           <CustomTextField
             {...params}
