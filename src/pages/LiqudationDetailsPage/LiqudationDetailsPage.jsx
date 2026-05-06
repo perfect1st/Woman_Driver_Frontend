@@ -16,6 +16,7 @@ import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
+import { exportToPDF } from "../../utils/exportPDF";
 
 const LiquidationDetailsPage = () => {
   const theme = useTheme();
@@ -113,90 +114,115 @@ const LiquidationDetailsPage = () => {
     };
   }, []);
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "-";
+    return new Date(dateStr).toLocaleDateString("en-CA"); // YYYY-MM-DD
+  };
+
   const fetchAndExport = async (type) => {
-  try {
-    // build query without pagination so we get full details
-    const query =
-      (keyword ? `&keyword=${keyword}` : "") +
-      (user_type ? `&user_type=${user_type}` : "");
+    try {
+      // build query without pagination so we get full details
+      const query =
+        (keyword ? `&keyword=${keyword}` : "") +
+        (user_type ? `&user_type=${user_type}` : "");
 
-    // fetch the liquidation (full data)
-    const response = await dispatch(getOneLiquidationWithoutPagination({ id, query })).unwrap();
+      // fetch the liquidation (full data)
+      const response = await dispatch(
+        getOneLiquidationWithoutPagination({ id, query })
+      ).unwrap();
 
-    // normalize response shape (handle possible shapes)
-    const payload = response?.liquidation || {};
-    const allDetails = response?.details || [];
+      // normalize response shape (handle possible shapes)
+      const payload = response?.liquidation || {};
+      const allDetails = response?.details || [];
 
-    if (!allDetails.length) {
-      console.warn("No details to export");
-      return;
-    }
+      if (!allDetails.length) {
+        console.warn("No details to export");
+        return;
+      }
 
-    // Build export rows (one row per driver detail)
-    const exportData = allDetails.map((d, idx) => ({
-      "No.": (idx + 1),
-      "Driver Name": d.driver_id?.fullname || "-",
-      "Driver Type": d.driver_id?.user_type || "-",
-      "Total Balance": Number(d.total_balance_array ?? 0).toFixed(2),
-      "Transactions Count": Array.isArray(d.balance_array) ? d.balance_array.length : 0,
-    }));
+      // Build export rows (one row per driver detail)
+      const exportData = allDetails.map((d) => ({
+        "كود السائق": d.driver_id?.serial_num || "-",
+        "نوع السائق": t(d.driver_id?.user_type) || "-",
+        "اسم السائق": d.driver_id?.fullname || "-",
+        "رقم الهوية": d.driver_id?.national_id_number || "-",
+        "رقم الجوال": d.driver_id?.phone_number || "-",
+        "بنك السائق": d.driver_id?.bank_name || "-",
+        "الحساب البنكي": d.driver_id?.account_number || "-",
+        "من تاريخ": formatDate(payload?.start_date),
+        "الي تاريخ": formatDate(payload?.end_date),
+        "الايراد": d.total_revenue || 0,
+        "النسبه": d.commission_percent || 0,
+        "العموله": d.commission_amount || 0,
+      }));
 
-    // Excel
-    if (type === "excel") {
-      const ws = XLSX.utils.json_to_sheet(exportData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Liquidation Details");
-      const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-      const dataBlob = new Blob([excelBuffer], { type: "application/octet-stream" });
-      saveAs(dataBlob, `Liquidation_${id}_Details_${new Date().toISOString()}.xlsx`);
-      return;
-    }
+      // Excel
+      if (type === "excel") {
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Liquidation Details");
+        const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+        const dataBlob = new Blob([excelBuffer], {
+          type: "application/octet-stream",
+        });
+        saveAs(
+          dataBlob,
+          `Liquidation_${id}_Details_${new Date().toISOString()}.xlsx`
+        );
+        return;
+      }
 
-    // PDF
-    if (type === "pdf") {
-      const doc = new jsPDF({
-        orientation: "landscape",
-        unit: "pt",
-        format: "a4",
-      });
+      // PDF
+      if (type === "pdf") {
+        // const doc = new jsPDF({
+        //   orientation: "landscape",
+        //   unit: "pt",
+        //   format: "a4",
+        // });
 
-      const title = `Liquidation ${payload?.serial_num ? `#${payload.serial_num} ` : ""} Details`;
-      doc.setFontSize(14);
-      doc.text(title, 40, 40);
+        // const title = `Liquidation ${
+        //   payload?.serial_num ? `#${payload.serial_num} ` : ""
+        // } Details`;
+        // doc.setFontSize(14);
+        // doc.text(title, 40, 40);
 
-      const head = [Object.keys(exportData[0])];
-      const body = exportData.map((row) => Object.values(row));
+        // const head = [Object.keys(exportData[0])];
+        // const body = exportData.map((row) => Object.values(row));
 
-      autoTable(doc, {
-        startY: 60,
-        head,
-        body,
-        styles: { fontSize: 9 },
-        headStyles: { fillColor: [220, 220, 220] },
-        margin: { left: 20, right: 20 },
-      });
+        // autoTable(doc, {
+        //   startY: 60,
+        //   head,
+        //   body,
+        //   styles: { fontSize: 8 },
+        //   headStyles: { fillColor: [220, 220, 220] },
+        //   margin: { left: 20, right: 20 },
+        // });
 
-      doc.save(`Liquidation_${id}_Details_${new Date().toISOString()}.pdf`);
-      return;
-    }
+        // doc.save(`Liquidation_${id}_Details_${new Date().toISOString()}.pdf`);
+                await exportToPDF(exportData, "Liquidation Details", "Liquidation", i18n.language === "ar");
 
-    // Print
-    if (type === "print") {
-      const printableWindow = window.open("", "_blank");
-      const keys = Object.keys(exportData[0]);
-      const htmlContent = `
-        <html>
+        return;
+      }
+
+      // Print
+      if (type === "print") {
+        const printableWindow = window.open("", "_blank");
+        const keys = Object.keys(exportData[0]);
+        const htmlContent = `
+        <html dir="rtl">
           <head>
             <title>Liquidation Details</title>
             <style>
-              body { font-family: Arial, sans-serif; padding: 20px; }
+              body { font-family: Arial, sans-serif; padding: 20px; direction: rtl; }
               table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-              th, td { border: 1px solid #333; padding: 6px 8px; text-align: left; font-size: 12px; }
+              th, td { border: 1px solid #333; padding: 6px 8px; text-align: center; font-size: 12px; }
               th { background:#f2f2f2; }
             </style>
           </head>
           <body>
-            <h2>${payload?.serial_num ? `Liquidation #${payload.serial_num} - ` : ""}Details</h2>
+            <h2 style="text-align: center;">تفاصيل التصفية ${
+              payload?.serial_num ? `#${payload.serial_num}` : ""
+            }</h2>
             <table>
               <thead>
                 <tr>${keys.map((k) => `<th>${k}</th>`).join("")}</tr>
@@ -206,7 +232,14 @@ const LiquidationDetailsPage = () => {
                   .map(
                     (row) =>
                       `<tr>${keys
-                        .map((k) => `<td>${(row[k] !== null && row[k] !== undefined) ? row[k] : ""}</td>`)
+                        .map(
+                          (k) =>
+                            `<td>${
+                              row[k] !== null && row[k] !== undefined
+                                ? row[k]
+                                : ""
+                            }</td>`
+                        )
                         .join("")}</tr>`
                   )
                   .join("")}
@@ -215,19 +248,20 @@ const LiquidationDetailsPage = () => {
           </body>
         </html>
       `;
-      printableWindow.document.write(htmlContent);
-      printableWindow.document.close();
-      printableWindow.focus();
-      printableWindow.print();
-      return;
-    }
+        printableWindow.document.write(htmlContent);
+        printableWindow.document.close();
+        printableWindow.focus();
+        printableWindow.print();
+        return;
+      }
 
-    // unknown type
-    console.warn("Unknown export type:", type);
-  } catch (err) {
-    console.error("Export error:", err);
-  }
-};
+      // unknown type
+      console.warn("Unknown export type:", type);
+    } catch (err) {
+      console.error("Export error:", err);
+    }
+  };
+
 
 
 

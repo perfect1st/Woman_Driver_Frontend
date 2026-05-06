@@ -15,8 +15,7 @@ import {
   getAllTripsWithoutPaginations,
 } from "../../redux/slices/trip/thunk";
 import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import { exportToPDF } from "../../utils/exportPDF";
 import { saveAs } from "file-saver";
 import { getAllCarTypesWithoutPaginations } from "../../redux/slices/carType/thunk";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
@@ -198,14 +197,7 @@ const TripsPage = () => {
           `Trips_${Date.now()}.xlsx`
         );
       } else if (type === "pdf") {
-        const doc = new jsPDF();
-        doc.text("Trips Report", 14, 10);
-        autoTable(doc, {
-          startY: 20,
-          head: [Object.keys(exportData[0])],
-          body: exportData.map((r) => Object.values(r)),
-        });
-        doc.save(`Trips_${Date.now()}.pdf`);
+        await exportToPDF(exportData, "Trips Report", "Trips", i18n.language === "ar");
       } else {
         const w = window.open("", "_blank");
         const html = `

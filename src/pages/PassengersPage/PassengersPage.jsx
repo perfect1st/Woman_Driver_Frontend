@@ -15,8 +15,7 @@ import LoadingPage from "../../components/LoadingComponent";
 import PaginationFooter from "../../components/PaginationFooter/PaginationFooter";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable"; // ⬅️ هذا هو الجزء الناقص عندك
+import { exportToPDF } from "../../utils/exportPDF";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 import notify from "../../components/notify";
 
@@ -185,14 +184,7 @@ const PassengersPage = () => {
         });
         saveAs(data, `Riders_${new Date().toISOString()}.xlsx`);
       } else if (type === "pdf") {
-        const doc = new jsPDF();
-        doc.text("Riders Report", 14, 10);
-        autoTable(doc, {
-          startY: 20,
-          head: [Object.keys(exportData[0])],
-          body: exportData.map((row) => Object.values(row)),
-        });
-        doc.save(`Riders_${new Date().toISOString()}.pdf`);
+        await exportToPDF(exportData, "Riders Report", "Riders", i18n.language === "ar");
       } else if (type === "print") {
         const printableWindow = window.open("", "_blank");
         const htmlContent = `

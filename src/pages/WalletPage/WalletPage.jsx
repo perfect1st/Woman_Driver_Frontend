@@ -15,8 +15,7 @@ import {
   updateTransation,
 } from "../../redux/slices/wallet/thunk";
 import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import { exportToPDF } from "../../utils/exportPDF";
 import { saveAs } from "file-saver";
 import notify from "../../components/notify";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
@@ -157,14 +156,7 @@ const WalletPage = () => {
           `Wallets_${Date.now()}.xlsx`
         );
       } else if (type === "pdf") {
-        const doc = new jsPDF();
-        doc.text("Wallets Report", 14, 10);
-        autoTable(doc, {
-          startY: 20,
-          head: [Object.keys(exportData[0])],
-          body: exportData.map((r) => Object.values(r)),
-        });
-        doc.save(`Wallets_${Date.now()}.pdf`);
+        await exportToPDF(exportData, "Wallets Report", "Wallets", i18n.language === "ar");
       } else {
         const w = window.open("", "_blank");
         const html = `

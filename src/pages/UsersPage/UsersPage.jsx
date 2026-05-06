@@ -13,8 +13,7 @@ import LoadingPage from "../../components/LoadingComponent";
 import getPermissionsByScreen from "../../hooks/getPermissionsByScreen";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import { exportToPDF } from "../../utils/exportPDF";
 import {
   getAllUsers,
   getAllUsersWithoutPaginations,
@@ -162,14 +161,7 @@ const UsersPage = () => {
         const data = new Blob([excelBuffer], { type: "application/octet-stream" });
         saveAs(data, `Users_${new Date().toISOString()}.xlsx`);
       } else if (type === "pdf") {
-        const doc = new jsPDF();
-        doc.text("Users Report", 14, 10);
-        autoTable(doc, {
-          startY: 20,
-          head: [Object.keys(exportData[0])],
-          body: exportData.map(row => Object.values(row)),
-        });
-        doc.save(`Users_${new Date().toISOString()}.pdf`);
+        await exportToPDF(exportData, "Users Report", "Users", i18n.language === "ar");
       } else if (type === "print") {
         const printableWindow = window.open("", "_blank");
         const htmlContent = `
