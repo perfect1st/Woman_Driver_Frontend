@@ -267,4 +267,5 @@ const OffersPage = () => {
   );
 };
 
+// offers page
 export default OffersPage;
