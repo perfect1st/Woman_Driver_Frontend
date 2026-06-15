@@ -9,6 +9,7 @@ import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { addOneBackup, getAllBackups, downloadBackup } from '../../redux/slices/backups/thunk';
 import TableComponent from '../../components/TableComponent/TableComponent';
 import CloseIcon from "@mui/icons-material/Close";
+import { getUserCookie } from '../../hooks/authCookies';
 
 
 export default function BackUpPage() {
@@ -105,6 +106,22 @@ export default function BackUpPage() {
   };
 
   const handleSave=async()=>{
+      const user=getUserCookie();
+
+      // console.log("user", user);
+
+      // console.log("radius",radius);
+
+       const data = {
+            note: radius,
+            userId: user?.id
+        };
+
+        await dispatch(addOneBackup({ data }));
+        await dispatch(getAllBackups());
+        setLoading(false);
+        setShowModal(false);
+        setRadius("");
 
   }
 
