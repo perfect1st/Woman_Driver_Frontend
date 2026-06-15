@@ -68,6 +68,7 @@ import PrivacyPolicyPage from "./pages/settings/PrivacyPolicyPage";
 import HelpPage from "./pages/settings/HelpPage";
 import ContactUsPage from "./pages/ContactUsPage/ContactUsPage";
 import ProtectedRoute from "./Auth/ProtectedRoute";
+import BackUpPage from "./pages/BackUpsPage/BackUpPage";
 
 export const ColorModeContext = React.createContext({
   toggleColorMode: () => { },
@@ -736,6 +737,14 @@ function App() {
                   element={
                     <MainLayout>
                       <PrivacyPolicyPage />
+                    </MainLayout>
+                  }
+                />
+                 <Route
+                  path="/backUp"
+                  element={
+                    <MainLayout>
+                      <BackUpPage />
                     </MainLayout>
                   }
                 />

@@ -787,8 +787,10 @@
   "withdrawal_request": "Withdrawal Request",
   "arrived":"Driver Arrived",
   "no_country":"No Country",
-  "Country Code":"Country Code"
-
-
-
+  "Country Code":"Country Code",
+  "Back Up & Restore": "Back Up & Restore",
+  "Add Backup": "Add Backup",
+  "size": "Size",
+  "createdBy": "Created By",
+  "dateCreated": "Date Created"
 }

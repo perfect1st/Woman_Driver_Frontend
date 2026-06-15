@@ -160,6 +160,13 @@ const routesData = {
           // icon: More,
 
         },
+         {
+          key: "backUp",
+          label: { en: "BackUp", ar: "النسخ الاحتياطي " },
+          path: "/backUp",
+          // icon: More,
+
+        },
        
       ],
     },

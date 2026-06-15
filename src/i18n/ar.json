@@ -801,7 +801,10 @@
   "withdrawal_request": "طلب سحب",
   "arrived":"وصل السائق",
   "no_country":"لا يوجد دوله",
-  "Country Code":"كود الدوله"
-
-
+  "Country Code":"كود الدوله",
+  "Back Up & Restore": "النسخ الاحتياطي والاستعادة",
+  "Add Backup": "إضافة نسخة احتياطية",
+  "size": "الحجم",
+  "createdBy": "أنشئ بواسطة",
+  "dateCreated": "تاريخ الإنشاء"
 }

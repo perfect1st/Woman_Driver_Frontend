@@ -19,6 +19,10 @@ import trafficTimeSlice from "./slices/trafficTime/trafficTimeSlice";
 import settingSlice from "./slices/setting/settingSlice";
 import contactUsSlice from "./slices/contactUs/contactUsSlice";
 
+
+import backupsSlice from "./slices/backups/backupsSlice";
+
+
 export const store = configureStore({
   reducer: {
     passenger: passengerSlice,
@@ -40,5 +44,6 @@ export const store = configureStore({
     trafficTime: trafficTimeSlice,
     setting: settingSlice,
     contactUs: contactUsSlice,
+    backupsReducer:backupsSlice,
   },
 });
