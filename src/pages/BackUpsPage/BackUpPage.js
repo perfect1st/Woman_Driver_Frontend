@@ -1,4 +1,4 @@
-import { Backdrop, Box, Button, Divider, IconButton, Modal, TextField, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Backdrop, Box, Button, Divider, FormControl, IconButton, InputLabel, MenuItem, Modal, Select, TextField, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,6 +25,8 @@ export default function BackUpPage() {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [radius, setRadius] = useState("");
+  const [backupType, setBackupType] = useState("");
+  const [backupCategory, setBackupCategory] = useState("");
 
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
@@ -223,14 +225,57 @@ export default function BackUpPage() {
       }
 
       <Box sx={{ my: 2 }}>
-        <FilterComponent
-          onSearch={handleSearch}
-          initialFilters={{ keyword }}
-        // carTypeOptions={allCarTypes?.data}
-        // companyCarOptions={companyCarOptions}
-        // statusOptions={statusOptions}
-        // isCar
-        />
+        <Box display="grid" gap={2} gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr 140px' }} alignItems="center">
+          <FormControl fullWidth sx={{ '& .MuiInputBase-root': { height: 48 }, '& .MuiSelect-select': { display: 'flex', alignItems: 'center', height: 48 } }}>
+            <InputLabel>{t("type")}</InputLabel>
+            <Select
+              value={searchParams.get("type") || ""}
+              label={t("type")}
+              onChange={(e) => {
+                if (e.target.value == "") return;
+                searchParams.set("type", e.target.value);
+                setSearchParams(searchParams);
+              }}
+            >
+              <MenuItem value="">{t("Select Backup Type")}</MenuItem>
+              <MenuItem value="manual">يدوي</MenuItem>
+              <MenuItem value="automatic">تلقائي</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth sx={{ '& .MuiInputBase-root': { height: 48 }, '& .MuiSelect-select': { display: 'flex', alignItems: 'center', height: 48 } }}>
+            <InputLabel>{t("Status")}</InputLabel>
+            <Select
+              value={searchParams.get("status") || ""}
+              label={t("Status")}
+              onChange={(e) => {
+                if (e.target.value == "") return;
+                searchParams.set("status", e.target.value);
+                setSearchParams(searchParams);
+              }}
+            >
+              <MenuItem value="">{t("Select Status")}</MenuItem>
+              <MenuItem value="success">عملية ناجحة</MenuItem>
+              <MenuItem value="failed">عملية فاشلة</MenuItem>
+            </Select>
+          </FormControl>
+
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Button
+              variant="contained"
+              className="danger"
+              fullWidth
+              sx={{ height: 48, minHeight: 48 }}
+              onClick={() => {
+                searchParams.delete("type");
+                searchParams.delete("status");
+                setSearchParams(searchParams);
+              }}
+            >
+              {t("الغاء")}
+            </Button>
+          </Box>
+        </Box>
       </Box>
 
       <TableComponent

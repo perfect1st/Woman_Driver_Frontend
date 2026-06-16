@@ -40,6 +40,7 @@ const FilterComponent = ({
   isCoupon = false,
   isOffer = false,
   isContactUs = false,
+  isBackup=false
 }) => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
