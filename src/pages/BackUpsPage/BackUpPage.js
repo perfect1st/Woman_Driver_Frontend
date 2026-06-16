@@ -25,6 +25,8 @@ export default function BackUpPage() {
 
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
   const [radius, setRadius] = useState("");
   const [backupType, setBackupType] = useState("");
   const [backupCategory, setBackupCategory] = useState("");
@@ -134,6 +136,16 @@ export default function BackUpPage() {
         setSearchParams(searchParams);
 
     };
+
+  const handleViewDetails = (row) => {
+    setSelectedRow(row);
+    setShowDetailsModal(true);
+  };
+
+  const handleDetailsDownload = async () => {
+    if (!selectedRow) return;
+    await handleDownload(selectedRow.id, selectedRow.filename);
+  };
 
     const handleDownload = async (id, filename) => {
         console.log("الضغط شغال! الـ ID المستلم هو:", id);
@@ -275,6 +287,84 @@ export default function BackUpPage() {
         )
       }
 
+      {
+        showDetailsModal && selectedRow && (
+          <Modal
+            open={showDetailsModal}
+            onClose={() => setShowDetailsModal(false)}
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+            slotProps={{
+              backdrop: {
+                timeout: 500,
+                sx: {
+                  backdropFilter: "blur(5px)",
+                  backgroundColor: "rgba(0,0,0,0.1)",
+                },
+              },
+            }}
+          >
+            <Box
+              sx={{
+                width: isSmall ? "95%" : 520,
+                bgcolor: "#fff",
+                borderRadius: 2,
+                p: 3,
+                mx: "auto",
+                mt: isSmall ? "20%" : "12%",
+                outline: "none",
+                boxShadow: 24,
+                position: "relative",
+                isolation: "isolate",
+              }}
+            >
+              <Box sx={{ position: "relative", zIndex: 1 }}>
+                <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                  <Typography fontWeight="bold" variant="h6">
+                    {t("Backup Details")}
+                  </Typography>
+                  <IconButton onClick={() => setShowDetailsModal(false)}>
+                    <CloseIcon />
+                  </IconButton>
+                </Box>
+
+                <Divider sx={{ my: 1 }} />
+
+                <Box display="grid" gap={2} mt={2}>
+                  {[
+                    { label: t("ID"), value: selectedRow.id },
+                    { label: t("Name"), value: selectedRow.filename },
+                    { label: t("size"), value: selectedRow.fileSize },
+                    { label: t("createdBy"), value: selectedRow.performedBy },
+                    { label: t("dateCreated"), value: selectedRow.dateCreated },
+                    { label: t("type"), value: selectedRow.type },
+                    { label: t("Status"), value: selectedRow.status },
+                    { label: t("Notes"), value: selectedRow.note || "" },
+                  ].map((field) => (
+                    <TextField
+                      key={field.label}
+                      label={field.label}
+                      value={field.value || ""}
+                      InputProps={{ readOnly: true }}
+                      variant="outlined"
+                      fullWidth
+                      size="small"
+                    />
+                  ))}
+
+                </Box>
+
+                <Box display="flex" justifyContent="flex-end" mt={3}>
+                  <Button variant="contained" onClick={handleDetailsDownload}>
+                    {t("تحميل")}
+                  </Button>
+                </Box>
+              </Box>
+            </Box>
+          </Modal>
+        )
+      }
+
       <Box sx={{ my: 2 }}>
         <Box display="grid" gap={2} gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr 140px' }} alignItems="center">
           <FormControl fullWidth sx={{ '& .MuiInputBase-root': { height: 48 }, '& .MuiSelect-select': { display: 'flex', alignItems: 'center', height: 48 } }}>
@@ -332,7 +422,7 @@ export default function BackUpPage() {
         data={rows}
         onViewDetails={(r) => {
           console.log("view details of", r);
-          // setShowModal(() => true);
+          handleViewDetails(r);
         }}
         loading={loading}
         // isUsers={true}
