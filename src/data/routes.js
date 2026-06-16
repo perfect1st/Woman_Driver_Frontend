@@ -163,7 +163,7 @@ const routesData = {
          {
           key: "backUp",
           label: { en: "BackUp", ar: "النسخ الاحتياطي " },
-          path: "/backUp",
+          path: "/backUp?page=1",
           // icon: More,
 
         },

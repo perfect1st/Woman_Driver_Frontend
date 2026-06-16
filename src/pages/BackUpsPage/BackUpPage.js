@@ -10,6 +10,7 @@ import { addOneBackup, getAllBackups, downloadBackup } from '../../redux/slices/
 import TableComponent from '../../components/TableComponent/TableComponent';
 import CloseIcon from "@mui/icons-material/Close";
 import { getUserCookie } from '../../hooks/authCookies';
+import PaginationFooter from '../../components/PaginationFooter/PaginationFooter';
 
 
 export default function BackUpPage() {
@@ -43,7 +44,7 @@ export default function BackUpPage() {
 
       const queryParams = new URLSearchParams();
 
-      queryParams.set("limit", 10);
+      queryParams.set("limit", searchParams.get("limit") || "10");
       queryParams.set(
         "page",
         searchParams.get("page") && searchParams.get("page") !== "0"
@@ -72,16 +73,16 @@ export default function BackUpPage() {
 
   console.log("backups", backups);
 
-  const updateParams = (upd) => {
-    const next = Object.fromEntries(searchParams);
-    Object.entries(upd).forEach(([k, v]) => {
-      if (v !== undefined && v !== "") next[k] = v;
-      else delete next[k];
-    });
-    setSearchParams(next);
-  };
+  // const updateParams = (upd) => {
+  //   const next = Object.fromEntries(searchParams);
+  //   Object.entries(upd).forEach(([k, v]) => {
+  //     if (v !== undefined && v !== "") next[k] = v;
+  //     else delete next[k];
+  //   });
+  //   setSearchParams(next);
+  // };
 
-  const handleSearch = (f) => updateParams({ ...f, page: 1 });
+  // const handleSearch = (f) => updateParams({ ...f, page: 1 });
 
   const rows = backups?.backups?.map((u, index) => ({
     id: u._id,
@@ -103,29 +104,79 @@ export default function BackUpPage() {
     { key: "status", label: t("Status") },
   ];
 
-  const addModal =()=> {
-      setShowModal(()=>true);
+  const addModal = () => {
+    setShowModal(() => true);
   };
 
-  const handleSave=async()=>{
-      const user=getUserCookie();
+  const handleSave = async () => {
+    const user = getUserCookie();
 
-      // console.log("user", user);
+    // console.log("user", user);
 
-      // console.log("radius",radius);
+    // console.log("radius",radius);
 
-       const data = {
-            note: radius,
-            userId: user?.id
-        };
+    const data = {
+      note: radius,
+      userId: user?.id
+    };
 
-        await dispatch(addOneBackup({ data }));
-        await dispatch(getAllBackups());
-        setLoading(false);
-        setShowModal(false);
-        setRadius("");
+    await dispatch(addOneBackup({ data }));
+    await dispatch(getAllBackups());
+    setLoading(false);
+    setShowModal(false);
+    setRadius("");
 
   }
+
+  const nextPage = async (page) => {
+        let next_page = page;
+        searchParams.set("page", next_page);
+        setSearchParams(searchParams);
+
+    };
+
+    const handleDownload = async (id, filename) => {
+        console.log("الضغط شغال! الـ ID المستلم هو:", id);
+
+        try {
+            // 1. استخدام fetch العادي مع أخذ الاستجابة كـ ArrayBuffer (أضمن وأسرع للملفات المضغوطة)
+            const response = await fetch(`https://takaful.sale/api/v1/backups/download/${id}`, {
+                headers: {
+                    'authorization': localStorage.getItem("token")
+                }
+            });
+
+            if (!response.ok) {
+                console.error("السيرفر رد بخطأ:", response.status);
+                return;
+            }
+
+            // 2. قراءة البيانات كـ ArrayBuffer لتجنب تعليق الـ Stream
+            const buffer = await response.arrayBuffer();
+            console.log("تم استلام البيانات بنجاح، الحجم:", buffer.byteLength);
+
+            // 3. تحويل الـ Buffer إلى Blob هنا في المتصفح فوراً
+            const blob = new Blob([buffer], { type: "application/gzip" });
+            const url = window.URL.createObjectURL(blob);
+
+            // 4. صناعة رابط التحميل وتفعيله
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename || `backup-${id}.tar.gz`;
+
+            document.body.appendChild(a);
+            a.click();
+
+            // 5. تنظيف الذاكرة بعد ثانية لضمان بدء التحميل
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 1000);
+
+        } catch (error) {
+            console.error("حدث خطأ غير متوقع أثناء التحميل:", error);
+        }
+    };
 
   return (
     <Box
@@ -151,76 +202,76 @@ export default function BackUpPage() {
       />
 
       {/* add modal */}
-      
+
       {
         showModal && (
-           <Modal
-      open={showModal}
-      onClose={()=>setShowModal(()=>false)}
-      closeAfterTransition
-      slots={{ backdrop: Backdrop }}
-      slotProps={{
-        backdrop: {
-          timeout: 500,
-          sx: {
-            backdropFilter: "blur(5px)",
-            backgroundColor: "rgba(0,0,0,0.1)",
-          },
-        },
-      }}
-    >
-      <Box
-        sx={{
-          width: isSmall ? "90%" : 400,
-          bgcolor: "#fff",
-          borderRadius: 2,
-          p: 2,
-          mx: "auto",
-          mt: isSmall ? "30%" : "10%",
-          outline: "none",
-          boxShadow: 24,
-          position: "relative",
-          isolation: "isolate",
-        }}
-      >
-        <Box sx={{ position: "relative", zIndex: 1 }}>
-          <Box display="flex" alignItems="center" justifyContent="space-between">
-            <Typography fontWeight="bold" variant="h6">
-              {t("Add Backup")}
-            </Typography>
-            <IconButton onClick={()=>setShowModal(()=>false)}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-
-          <Divider sx={{ my: 1 }} />
-
-          <Box display="flex" flexDirection="column" alignItems="start" mt={2}>
-            <Typography variant="subtitle1" mb={2} fontWeight="bold">
-              {t("Notes")}
-            </Typography>
-
-            <TextField
-              placeholder={t("Enter the Notes")}
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={4}
-              maxRows={6}
-              value={radius}
-              onChange={(e) => {
-                setRadius(e.target.value);
+          <Modal
+            open={showModal}
+            onClose={() => setShowModal(() => false)}
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+            slotProps={{
+              backdrop: {
+                timeout: 500,
+                sx: {
+                  backdropFilter: "blur(5px)",
+                  backgroundColor: "rgba(0,0,0,0.1)",
+                },
+              },
+            }}
+          >
+            <Box
+              sx={{
+                width: isSmall ? "90%" : 400,
+                bgcolor: "#fff",
+                borderRadius: 2,
+                p: 2,
+                mx: "auto",
+                mt: isSmall ? "30%" : "10%",
+                outline: "none",
+                boxShadow: 24,
+                position: "relative",
+                isolation: "isolate",
               }}
-              sx={{ mb: 3 }}
-            />
+            >
+              <Box sx={{ position: "relative", zIndex: 1 }}>
+                <Box display="flex" alignItems="center" justifyContent="space-between">
+                  <Typography fontWeight="bold" variant="h6">
+                    {t("Add Backup")}
+                  </Typography>
+                  <IconButton onClick={() => setShowModal(() => false)}>
+                    <CloseIcon />
+                  </IconButton>
+                </Box>
 
-            <Button variant="contained" fullWidth onClick={handleSave}>
-              {t("common.done")}
-            </Button>
-          </Box>
-        </Box>
-      </Box>
-    </Modal>
+                <Divider sx={{ my: 1 }} />
+
+                <Box display="flex" flexDirection="column" alignItems="start" mt={2}>
+                  <Typography variant="subtitle1" mb={2} fontWeight="bold">
+                    {t("Notes")}
+                  </Typography>
+
+                  <TextField
+                    placeholder={t("Enter the Notes")}
+                    variant="outlined"
+                    fullWidth
+                    multiline
+                    rows={4}
+                    maxRows={6}
+                    value={radius}
+                    onChange={(e) => {
+                      setRadius(e.target.value);
+                    }}
+                    sx={{ mb: 3 }}
+                  />
+
+                  <Button variant="contained" fullWidth onClick={handleSave}>
+                    {t("common.done")}
+                  </Button>
+                </Box>
+              </Box>
+            </Box>
+          </Modal>
         )
       }
 
@@ -267,9 +318,7 @@ export default function BackUpPage() {
               fullWidth
               sx={{ height: 48, minHeight: 48 }}
               onClick={() => {
-                searchParams.delete("type");
-                searchParams.delete("status");
-                setSearchParams(searchParams);
+                setSearchParams({});
               }}
             >
               {t("الغاء")}
@@ -279,18 +328,30 @@ export default function BackUpPage() {
       </Box>
 
       <TableComponent
-              columns={columns}
-              data={rows}
-              onViewDetails={(r) => {
-                console.log("view details of", r);
-                setShowModal(() => true);
+        columns={columns}
+        data={rows}
+        onViewDetails={(r) => {
+          console.log("view details of", r);
+          // setShowModal(() => true);
+        }}
+        loading={loading}
+        // isUsers={true}
+        // statusKey="status"
+        sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
+        // onStatusChange={onStatusChange}
+        showStatusChange={false}
+      />
+
+      <PaginationFooter
+               currentPage={searchParams.get("page") ? parseInt(searchParams.get("page")) : 1}
+              totalPages={backups?.totalPages}
+              limit={limit}
+               onPageChange={nextPage}
+               onLimitChange={(nextLimit) => {
+                console.log("nextLimit", nextLimit);
+                searchParams.set("limit", nextLimit.target.value);
+                setSearchParams(searchParams);
               }}
-              loading={loading}
-              // isUsers={true}
-              // statusKey="status"
-              sx={{ flex: 1, overflow: "auto", boxShadow: 1, borderRadius: 1 }}
-              // onStatusChange={onStatusChange}
-              showStatusChange={false}
             />
     </Box>
   )
